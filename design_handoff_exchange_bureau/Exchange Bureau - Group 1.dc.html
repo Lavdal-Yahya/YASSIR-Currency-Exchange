@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body { margin:0; background:#E4E9ED; font-family:'IBM Plex Sans Arabic', system-ui, sans-serif; color:#0B1220; -webkit-font-smoothing:antialiased; }
+  a { color:#0B6E5F; text-decoration:none; border-bottom:1px solid #B9CFC9; }
+  a:hover { color:#08554A; border-bottom-color:#0B6E5F; }
+  input { font-family:inherit; }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+</style>
+</helmet>
+
+<section style="padding:48px 56px 96px; display:flex; flex-direction:column; gap:56px">
+
+  <div style="max-width:760px; display:flex; flex-direction:column; gap:14px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1a</span>
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C; letter-spacing:.04em">GROUPE 1 — LE SYSTÈME</span>
+    </div>
+    <h1 style="margin:0; font-size:34px; font-weight:600; letter-spacing:-.02em; line-height:1.15; text-wrap:pretty">Bureau de change · Nouakchott</h1>
+    <p style="margin:0; font-size:15px; line-height:1.6; color:#5A6B7C; text-wrap:pretty">Le chiffre est le héros. Tout le reste se tait. Groupe 1 seulement : jetons, Deal Card dans ses quatre contextes, écran Vendre avec ses états, tableau de bord en deux versions.</p>
+    <div style="display:flex; gap:10px; align-items:center; margin-top:6px">
+      <button onClick="{{ setFr }}" style="{{ frBtn }}" style-active="transform:scale(0.97)">Français</button>
+      <button onClick="{{ setAr }}" style="{{ arBtn }}" style-active="transform:scale(0.97)">العربية · RTL</button>
+      <button onClick="{{ toggleOffline }}" style="{{ offBtn }}" style-active="transform:scale(0.97)">Hors ligne</button>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1b</span>
+      <span style="font-size:15px; font-weight:600">Jetons</span>
+      <span style="font-size:13px; color:#5A6B7C">densité tableau de bord</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; max-width:1400px">
+
+      <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:18px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C; margin-bottom:14px">Palette</div>
+        <div style="display:flex; flex-direction:column; gap:2px">
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#0B1220"></span><span style="font-size:13px">ink · texte</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#0B1220</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#5A6B7C"></span><span style="font-size:13px">muted · libellés</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#5A6B7C</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#F5F7F9; border:1px solid #DCE2E8"></span><span style="font-size:13px">surface</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#F5F7F9</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#DCE2E8"></span><span style="font-size:13px">hairline</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#DCE2E8</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#0B6E5F"></span><span style="font-size:13px">in · entrée <b style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</b></span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#0B6E5F</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#A8500F"></span><span style="font-size:13px">out · sortie <b style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</b></span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#A8500F</span></div>
+          <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:7px 0"><span style="width:26px; height:26px; border-radius:5px; background:#B4231F"></span><span style="font-size:13px">danger · destructif</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#B4231F</span></div>
+        </div>
+        <div style="margin-top:14px; padding-top:12px; border-top:1px solid #DCE2E8">
+          <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C; margin-bottom:10px">Rôles dérivés</div>
+          <div style="display:flex; flex-direction:column; gap:2px">
+            <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#0B1220"></span><span style="font-size:13px">chrome — barre et onglets</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">ink</span></div>
+            <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#E6F1EF; border:1px solid #BFDBD5"></span><span style="font-size:13px">in-tint · texte #0A5548</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#E6F1EF</span></div>
+            <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:6px 0; border-bottom:1px solid #F0F3F5"><span style="width:26px; height:26px; border-radius:5px; background:#FDF0E6; border:1px solid #EBCBAC"></span><span style="font-size:13px">out-tint · texte #8C420C</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#FDF0E6</span></div>
+            <div style="display:grid; grid-template-columns:26px 1fr auto; align-items:center; gap:12px; padding:6px 0"><span style="width:26px; height:26px; border-radius:5px; background:#93A3B4"></span><span style="font-size:13px">muted sur ink</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">#93A3B4</span></div>
+          </div>
+        </div>
+        <p style="margin:14px 0 0; font-size:12px; line-height:1.55; color:#5A6B7C">Une seule dérogation : <b style="color:#0B1220">#0B5A4E</b> pour le teal sur fond teinté, où #0B6E5F tombait sous 4,5:1. Le sens n'est jamais porté par la couleur seule — signe, mot, puis teinte.</p>
+      </div>
+
+      <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:18px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C; margin-bottom:14px">Le chiffre · IBM Plex Mono, tabulaire</div>
+        <div style="display:flex; flex-direction:column; gap:12px">
+          <div><div style="font-size:11px; color:#5A6B7C; margin-bottom:2px">money-xl · 40/1.0 · 600</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:40px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1">164 000</div></div>
+          <div><div style="font-size:11px; color:#5A6B7C; margin-bottom:2px">money-lg · 28/1.05 · 600</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.05">100 000</div></div>
+          <div><div style="font-size:11px; color:#5A6B7C; margin-bottom:2px">money-md · 18/1.2 · 500 — colonnes</div>
+            <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:18px; font-weight:500; font-variant-numeric:tabular-nums; line-height:1.5; text-align:end; width:150px; border-inline-start:1px solid #DCE2E8; padding-inline-start:12px">
+              <div>164 000</div><div>1 411</div><div>64 000</div><div>9 250 000</div>
+            </div>
+          </div>
+          <div><div style="font-size:11px; color:#5A6B7C; margin-bottom:2px">money-sm · 13/1.3 · 500 · réf. et taux</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:500; font-variant-numeric:tabular-nums">41.0000 · 2026-0731-0142</div></div>
+        </div>
+      </div>
+
+      <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:18px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C; margin-bottom:14px">Le mot · IBM Plex Sans Arabic</div>
+        <div style="display:flex; flex-direction:column; gap:11px">
+          <div style="font-size:22px; font-weight:600; letter-spacing:-.01em">title · 22/1.25 · 600</div>
+          <div style="font-size:15px; font-weight:600">strong · 15/1.4 · 600</div>
+          <div style="font-size:14px; font-weight:400; line-height:1.5">body · 14/1.5 · 400 — النص العربي بنفس العائلة</div>
+          <div style="font-size:12px; font-weight:500; color:#5A6B7C">caption · 12/1.45 · 500</div>
+          <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">label · 11/1.2 · 600 · +.09em</div>
+        </div>
+        <div style="margin-top:16px; padding-top:14px; border-top:1px solid #DCE2E8; display:flex; flex-direction:column; gap:8px">
+          <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Espace · 4 8 12 16 24 32 48</div>
+          <div style="display:flex; align-items:flex-end; gap:6px">
+            <span style="width:4px; height:4px; background:#0B1220"></span><span style="width:8px; height:8px; background:#0B1220"></span><span style="width:12px; height:12px; background:#0B1220"></span><span style="width:16px; height:16px; background:#0B1220"></span><span style="width:24px; height:24px; background:#0B1220"></span><span style="width:32px; height:32px; background:#0B1220"></span><span style="width:48px; height:48px; background:#0B1220"></span>
+          </div>
+          <div style="font-size:12px; color:#5A6B7C; line-height:1.5">Rayons 6 · 8 · 10 · 999. Élévation : aucune, sauf feuille d'action (0 8px 32px rgba(11,18,32,.18)). Les cartes sont délimitées par un filet, pas par une ombre. Cible tactile 44px, 8px d'écart. Mouvement 160ms.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1c</span>
+      <span style="font-size:15px; font-weight:600">Deal Card — quatre contextes, un seul composant</span>
+    </div>
+    <div dir="{{ dir }}" style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start">
+
+      <div style="width:360px; display:flex; flex-direction:column; gap:10px">
+        <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">01 · APERÇU DANS LE FORMULAIRE</div>
+        <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+          <div style="padding:14px 16px">
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGive }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#FDF0E6; color:#8C420C; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</span>{{ t.cashOut }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:3px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.05">4 000</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:500; color:#5A6B7C">USD</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin:12px 0">
+              <span style="height:1px; background:#DCE2E8"></span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:500; font-variant-numeric:tabular-nums">1 USD = 41.0000 MRU</span>
+              <span style="height:1px; background:#DCE2E8"></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGet }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#E6F1EF; color:#0A5548; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</span>{{ t.cashIn }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:3px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:28px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.05">164 000</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:500; color:#5A6B7C">MRU</span>
+            </div>
+          </div>
+          <div style="background:#F5F7F9; border-top:1px solid #DCE2E8; padding:10px 16px; display:flex; flex-direction:column; gap:6px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <span style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.paidNow }}</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums; color:#0B5A4E">+ 100 000 MRU</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <span style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.stillOwed }}</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px; font-weight:600; font-variant-numeric:tabular-nums">64 000 MRU</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px; line-height:1.5; color:#5A6B7C">Densité réduite, mêmes chiffres, mêmes libellés. Se met à jour à chaque frappe.</div>
+      </div>
+
+      <div style="width:390px; display:flex; flex-direction:column; gap:10px">
+        <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">02 · CONFIRMATION</div>
+        <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+          <div style="padding:20px 20px 18px">
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGive }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#FDF0E6; color:#8C420C; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</span>{{ t.cashOut }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:10px; margin-top:4px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:40px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1">4 000</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:500; color:#5A6B7C">USD</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:12px; margin:16px 0">
+              <span style="height:1px; background:#DCE2E8"></span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:500; font-variant-numeric:tabular-nums">1 USD = 41.0000 MRU</span>
+              <span style="height:1px; background:#DCE2E8"></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGet }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#E6F1EF; color:#0A5548; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</span>{{ t.cashIn }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:10px; margin-top:4px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:40px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1">164 000</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:500; color:#5A6B7C">MRU</span>
+            </div>
+          </div>
+          <div style="background:#F5F7F9; border-top:1px solid #DCE2E8; padding:14px 20px">
+            <div style="display:grid; grid-template-columns:auto auto auto; justify-content:space-between; gap:0">
+              <div style="padding-inline-end:14px">
+                <div style="font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#5A6B7C; line-height:1.3; min-height:26px">{{ t.dealValue }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:19px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; margin-top:4px">164 000</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU</div>
+              </div>
+              <div style="padding-inline:12px; border-inline-start:1px solid #DCE2E8">
+                <div style="font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#5A6B7C; line-height:1.3; min-height:26px">{{ t.paidNow }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:19px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; color:#0B5A4E; margin-top:4px">+100 000</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · {{ t.cashWord }}</div>
+              </div>
+              <div style="padding-inline-start:12px; border-inline-start:1px solid #DCE2E8">
+                <div style="font-size:10.5px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#5A6B7C; line-height:1.3; min-height:26px">{{ t.stillOwed }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:19px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; margin-top:4px">64 000</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · {{ t.owedWord }}</div>
+              </div>
+            </div>
+            <div style="margin-top:12px; padding-top:10px; border-top:1px solid #DCE2E8; font-size:11.5px; line-height:1.45; color:#5A6B7C">{{ t.noSum }}</div>
+          </div>
+        </div>
+        <div style="font-size:12px; line-height:1.5; color:#5A6B7C">Le contexte qui enseigne la distinction : bande à trois chiffres, trois libellés, aucun total.</div>
+      </div>
+
+      <div style="width:320px; display:flex; flex-direction:column; gap:10px">
+        <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">03 · REÇU</div>
+        <div style="background:#fff; padding:20px; border:1px solid #DCE2E8; border-radius:10px">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; padding-bottom:12px; border-bottom:1px dashed #C6CFD7">
+            <span style="font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase">Bureau Al-Wifaq</span>
+            <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">2026-07-31 · 11:42</span>
+          </div>
+          <div style="padding:14px 0 12px">
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGive }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#FDF0E6; color:#8C420C; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</span>{{ t.cashOut }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:2px"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums">4 000</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; color:#5A6B7C">USD</span></div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; margin:10px 0"><span style="height:1px; background:#DCE2E8"></span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-variant-numeric:tabular-nums">1 USD = 41.0000 MRU</span><span style="height:1px; background:#DCE2E8"></span></div>
+            <div style="display:flex; align-items:center; gap:8px"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.youGet }}</span><span style="display:inline-flex; align-items:center; gap:4px; background:#E6F1EF; color:#0A5548; border-radius:4px; padding:2px 6px; font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</span>{{ t.cashIn }}</span></div>
+            <div style="display:flex; align-items:baseline; gap:8px; margin-top:2px"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums">164 000</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; color:#5A6B7C">MRU</span></div>
+          </div>
+          <div style="border-top:1px dashed #C6CFD7; padding-top:12px; display:flex; flex-direction:column; gap:7px">
+            <div style="display:flex; justify-content:space-between"><span style="font-size:12px; color:#5A6B7C">{{ t.dealValue }}</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:500; font-variant-numeric:tabular-nums">164 000 MRU</span></div>
+            <div style="display:flex; justify-content:space-between"><span style="font-size:12px; color:#5A6B7C">{{ t.paidNow }} · Bankily</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:500; font-variant-numeric:tabular-nums; color:#0B5A4E">+ 100 000 MRU</span></div>
+            <div style="display:flex; justify-content:space-between"><span style="font-size:12px; color:#5A6B7C">{{ t.stillOwed }}</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600; font-variant-numeric:tabular-nums">64 000 MRU</span></div>
+          </div>
+          <div style="margin-top:14px; padding-top:10px; border-top:1px solid #DCE2E8; display:flex; justify-content:space-between; align-items:center">
+            <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">RÉF 2026-0731-0142</span>
+            <span style="font-size:11px; color:#5A6B7C">Ahmed Salem · caisse 1</span>
+          </div>
+        </div>
+        <div style="font-size:12px; line-height:1.5; color:#5A6B7C">Mêmes chiffres au même endroit. Filets pointillés et papier blanc : la seule variation est le support.</div>
+      </div>
+
+      <div style="width:390px; display:flex; flex-direction:column; gap:10px">
+        <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">04 · LIGNE DE LISTE</div>
+        <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+          <div style="padding:12px 16px; border-bottom:1px solid #DCE2E8; display:flex; flex-direction:column; gap:7px; min-height:44px">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+              <span style="font-size:14px; font-weight:600">Ahmed Salem</span>
+              <span style="display:inline-flex; align-items:center; gap:6px; background:#FDF0E6; color:#8C420C; border-radius:999px; padding:3px 9px; font-size:11px; font-weight:600"><span style="width:6px; height:6px; border-radius:999px; background:#A8500F"></span>{{ t.statusPartial }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums">4 000 <span style="font-size:12px; color:#5A6B7C">USD</span></span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">→ 41.0000 →</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums; text-align:end">164 000 <span style="font-size:12px; color:#5A6B7C">MRU</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">31/07 · 11:42</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-variant-numeric:tabular-nums"><span style="color:#0B5A4E">+100 000</span><span style="color:#5A6B7C"> · {{ t.owedShort }} </span><span style="direction:ltr; unicode-bidi:isolate">64 000</span><span style="color:#5A6B7C"> MRU</span></span>
+            </div>
+          </div>
+          <div style="padding:12px 16px; border-bottom:1px solid #DCE2E8; display:flex; flex-direction:column; gap:7px">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+              <span style="font-size:14px; font-weight:600">Mariem Bint Sidi</span>
+              <span style="display:inline-flex; align-items:center; gap:6px; background:#E6F1EF; color:#0A5548; border-radius:999px; padding:3px 9px; font-size:11px; font-weight:600"><span style="width:6px; height:6px; border-radius:999px; background:#0B6E5F"></span>{{ t.statusPaid }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums">1 200 <span style="font-size:12px; color:#5A6B7C">EUR</span></span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">→ 44.2500 →</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums; text-align:end">53 100 <span style="font-size:12px; color:#5A6B7C">MRU</span></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">31/07 · 10:05</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-variant-numeric:tabular-nums"><span style="color:#0B5A4E">+53 100</span><span style="color:#5A6B7C"> · {{ t.owedShort }} </span><span style="direction:ltr; unicode-bidi:isolate">0</span><span style="color:#5A6B7C"> MRU</span></span>
+            </div>
+          </div>
+          <div style="padding:12px 16px; display:flex; flex-direction:column; gap:7px; background:#FBFCFD">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+              <span style="font-size:14px; font-weight:600; color:#5A6B7C; text-decoration:line-through">Cheikh Ould Amar</span>
+              <span style="display:inline-flex; align-items:center; gap:6px; border:1px solid #C9A9A8; color:#8E1C19; border-radius:4px; padding:2px 7px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:10px; font-weight:600; letter-spacing:.06em">{{ t.reversed }}</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; color:#5A6B7C; text-decoration:line-through">
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums">800 <span style="font-size:12px">USD</span></span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px">→ 40.5000 →</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums; text-align:end">32 400 <span style="font-size:12px">MRU</span></span>
+            </div>
+            <div style="font-size:11.5px; color:#5A6B7C">30/07 · 16:20 — {{ t.reversedBy }}</div>
+          </div>
+        </div>
+        <div style="font-size:12px; line-height:1.5; color:#5A6B7C">La ligne garde les trois chiffres : donné, reçu, et payé/dû sur la dernière ligne. Jamais un seul montant.</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:28px; background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:18px 20px; max-width:1400px">
+      <div dir="{{ dir }}" style="display:flex; flex-direction:column; gap:10px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Statut de paiement · pilule</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <span style="display:inline-flex; align-items:center; gap:6px; background:#E6F1EF; color:#0A5548; border-radius:999px; padding:5px 11px; font-size:12px; font-weight:600"><span style="width:6px; height:6px; border-radius:999px; background:#0B6E5F"></span>{{ t.statusPaid }}</span>
+          <span style="display:inline-flex; align-items:center; gap:6px; background:#FDF0E6; color:#8C420C; border-radius:999px; padding:5px 11px; font-size:12px; font-weight:600"><span style="width:6px; height:6px; border-radius:999px; background:#A8500F"></span>{{ t.statusPartial }}</span>
+          <span style="display:inline-flex; align-items:center; gap:6px; background:#EEF1F4; color:#3E4C5A; border-radius:999px; padding:5px 11px; font-size:12px; font-weight:600"><span style="width:6px; height:6px; border-radius:999px; background:#5A6B7C"></span>{{ t.statusUnpaid }}</span>
+        </div>
+      </div>
+      <div dir="{{ dir }}" style="display:flex; flex-direction:column; gap:10px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Cycle de vie · cadre mono</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <span style="border:1px solid #B6C0CA; color:#3E4C5A; border-radius:4px; padding:4px 8px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; font-weight:600; letter-spacing:.06em">{{ t.active }}</span>
+          <span style="border:1px solid #C9A9A8; color:#8E1C19; border-radius:4px; padding:4px 8px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; font-weight:600; letter-spacing:.06em">{{ t.reversed }}</span>
+          <span style="border:1px solid #B6C0CA; color:#3E4C5A; border-radius:4px; padding:4px 8px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; font-weight:600; letter-spacing:.06em">{{ t.opening }}</span>
+        </div>
+      </div>
+      <div style="font-size:12px; line-height:1.5; color:#5A6B7C; max-width:280px">Deux familles qui ne se confondent pas de loin : le paiement est une pilule teintée avec un point, le cycle de vie est un cadre mono anguleux.</div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1d</span>
+      <span style="font-size:15px; font-weight:600">Vendre des devises — S-06</span>
+      <span style="font-size:13px; color:#5A6B7C">le reste dû bouge à la frappe · essayez le champ</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start">
+
+      <div dir="{{ dir }}" style="width:390px; background:#F5F7F9; border:1px solid #C6CFD7; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; min-height:840px">
+        <div style="background:#0B1220; padding:10px 16px; display:flex; align-items:center; gap:12px; min-height:52px">
+          <span style="font-size:22px; color:#AEBBCB">{{ t.backGlyph }}</span>
+          <span style="font-size:15px; font-weight:600; flex:1; color:#F5F7F9">{{ t.sellTitle }}</span>
+          <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; border:1px solid #33415C; border-radius:6px; padding:6px 8px; color:#C3CEDB">{{ t.langGlyph }}</span>
+        </div>
+        <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FBEAE9; border-bottom:1px solid #E2B9B7; padding:10px 16px; display:flex; gap:10px; align-items:flex-start">
+            <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:600; color:#B4231F">!</span>
+            <span style="font-size:12.5px; line-height:1.45; color:#7C1815">{{ t.offlineMsg }}</span>
+          </div>
+        </sc-if>
+        <div style="flex:1; padding:16px; display:flex; flex-direction:column; gap:16px">
+
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.contact }}</label>
+            <div style="display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 14px; background:#fff; border:1px solid #DCE2E8; border-radius:8px">
+              <span style="width:32px; height:32px; border-radius:999px; background:#EEF1F4; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:#3E4C5A">AS</span>
+              <span style="flex:1; display:flex; flex-direction:column; gap:1px">
+                <span style="font-size:14px; font-weight:600">Ahmed Salem</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">45 000 MRU · +222 44 12 88 07</span></span>
+              </span>
+              <span style="font-size:12px; color:#5A6B7C">{{ t.change }}</span>
+            </div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:14px">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.youDeliver }}</label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:56px; padding:8px 12px; background:#fff; border:1px solid #0B1220; border-radius:8px">
+                <span style="flex:1; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums">4 000</span>
+                <span style="display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 10px; background:#F5F7F9; border:1px solid #DCE2E8; border-radius:6px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600">USD <span style="font-size:10px; color:#5A6B7C">▾</span></span>
+              </div>
+              <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11.5px; color:#5A6B7C; margin-top:5px">{{ t.available }} <span style="direction:ltr; unicode-bidi:isolate">9 250 USD</span></div>
+            </div>
+            <div>
+              <label style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.mruTotal }}<span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:10px; font-weight:600; letter-spacing:.06em; color:#5A6B7C; border:1px solid #DCE2E8; border-radius:4px; padding:2px 6px">{{ t.fixedMru }}</span></label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:56px; padding:8px 12px; background:#F5F7F9; border:1px solid #DCE2E8; border-radius:8px">
+                <span style="flex:1; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums">164 000</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600; color:#5A6B7C">MRU</span>
+              </div>
+              <div style="font-size:11.5px; color:#5A6B7C; margin-top:5px">{{ t.derivedNote }}</div>
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.rate }}</label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:52px; padding:8px 12px; background:#fff; border:1px solid #DCE2E8; border-radius:8px">
+                <span style="flex:1; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:22px; font-weight:600; font-variant-numeric:tabular-nums">41.0000</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">MRU / USD</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:6px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:500; font-variant-numeric:tabular-nums">1 USD = 41.0000 MRU</div>
+              <div style="font-size:11.5px; color:#5A6B7C; margin-top:3px">{{ t.lastRate }} 40.8000 · {{ t.withinRange }}</div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:12px">
+            <div>
+              <label for="paidnow" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.receivedNow }}</label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:56px; padding:8px 12px; background:#fff; border:1px solid #0B1220; border-radius:8px">
+                <input id="paidnow" inputMode="numeric" value="{{ paidStr }}" onChange="{{ onPaid }}" style="flex:1; min-width:0; border:0; outline:none; background:transparent; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; color:#0B1220; padding:0">
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600; color:#5A6B7C">MRU</span>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:10px">
+                <button onClick="{{ setFull }}" style="min-height:44px; padding:0 16px; border:1px solid #DCE2E8; border-radius:999px; background:#F5F7F9; font-family:inherit; font-size:13px; font-weight:600; color:#0B1220; cursor:pointer" style-hover="border-color:#0B1220">{{ t.full }}</button>
+                <button onClick="{{ setNone }}" style="min-height:44px; padding:0 16px; border:1px solid #DCE2E8; border-radius:999px; background:#F5F7F9; font-family:inherit; font-size:13px; font-weight:600; color:#0B1220; cursor:pointer" style-hover="border-color:#0B1220">{{ t.none }}</button>
+              </div>
+            </div>
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.method }}</label>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <span style="min-height:44px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid #0B1220; background:#0B1220; color:#F5F7F9; border-radius:8px; font-size:13px; font-weight:600">Bankily</span>
+                <span style="min-height:44px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid #DCE2E8; background:#fff; border-radius:8px; font-size:13px; font-weight:500">{{ t.cash }}</span>
+                <span style="min-height:44px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid #DCE2E8; background:#fff; border-radius:8px; font-size:13px; font-weight:500">Masrivi</span>
+                <span style="min-height:44px; display:inline-flex; align-items:center; padding:0 14px; border:1px solid #DCE2E8; background:#fff; border-radius:8px; font-size:13px; font-weight:500">Sedad</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+            <div style="padding:12px 14px; display:flex; flex-direction:column; gap:8px">
+              <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+                <span style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.dealValue }}</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px; font-weight:500; font-variant-numeric:tabular-nums">164 000 MRU</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+                <span style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.paidNow }}</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px; font-weight:500; font-variant-numeric:tabular-nums; color:#0B5A4E">+ {{ paidStr }} MRU</span>
+              </div>
+            </div>
+            <div style="background:#0B1220; padding:16px 14px; display:flex; justify-content:space-between; align-items:baseline; gap:12px">
+              <span style="font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:#93A3B4">{{ t.stillOwed }}</span>
+              <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:30px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1; color:#FFFFFF; transition:color 160ms ease">{{ owedStr }} <span style="font-size:14px; color:#93A3B4">MRU</span></span>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 16px 20px; background:#fff; border-top:1px solid #DCE2E8">
+          <button style="{{ submitStyle }}" style-active="transform:scale(0.985)">{{ t.review }}</button>
+          <sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:11.5px; color:#7C1815; text-align:center; margin-top:8px">{{ t.offlineBtn }}</div>
+          </sc-if>
+        </div>
+        <div style="background:#0B1220; border-top:1px solid #16233A; display:grid; grid-template-columns:1fr 1fr 76px 1fr 1fr; align-items:center; min-height:64px; padding-bottom:6px">
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">▤</span>{{ t.navHome }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:600; color:#FFFFFF"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⇄</span>{{ t.navTrades }}</span>
+          <span style="display:flex; justify-content:center"><span style="width:56px; height:56px; border-radius:999px; background:#0B6E5F; color:#FFFFFF; box-shadow:0 3px 12px rgba(11,110,95,.4); display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:400; margin-top:-18px">+</span></span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">≡</span>{{ t.navDebts }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⋯</span>{{ t.navMore }}</span>
+        </div>
+      </div>
+
+      <div dir="{{ dir }}" style="width:390px; display:flex; flex-direction:column; gap:20px">
+
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">ÉTAT · TAUX INVERSÉ (AVERTIT, NE BLOQUE PAS)</div>
+          <div style="background:#F5F7F9; border:1px solid #C6CFD7; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:14px">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.rate }}</label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:52px; padding:8px 12px; background:#fff; border:2px solid #A8500F; border-radius:8px">
+                <span style="flex:1; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:22px; font-weight:600; font-variant-numeric:tabular-nums">0.0244</span>
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C">MRU / USD</span>
+              </div>
+              <div style="margin-top:8px; background:#FDF0E6; border:1px solid #E8C39C; border-radius:8px; padding:12px">
+                <div style="display:flex; gap:9px; align-items:flex-start">
+                  <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600; color:#8C420C; line-height:1.2">▲</span>
+                  <div style="display:flex; flex-direction:column; gap:7px">
+                    <span style="font-size:13px; font-weight:600; color:#7A3A0A; line-height:1.4">{{ t.warnTitle }}</span>
+                    <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:600; color:#0B1220">1 USD = 0.0244 MRU</span>
+                    <span style="font-size:12.5px; line-height:1.5; color:#7A3A0A">{{ t.warnBody }}</span>
+                    <div style="display:flex; gap:8px; margin-top:2px; flex-wrap:wrap">
+                      <button style="min-height:44px; padding:0 14px; border:1px solid #8C420C; background:#8C420C; color:#fff; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer">{{ t.useInverse }}</button>
+                      <button style="min-height:44px; padding:0 14px; border:1px solid #C99B6E; background:transparent; color:#7A3A0A; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer">{{ t.keepRate }}</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid #DCE2E8; padding-top:12px">
+              <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C; margin-bottom:6px">{{ t.mruTotal }}</div>
+              <div style="display:flex; align-items:baseline; gap:8px"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; color:#8C420C">98</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; color:#5A6B7C">MRU</span></div>
+              <div style="font-size:12px; line-height:1.5; color:#7A3A0A; margin-top:5px">{{ t.warnTotal }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">ÉTAT · SOLDE INSUFFISANT (BLOQUE)</div>
+          <div style="background:#F5F7F9; border:1px solid #C6CFD7; border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:14px">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px">{{ t.youDeliver }}</label>
+              <div style="display:flex; align-items:center; gap:10px; min-height:56px; padding:8px 12px; background:#fff; border:2px solid #B4231F; border-radius:8px">
+                <span style="flex:1; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums">12 000</span>
+                <span style="display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 10px; background:#F5F7F9; border:1px solid #DCE2E8; border-radius:6px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:14px; font-weight:600">USD <span style="font-size:10px; color:#5A6B7C">▾</span></span>
+              </div>
+              <div style="display:flex; gap:8px; align-items:flex-start; margin-top:8px">
+                <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:13px; font-weight:600; color:#B4231F; line-height:1.3">✕</span>
+                <div style="display:flex; flex-direction:column; gap:4px">
+                  <span style="font-size:13px; font-weight:600; color:#8E1C19; line-height:1.45">{{ t.errBalance }}</span>
+                  <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; color:#5A6B7C; font-variant-numeric:tabular-nums">{{ t.short }} <span style="direction:ltr; unicode-bidi:isolate">2 750 USD</span></span>
+                </div>
+              </div>
+            </div>
+            <div style="border-top:1px solid #DCE2E8; padding-top:12px; display:flex; flex-direction:column; gap:10px">
+              <button style="width:100%; min-height:52px; border-radius:10px; border:1px solid #DCE2E8; background:#EEF1F4; color:#9AA6B2; font-family:inherit; font-size:15px; font-weight:600; cursor:not-allowed">{{ t.review }}</button>
+              <span style="font-size:12px; line-height:1.5; color:#5A6B7C">{{ t.errHint }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">ÉTATS · VIDE ET SQUELETTE</div>
+          <div style="display:flex; gap:12px">
+            <div style="flex:1; background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center">
+              <span style="width:38px; height:38px; border:1px solid #DCE2E8; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:16px; color:#5A6B7C">⇄</span>
+              <span style="font-size:14px; font-weight:600">{{ t.emptyTitle }}</span>
+              <span style="font-size:12px; line-height:1.5; color:#5A6B7C">{{ t.emptyBody }}</span>
+              <button style="min-height:44px; padding:0 16px; border:1px solid #0B1220; background:#0B1220; color:#F5F7F9; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer">{{ t.emptyAction }}</button>
+            </div>
+            <div style="flex:1; background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:12px">
+              <div style="display:flex; flex-direction:column; gap:7px"><span style="height:12px; width:60%; background:#EAEEF1; border-radius:3px"></span><span style="height:20px; width:85%; background:#EAEEF1; border-radius:3px"></span><span style="height:10px; width:45%; background:#F0F3F5; border-radius:3px"></span></div>
+              <div style="height:1px; background:#F0F3F5"></div>
+              <div style="display:flex; flex-direction:column; gap:7px"><span style="height:12px; width:50%; background:#EAEEF1; border-radius:3px"></span><span style="height:20px; width:75%; background:#EAEEF1; border-radius:3px"></span><span style="height:10px; width:55%; background:#F0F3F5; border-radius:3px"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1e</span>
+      <span style="font-size:15px; font-weight:600">Tableau de bord — S-04, deux fois</span>
+      <span style="font-size:13px; color:#5A6B7C">propriétaire · employé sans <code style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px">profit:view</code></span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start">
+
+      <div dir="{{ dir }}" style="width:390px; background:#F5F7F9; border:1px solid #C6CFD7; border-radius:22px; overflow:hidden; display:flex; flex-direction:column">
+        <div style="background:#0B1220; padding:10px 16px; display:flex; align-items:center; gap:12px; min-height:52px">
+          <span style="font-size:15px; font-weight:600; flex:1; color:#F5F7F9">{{ t.dashTitle }}</span>
+          <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; border:1px solid #33415C; border-radius:6px; padding:6px 8px; color:#C3CEDB">{{ t.langGlyph }}</span>
+          <span style="width:32px; height:32px; border-radius:999px; background:#F5F7F9; color:#0B1220; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600">MO</span>
+        </div>
+        <div style="background:#fff; border-bottom:1px solid #DCE2E8; padding:10px 16px; display:flex; gap:8px">
+          <span style="flex:1; min-height:40px; display:flex; align-items:center; justify-content:center; gap:6px; border:1px solid #0B1220; background:#0B1220; color:#F5F7F9; border-radius:8px; font-size:13px; font-weight:600">{{ t.today }} <span style="font-size:10px; color:#93A3B4">▾</span></span>
+          <span style="flex:1; min-height:40px; display:flex; align-items:center; justify-content:center; gap:6px; border:1px solid #DCE2E8; border-radius:8px; font-size:13px; font-weight:500; color:#3E4C5A">{{ t.allCurrencies }} <span style="font-size:10px; color:#5A6B7C">▾</span></span>
+        </div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:20px">
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.balances }}</span><span style="font-size:12px; color:#5A6B7C">{{ t.seeAll }}</span></div>
+            <div style="display:flex; gap:10px; overflow-x:auto; overflow-y:hidden; padding-bottom:6px">
+              <div style="flex:0 0 auto; box-sizing:border-box; width:168px; background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">MRU</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:5px">1 284 500</div>
+                <div style="font-size:11px; color:#5A6B7C; margin-top:6px">{{ t.lastMovement }} 11:42</div>
+              </div>
+              <div style="flex:0 0 auto; box-sizing:border-box; width:148px; background:#fff; border:1px solid #E8C39C; border-radius:10px; padding:13px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">USD</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:5px">9 250</div>
+                <div style="font-size:11px; font-weight:600; color:#8C420C; margin-top:6px"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">▲</span> {{ t.lowBalance }} <span style="direction:ltr; unicode-bidi:isolate">10 000</span></div>
+              </div>
+              <div style="flex:0 0 auto; box-sizing:border-box; width:130px; background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">EUR</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:5px">3 120</div>
+              </div>
+            </div>
+            <div style="font-size:11.5px; line-height:1.5; color:#5A6B7C">{{ t.noSumShort }}</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.cashToday }}</span>
+            <div style="display:flex; gap:10px">
+              <div style="flex:1; background:#E6F1EF; border:1px solid #BFDBD5; border-radius:10px; padding:13px; border-inline-start:3px solid #0B6E5F">
+                <div style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#0A5548"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</span>{{ t.cashIn }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:5px">418 000</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · <span style="direction:ltr; unicode-bidi:isolate">7</span> {{ t.movements }}</div>
+              </div>
+              <div style="flex:1; background:#FDF0E6; border:1px solid #EBCBAC; border-radius:10px; padding:13px; border-inline-start:3px solid #A8500F">
+                <div style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#8C420C"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</span>{{ t.cashOut }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.1; margin-top:5px">276 300</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · <span style="direction:ltr; unicode-bidi:isolate">5</span> {{ t.movements }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.debtSummary }}</span>
+            <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+              <div style="display:grid; grid-template-columns:1fr 1fr">
+                <div style="padding:13px; background:#F2F8F6; border-inline-end:1px solid #DCE2E8">
+                  <div style="font-size:12px; font-weight:600; color:#0A5548; margin-bottom:7px">{{ t.owedToUs }}</div>
+                  <div style="display:flex; flex-direction:column; gap:4px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums">
+                    <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">MRU</span>612 000</div>
+                    <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">USD</span>1 400</div>
+                  </div>
+                </div>
+                <div style="padding:13px; background:#FEF8F2">
+                  <div style="font-size:12px; font-weight:600; color:#8C420C; margin-bottom:7px">{{ t.weOwe }}</div>
+                  <div style="display:flex; flex-direction:column; gap:4px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums">
+                    <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">MRU</span>389 500</div>
+                    <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">EUR</span>800</div>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top:1px solid #DCE2E8; padding:10px 13px; font-size:11.5px; line-height:1.5; color:#5A6B7C; background:#F5F7F9">{{ t.noNet }}</div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.periodSummary }}</span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px"><div style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.sales }}</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:4px">964 000</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU {{ t.valueWord }}</div></div>
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px"><div style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.purchases }}</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:4px">742 800</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU {{ t.valueWord }}</div></div>
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px"><div style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.grossProfit }}</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:4px; color:#0B5A4E">+ 78 400</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · {{ t.wac }}</div></div>
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:13px"><div style="font-size:12px; font-weight:500; color:#5A6B7C">{{ t.netProfit }}</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:20px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:4px; color:#0B5A4E">+ 61 150</div><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · − {{ t.expenses }} <span style="direction:ltr; unicode-bidi:isolate">17 250</span></div></div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.recent }}</span><span style="font-size:12px; color:#5A6B7C">{{ t.seeAll }}</span></div>
+            <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+              <div style="padding:11px 13px; border-bottom:1px solid #F0F3F5; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Ahmed Salem</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">11:42 · {{ t.sale }} · <span style="direction:ltr; unicode-bidi:isolate">4 000 USD</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#0B5A4E">+ 100 000</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">64 000</span></span></span>
+              </div>
+              <div style="padding:11px 13px; border-bottom:1px solid #F0F3F5; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Mariem Bint Sidi</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">10:05 · {{ t.sale }} · <span style="direction:ltr; unicode-bidi:isolate">1 200 EUR</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#0B5A4E">+ 53 100</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">0</span></span></span>
+              </div>
+              <div style="padding:11px 13px; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Sté Chinguitel</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">09:18 · {{ t.purchase }} · <span style="direction:ltr; unicode-bidi:isolate">2 500 USD</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#8C420C">− 102 000</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">0</span></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0B1220; border-top:1px solid #16233A; display:grid; grid-template-columns:1fr 1fr 76px 1fr 1fr; align-items:center; min-height:64px; padding-bottom:6px">
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:600; color:#FFFFFF"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">▤</span>{{ t.navHome }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⇄</span>{{ t.navTrades }}</span>
+          <span style="display:flex; justify-content:center"><span style="width:56px; height:56px; border-radius:999px; background:#0B6E5F; color:#FFFFFF; box-shadow:0 3px 12px rgba(11,110,95,.4); display:flex; align-items:center; justify-content:center; font-size:26px; margin-top:-18px">+</span></span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">≡</span>{{ t.navDebts }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⋯</span>{{ t.navMore }}</span>
+        </div>
+      </div>
+
+      <div dir="{{ dir }}" style="width:390px; background:#F5F7F9; border:1px solid #C6CFD7; border-radius:22px; overflow:hidden; display:flex; flex-direction:column">
+        <div style="background:#0B1220; padding:10px 16px; display:flex; align-items:center; gap:12px; min-height:52px">
+          <span style="font-size:15px; font-weight:600; flex:1; color:#F5F7F9">{{ t.dashTitle }}</span>
+          <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; border:1px solid #33415C; border-radius:6px; padding:6px 8px; color:#C3CEDB">{{ t.langGlyph }}</span>
+          <span style="width:32px; height:32px; border-radius:999px; background:#33415C; color:#E7ECF1; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600">FA</span>
+        </div>
+        <div style="background:#fff; border-bottom:1px solid #DCE2E8; padding:10px 16px; display:flex; gap:8px">
+          <span style="flex:1; min-height:40px; display:flex; align-items:center; justify-content:center; gap:6px; border:1px solid #0B1220; background:#0B1220; color:#F5F7F9; border-radius:8px; font-size:13px; font-weight:600">{{ t.today }} <span style="font-size:10px; color:#93A3B4">▾</span></span>
+          <span style="flex:1; min-height:40px; display:flex; align-items:center; justify-content:center; gap:6px; border:1px solid #DCE2E8; border-radius:8px; font-size:13px; font-weight:500; color:#3E4C5A">{{ t.allCurrencies }} <span style="font-size:10px; color:#5A6B7C">▾</span></span>
+        </div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:20px">
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.balances }}</span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">MRU</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">1 284 500</div>
+                <div style="font-size:11px; color:#5A6B7C; margin-top:7px">{{ t.lastMovement }} 11:42</div>
+              </div>
+              <div style="background:#fff; border:1px solid #E8C39C; border-radius:10px; padding:14px">
+                <div style="display:flex; justify-content:space-between; align-items:center"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">USD</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; font-weight:600; color:#8C420C">▲</span></div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">9 250</div>
+                <div style="font-size:11px; font-weight:600; color:#8C420C; margin-top:7px">{{ t.lowBalance }} <span style="direction:ltr; unicode-bidi:isolate">10 000</span></div>
+              </div>
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">EUR</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">3 120</div>
+                <div style="font-size:11px; color:#5A6B7C; margin-top:7px">{{ t.lastMovement }} 10:05</div>
+              </div>
+              <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:14px">
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; display:inline-block; font-size:11px; font-weight:600; color:#E7ECF1; background:#0B1220; border-radius:4px; padding:2px 7px; letter-spacing:.06em">MAD</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">14 900</div>
+                <div style="font-size:11px; color:#5A6B7C; margin-top:7px">{{ t.lastMovement }} 28/07</div>
+              </div>
+            </div>
+            <div style="font-size:11.5px; line-height:1.5; color:#5A6B7C">{{ t.noSumShort }}</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.cashToday }}</span>
+            <div style="display:flex; gap:10px">
+              <div style="flex:1; background:#E6F1EF; border:1px solid #BFDBD5; border-radius:10px; padding:14px; border-inline-start:3px solid #0B6E5F">
+                <div style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#0A5548"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">+</span>{{ t.cashIn }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">418 000</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · <span style="direction:ltr; unicode-bidi:isolate">7</span> {{ t.movements }}</div>
+              </div>
+              <div style="flex:1; background:#FDF0E6; border:1px solid #EBCBAC; border-radius:10px; padding:14px; border-inline-start:3px solid #A8500F">
+                <div style="display:flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:#8C420C"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">−</span>{{ t.cashOut }}</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:26px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.05; margin-top:6px">276 300</div>
+                <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">MRU · <span style="direction:ltr; unicode-bidi:isolate">5</span> {{ t.movements }}</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.debtSummary }}</span>
+            <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+              <div style="display:grid; grid-template-columns:1fr 1fr">
+                <div style="padding:14px; background:#F2F8F6; border-inline-end:1px solid #DCE2E8">
+                  <div style="font-size:12px; font-weight:600; color:#0A5548; margin-bottom:8px">{{ t.owedToUs }}</div>
+                  <div style="display:flex; flex-direction:column; gap:5px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums">
+                    <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">MRU</span>612 000</div>
+                    <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">USD</span>1 400</div>
+                  </div>
+                </div>
+                <div style="padding:14px; background:#FEF8F2">
+                  <div style="font-size:12px; font-weight:600; color:#8C420C; margin-bottom:8px">{{ t.weOwe }}</div>
+                  <div style="display:flex; flex-direction:column; gap:5px; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums">
+                    <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">MRU</span>389 500</div>
+                    <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:600"><span style="font-size:11px; color:#5A6B7C; align-self:center">EUR</span>800</div>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top:1px solid #DCE2E8; padding:10px 14px; font-size:11.5px; line-height:1.5; color:#5A6B7C; background:#F5F7F9">{{ t.noNet }}</div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.myDay }}</span>
+            <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; display:grid; grid-template-columns:1fr 1fr 1fr">
+              <div style="padding:14px 12px; text-align:center"><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums">12</div><div style="font-size:11.5px; color:#5A6B7C; margin-top:3px">{{ t.tradesRecorded }}</div></div>
+              <div style="padding:14px 12px; text-align:center; border-inline:1px solid #DCE2E8"><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums">3</div><div style="font-size:11.5px; color:#5A6B7C; margin-top:3px">{{ t.partial }}</div></div>
+              <div style="padding:14px 12px; text-align:center"><div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:24px; font-weight:600; font-variant-numeric:tabular-nums">5</div><div style="font-size:11.5px; color:#5A6B7C; margin-top:3px">{{ t.paymentsTaken }}</div></div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:9px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline"><span style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">{{ t.recent }}</span><span style="font-size:12px; color:#5A6B7C">{{ t.seeAll }}</span></div>
+            <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; overflow:hidden">
+              <div style="padding:11px 13px; border-bottom:1px solid #F0F3F5; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Ahmed Salem</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">11:42 · {{ t.sale }} · <span style="direction:ltr; unicode-bidi:isolate">4 000 USD</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#0B5A4E">+ 100 000</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">64 000</span></span></span>
+              </div>
+              <div style="padding:11px 13px; border-bottom:1px solid #F0F3F5; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Mariem Bint Sidi</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">10:05 · {{ t.sale }} · <span style="direction:ltr; unicode-bidi:isolate">1 200 EUR</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#0B5A4E">+ 53 100</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">0</span></span></span>
+              </div>
+              <div style="padding:11px 13px; display:flex; justify-content:space-between; align-items:center; gap:10px; min-height:44px">
+                <span style="display:flex; flex-direction:column; gap:2px"><span style="font-size:13.5px; font-weight:600">Sté Chinguitel</span><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C">09:18 · {{ t.purchase }} · <span style="direction:ltr; unicode-bidi:isolate">2 500 USD</span></span></span>
+                <span style="text-align:end; font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-variant-numeric:tabular-nums"><span style="display:block; font-size:14px; font-weight:600; color:#8C420C">− 102 000</span><span style="display:block; font-size:11px; color:#5A6B7C">{{ t.owedShort }} <span style="direction:ltr; unicode-bidi:isolate">0</span></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:#0B1220; border-top:1px solid #16233A; display:grid; grid-template-columns:1fr 1fr 76px 1fr 1fr; align-items:center; min-height:64px; padding-bottom:6px">
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:600; color:#FFFFFF"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">▤</span>{{ t.navHome }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⇄</span>{{ t.navTrades }}</span>
+          <span style="display:flex; justify-content:center"><span style="width:56px; height:56px; border-radius:999px; background:#0B6E5F; color:#FFFFFF; box-shadow:0 3px 12px rgba(11,110,95,.4); display:flex; align-items:center; justify-content:center; font-size:26px; margin-top:-18px">+</span></span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">≡</span>{{ t.navDebts }}</span>
+          <span style="display:flex; flex-direction:column; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#93A3B4"><span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:15px">⋯</span>{{ t.navMore }}</span>
+        </div>
+      </div>
+
+      <div style="width:320px; display:flex; flex-direction:column; gap:12px; font-size:12.5px; line-height:1.6; color:#3E4C5A">
+        <div style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:11px; color:#5A6B7C; letter-spacing:.04em">SANS <span style="color:#0B1220">profit:view</span></div>
+        <p style="margin:0">Ce n'est pas le premier écran avec des trous. Les cartes de bénéfice disparaissent, et la place libérée sert à deux choses que l'employé, lui, regarde : la bande de soldes passe en grille 2×2 — quatre devises visibles sans défilement, chiffres plus grands — et un bloc <b>Ma journée</b> remplace le résumé de période.</p>
+        <p style="margin:0">Ce qui reste identique : les soldes, la caisse entrée/sortie séparée, les dettes par devise, l'activité récente. L'employé enregistre et vérifie ; il ne mesure pas la marge.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; flex-direction:column; gap:20px; max-width:1000px">
+    <div style="display:flex; align-items:center; gap:12px">
+      <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate; font-size:12px; font-weight:600; background:#0B1220; color:#F5F7F9; padding:5px 9px; border-radius:4px">1f</span>
+      <span style="font-size:15px; font-weight:600">Une page de justification</span>
+    </div>
+    <div style="background:#fff; border:1px solid #DCE2E8; border-radius:10px; padding:24px 28px; display:grid; grid-template-columns:1fr 1fr; gap:28px">
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">La direction</div>
+        <p style="margin:0; font-size:13.5px; line-height:1.65">Le tableau d'affichage et la colonne de registre : des chiffres en rangées, et rien qui les concurrence. Le mono tabulaire n'est pas un effet, c'est ce qui rend une colonne de dettes lisible d'un coup d'œil. Les cartes sont délimitées par un filet plutôt que par une ombre, parce qu'une ombre en plein soleil ne dit rien. La couleur ne décore rien : l'ink habille le chrome — barre de titre, onglets, et la bande du reste dû — pour que le corps de l'écran reste clair au soleil et que la hiérarchie vienne du cadre, pas d'un dégradé. Les deux teintes ne servent qu'au sens, entrée et sortie, et arrivent toujours après un signe et un mot ; le code devise passe en pastille sombre, comme sur le tableau d'affichage. Aucun aplat coloré derrière un montant.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Le risque assumé</div>
+        <p style="margin:0; font-size:13.5px; line-height:1.65">Le Deal Card refuse le format « une ligne, un montant » sur lequel toute liste financière converge. Une ligne de liste occupe ici trois lignes de texte et garde donné, reçu, payé et dû. On voit donc six ou sept opérations par écran, pas quinze. C'est un coût de densité accepté sciemment : la liste où l'on ne voit que <span style="font-family:'IBM Plex Mono','IBM Plex Sans Arabic',monospace; direction:ltr; unicode-bidi:isolate">164 000</span> est celle où l'on croit avoir été payé.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Rejeté</div>
+        <p style="margin:0; font-size:13.5px; line-height:1.65">Le total unique en haut du tableau de bord, sous toutes ses formes. Les sparklines : douze points ne disent rien qu'une colonne ne dise mieux. Le fond crème et le serif à fort contraste, le fond quasi noir à accent acide, la mise en page broadsheet — trois réflexes, pas trois choix. Le geste de suppression : rien ne s'efface, on contre-passe. Et l'astuce du bénéfice masqué par un flou : l'absence est plus honnête qu'un secret exhibé.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px">
+        <div style="font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:#5A6B7C">Deux questions pour le client</div>
+        <p style="margin:0; font-size:13.5px; line-height:1.65"><b>1. Les chiffres arabes occidentaux (0–9) en arabe.</b> Retenu ici pour la transcription depuis le papier, mais si le propriétaire et ses employés lisent les chiffres indo-arabes plus couramment, la règle doit s'inverser. À demander, pas à déduire de la langue d'interface.<br><br><b>2. Le mono.</b> Si l'interface doit paraître plus chaleureuse, c'est la première chose à abandonner — mais les chiffres tabulaires restent, dans tous les cas.</p>
+      </div>
+    </div>
+    <div style="font-size:13px; line-height:1.6; color:#5A6B7C; max-width:760px">Groupe 1 terminé, comme demandé. Dites-moi ce qui doit changer avant d'attaquer le groupe 2 — liste des opérations, détail avec contre-passation, aperçu des dettes, encaissement client, profil de contact. Le desktop viendra sur les écrans déjà validés en téléphone.</div>
+  </div>
+
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;lang&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;fr&quot;,&quot;ar&quot;],&quot;default&quot;:&quot;fr&quot;,&quot;tsType&quot;:&quot;'fr' | 'ar'&quot;,&quot;section&quot;:&quot;Langue&quot;},&quot;offline&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;États&quot;}}">
+const FR = {
+  youGive:"Vous donnez", youGet:"Vous recevez", paidNow:"Payé maintenant", stillOwed:"Reste dû",
+  dealValue:"Valeur du deal", cashWord:"encaissé", owedWord:"à recevoir", owedShort:"dû",
+  noSum:"Ces trois chiffres ne s'additionnent pas. La valeur est ce que vaut l'opération, l'encaissé est ce qui a changé de main, le reste dû est une créance.",
+  noSumShort:"Chaque devise reste séparée. Aucun total toutes devises confondues.",
+  noNet:"Créances et dettes ne se compensent pas, même pour un même contact.",
+  statusPaid:"Payé", statusPartial:"Partiel", statusUnpaid:"Non payé",
+  active:"ACTIVE", reversed:"CONTRE-PASSÉE", opening:"OUVERTURE", reversedBy:"contre-passée par Mohamed O. — taux saisi à l'envers",
+  sellTitle:"Vendre des devises", dashTitle:"Tableau de bord", backGlyph:"‹", langGlyph:"FR ع",
+  contact:"Contact", change:"Changer", youDeliver:"Vous livrez", available:"Disponible",
+  mruTotal:"Total MRU", fixedMru:"FIXE", derivedNote:"Dérivé du montant et du taux. Modifiable : le taux se recalcule.",
+  rate:"Taux", lastRate:"Dernier taux enregistré", withinRange:"écart +0,5 %",
+  receivedNow:"Reçu maintenant", full:"Tout", none:"Rien", method:"Mode de paiement", cash:"Espèces",
+  review:"Vérifier la vente",
+  warnTitle:"Ce taux est peut-être inversé.",
+  warnBody:"Le dernier taux enregistré pour USD → MRU est 40,8000. Vous avez saisi 0,0244, soit 1/41. Vérifiez le sens avant de continuer.",
+  warnTotal:"Total attendu autour de 164 000 MRU pour 4 000 USD.",
+  useInverse:"Utiliser 41.0000", keepRate:"Garder 0.0244",
+  errBalance:"Seulement 9 250 USD disponibles.", short:"Manque", errHint:"Réduisez le montant livré, ou achetez d'abord des USD.",
+  emptyTitle:"Aucune opération aujourd'hui", emptyBody:"Les ventes et achats enregistrés au comptoir apparaîtront ici.", emptyAction:"Enregistrer une vente",
+  offlineMsg:"Hors ligne. Rien n'est envoyé : l'enregistrement est désactivé jusqu'au retour du réseau.",
+  offlineBtn:"Indisponible hors ligne",
+  navHome:"Accueil", navTrades:"Opérations", navDebts:"Dettes", navMore:"Plus",
+  today:"Aujourd'hui", allCurrencies:"Toutes devises", seeAll:"Tout voir",
+  balances:"Soldes par devise", lowBalance:"Sous le seuil de", lastMovement:"Dernier mouvement",
+  cashToday:"Caisse du jour", cashIn:"Entrée", cashOut:"Sortie", movements:"mouvements",
+  debtSummary:"Dettes", owedToUs:"On nous doit", weOwe:"Nous devons",
+  periodSummary:"Résumé de la période", sales:"Ventes", purchases:"Achats", valueWord:"en valeur",
+  grossProfit:"Bénéfice brut", netProfit:"Bénéfice net", wac:"coût moyen pondéré", expenses:"dépenses",
+  recent:"Activité récente", sale:"vente", purchase:"achat",
+  myDay:"Ma journée", tradesRecorded:"opérations saisies", partial:"partiellement payées", paymentsTaken:"encaissements"
+};
+const AR = {
+  youGive:"أنت تدفع", youGet:"أنت تستلم", paidNow:"المدفوع الآن", stillOwed:"المتبقّي",
+  dealValue:"قيمة العملية", cashWord:"محصّل", owedWord:"دَين لنا", owedShort:"دَين",
+  noSum:"هذه الأرقام الثلاثة لا تُجمع. القيمة هي ما تساويه العملية، والمحصّل هو ما تبادلته الأيدي فعلاً، والمتبقّي دَين.",
+  noSumShort:"كل عملة تبقى منفصلة. لا يوجد مجموع لكل العملات معاً.",
+  noNet:"الديون لنا والديون علينا لا تُقاصّ، ولو كان الطرف واحداً.",
+  statusPaid:"مدفوع", statusPartial:"جزئي", statusUnpaid:"غير مدفوع",
+  active:"سارية", reversed:"ملغاة", opening:"افتتاحي", reversedBy:"ألغاها محمد ولد أحمد — سعر مقلوب",
+  sellTitle:"بيع العملة", dashTitle:"لوحة المتابعة", backGlyph:"›", langGlyph:"ع FR",
+  contact:"العميل", change:"تغيير", youDeliver:"أنت تسلّم", available:"المتوفّر",
+  mruTotal:"الإجمالي بالأوقية", fixedMru:"ثابت", derivedNote:"محسوب من المبلغ والسعر. عند تعديله يُعاد حساب السعر.",
+  rate:"السعر", lastRate:"آخر سعر مسجّل", withinRange:"فرق +0,5 %",
+  receivedNow:"المستلم الآن", full:"الكل", none:"لا شيء", method:"طريقة الدفع", cash:"نقداً",
+  review:"مراجعة البيع",
+  warnTitle:"قد يكون هذا السعر مقلوباً.",
+  warnBody:"آخر سعر مسجّل لـ USD ← MRU هو ⁦40,8000⁩. أدخلتَ ⁦0,0244⁩ أي ⁦1/41⁩. تحقّق من الاتجاه قبل المتابعة.",
+  warnTotal:"الإجمالي المتوقّع نحو ⁦164 000⁩ أوقية مقابل ⁦4 000⁩ دولار.",
+  useInverse:"استخدم 41.0000", keepRate:"أبقِ 0.0244",
+  errBalance:"المتوفّر ⁦9 250⁩ دولاراً فقط.", short:"النقص", errHint:"خفّض المبلغ المسلَّم، أو اشترِ دولارات أولاً.",
+  emptyTitle:"لا عمليات اليوم", emptyBody:"ستظهر هنا عمليات البيع والشراء المسجّلة في الشبّاك.", emptyAction:"تسجيل عملية بيع",
+  offlineMsg:"لا اتصال. لم يُرسل شيء: التسجيل معطّل حتى عودة الشبكة.",
+  offlineBtn:"غير متاح دون اتصال",
+  navHome:"الرئيسية", navTrades:"العمليات", navDebts:"الديون", navMore:"المزيد",
+  today:"اليوم", allCurrencies:"كل العملات", seeAll:"عرض الكل",
+  balances:"الأرصدة حسب العملة", lowBalance:"تحت حدّ", lastMovement:"آخر حركة",
+  cashToday:"صندوق اليوم", cashIn:"داخل", cashOut:"خارج", movements:"حركات",
+  debtSummary:"الديون", owedToUs:"لنا", weOwe:"علينا",
+  periodSummary:"ملخّص الفترة", sales:"مبيعات", purchases:"مشتريات", valueWord:"قيمة",
+  grossProfit:"الربح الإجمالي", netProfit:"الربح الصافي", wac:"متوسط التكلفة المرجّح", expenses:"مصاريف",
+  recent:"الحركة الأخيرة", sale:"بيع", purchase:"شراء",
+  myDay:"يومي", tradesRecorded:"عمليات مسجّلة", partial:"مدفوعة جزئياً", paymentsTaken:"تحصيلات"
+};
+
+class Component extends DCLogic {
+  state = { lang: null, offline: null, paid: 100000 };
+
+  get lang() { return this.state.lang ?? this.props.lang ?? "fr"; }
+  get offline() { return this.state.offline ?? this.props.offline ?? false; }
+
+  fmt(n) {
+    const s = String(Math.max(0, Math.round(n)));
+    let out = "";
+    for (let i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 === 0) out += " ";
+      out += s[i];
+    }
+    return out;
+  }
+
+  btn(active) {
+    return "min-height:40px;padding:0 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all 160ms ease;" +
+      (active ? "border:1px solid #0B1220;background:#0B1220;color:#F5F7F9" : "border:1px solid #C6CFD7;background:transparent;color:#3E4C5A");
+  }
+
+  renderVals() {
+    const total = 164000;
+    const paid = Math.min(this.state.paid, total);
+    const ar = this.lang === "ar";
+    return {
+      t: ar ? AR : FR,
+      dir: ar ? "rtl" : "ltr",
+      offline: this.offline,
+      paidStr: this.fmt(paid),
+      owedStr: this.fmt(total - paid),
+      frBtn: this.btn(!ar),
+      arBtn: this.btn(ar),
+      offBtn: this.btn(this.offline),
+      setFr: () => this.setState({ lang: "fr" }),
+      setAr: () => this.setState({ lang: "ar" }),
+      toggleOffline: () => this.setState({ offline: !this.offline }),
+      setFull: () => this.setState({ paid: total }),
+      setNone: () => this.setState({ paid: 0 }),
+      onPaid: (e) => {
+        const n = parseInt(String(e.target.value).replace(/[^0-9]/g, ""), 10);
+        this.setState({ paid: isNaN(n) ? 0 : Math.min(n, total) });
+      },
+      submitStyle: "width:100%;min-height:56px;border-radius:10px;font-family:inherit;font-size:16px;font-weight:600;transition:opacity 160ms ease;" +
+        (this.offline
+          ? "border:1px solid #DCE2E8;background:#EEF1F4;color:#9AA6B2;cursor:not-allowed"
+          : "border:1px solid #0B1220;background:#0B1220;color:#F5F7F9;cursor:pointer")
+    };
+  }
+}
+</script>
+</body>
+</html>
