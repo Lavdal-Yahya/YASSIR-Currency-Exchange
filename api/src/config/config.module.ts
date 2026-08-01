@@ -1,18 +1,29 @@
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { loadEnv, type Env } from './env.schema.js';
 
-// A thin, framework-free wrapper around loadEnv. The Nest wiring
-// (@Global module registered from AppModule) arrives with the first Nest
-// bootstrap in P1-05. Until then this is what tests and scripts import.
-let cached: Env | null = null;
+// Nest wraps @nestjs/config's ConfigModule and installs our zod schema
+// as the validator. A malformed env stops the app at boot, before any
+// controller accepts a request.
+@Global()
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      validate: (raw) => loadEnv(raw as NodeJS.ProcessEnv),
+    }),
+  ],
+  exports: [ConfigModule],
+})
+export class AppConfigModule {}
 
+// Standalone helper for scripts and tests that don't boot Nest.
+let cached: Env | null = null;
 export function getConfig(): Env {
-  if (!cached) {
-    cached = loadEnv();
-  }
+  if (!cached) cached = loadEnv();
   return cached;
 }
-
-// Test helper: rebuild the config from a fresh env snapshot.
 export function resetConfigForTest(): void {
   cached = null;
 }

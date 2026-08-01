@@ -43,10 +43,12 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
-      ],
+      // `consistent-type-imports` is deliberately OFF on the API side.
+      // Nest's DI reads constructor parameter *types* at runtime via
+      // reflect-metadata, so `import type { Foo }` for an @Injectable's
+      // constructor param silently breaks injection — the metadata slot
+      // ends up empty and Nest cannot resolve Foo. Judgement in review
+      // is safer than a lint rule that auto-fixes to a broken shape.
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       eqeqeq: ['error', 'always'],
     },

@@ -57,5 +57,14 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
+      - name: Prisma generate
+        run: npm --workspace api exec prisma generate
+
+      - name: Prisma migrate (test DB)
+        run: npm --workspace api exec prisma migrate deploy
+
+      - name: Test (unit)
         run: npm run test
+
+      - name: Test (integration)
+        run: npm --workspace api run test:integration
