@@ -9,7 +9,7 @@
     "build": "echo 'web build arrives in P1-11' && exit 0",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "echo 'web tests arrive with the shell (P1-11)' && exit 0"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {},
   "devDependencies": {
