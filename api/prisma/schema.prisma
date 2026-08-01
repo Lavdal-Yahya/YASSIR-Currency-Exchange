@@ -1,0 +1,14 @@
+// Prisma schema — datasource + generator only in P1-03.
+// Models arrive in P1-04 (auth: User, Role, Permission, RolePermission,
+// UserRole, AuditLog). Every subsequent phase adds models per its migration
+// section in docs/phases/phase-N.md.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
