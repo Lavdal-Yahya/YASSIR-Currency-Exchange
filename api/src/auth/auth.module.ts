@@ -8,6 +8,7 @@ import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
+import { PermissionGuard } from './permission.guard.js';
 import { LoginThrottlerGuard } from './login-throttler.guard.js';
 import type { Env } from '../config/env.schema.js';
 
@@ -35,8 +36,14 @@ import type { Env } from '../config/env.schema.js';
     AuthService,
     JwtStrategy,
     LoginThrottlerGuard,
-    // Global — every route requires a JWT unless @Public.
+    // Global chain, evaluated in declaration order.
+    //   1. JwtAuthGuard      — populates req.user (or 401)
+    //   2. PermissionGuard   — enforces @RequirePermission
+    // A route with neither @Public nor @RequirePermission fails closed
+    // at PermissionGuard; the route-table test asserts that no such
+    // route exists by construction.
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: PermissionGuard },
   ],
   exports: [AuthService],
 })

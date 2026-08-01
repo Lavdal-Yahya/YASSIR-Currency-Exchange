@@ -17,6 +17,7 @@ import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { LoginThrottlerGuard } from './login-throttler.guard.js';
 import { Public } from '../common/decorators/public.decorator.js';
+import { Authenticated } from '../common/decorators/authenticated.decorator.js';
 import { CurrentUser, type AuthUser } from '../common/decorators/current-user.decorator.js';
 import type { Env } from '../config/env.schema.js';
 
@@ -68,6 +69,7 @@ export class AuthController {
     });
   }
 
+  @Authenticated()
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(
@@ -79,6 +81,7 @@ export class AuthController {
     res.clearCookie(this.cookieName, { path: '/' });
   }
 
+  @Authenticated()
   @Get('me')
   async me(@CurrentUser() user: AuthUser): Promise<{
     id: string;
