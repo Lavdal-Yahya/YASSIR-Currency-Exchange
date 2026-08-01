@@ -36,9 +36,7 @@ export type MoneyString = string & { readonly __brand?: 'MoneyString' };
 // `roundTo(Number(input), 2)` when someone forgets D-002.
 export function assertNotNumber(value: unknown, field = 'amount'): void {
   if (typeof value === 'number') {
-    throw new TypeError(
-      `${field} must not be a JavaScript number (D-002). Use string or Decimal.`,
-    );
+    throw new TypeError(`${field} must not be a JavaScript number (D-002). Use string or Decimal.`);
   }
 }
 

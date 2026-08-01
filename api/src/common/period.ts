@@ -78,15 +78,7 @@ function partsInZone(instant: Date, tz: string): Parts {
 // Given local-clock parts (y, m, d, h, mn, s) in `tz`, return the UTC
 // instant that matches. Uses the same Intl trick in reverse: pick an
 // arbitrary UTC guess and iterate at most twice to correct the offset.
-function utcFromZoned(
-  tz: string,
-  y: number,
-  m: number,
-  d: number,
-  h = 0,
-  mn = 0,
-  s = 0,
-): Date {
+function utcFromZoned(tz: string, y: number, m: number, d: number, h = 0, mn = 0, s = 0): Date {
   let guess = new Date(Date.UTC(y, m - 1, d, h, mn, s));
   for (let i = 0; i < 2; i++) {
     const p = partsInZone(guess, tz);

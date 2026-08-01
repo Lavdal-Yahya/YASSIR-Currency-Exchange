@@ -77,11 +77,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
   }
 }
 
-function normalizeHttpException(
-  status: number,
-  body: unknown,
-  requestId: string,
-): ErrorPayload {
+function normalizeHttpException(status: number, body: unknown, requestId: string): ErrorPayload {
   // Nest's own HttpException includes helpful codes we don't want to
   // leak (`statusCode`, `error` = "Bad Request"). Rewrite to the domain
   // shape so the frontend has one contract.
@@ -109,7 +105,9 @@ function normalizeHttpException(
         code: b.code,
         i18nKey: b.i18nKey,
         message: typeof b.message === 'string' ? b.message : base.message,
-        ...(b.data && typeof b.data === 'object' ? { data: b.data as Record<string, unknown> } : {}),
+        ...(b.data && typeof b.data === 'object'
+          ? { data: b.data as Record<string, unknown> }
+          : {}),
         requestId,
       };
     }

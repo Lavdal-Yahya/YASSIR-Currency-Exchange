@@ -41,9 +41,7 @@ beforeEach(async () => {
 });
 
 async function attemptLogin(phone: string, xff?: string): Promise<number> {
-  const req = request(app.getHttpServer())
-    .post('/api/v1/auth/login')
-    .send({ phone, pin: '9999' });
+  const req = request(app.getHttpServer()).post('/api/v1/auth/login').send({ phone, pin: '9999' });
   if (xff) req.set('X-Forwarded-For', xff);
   const res = await req;
   return res.status;

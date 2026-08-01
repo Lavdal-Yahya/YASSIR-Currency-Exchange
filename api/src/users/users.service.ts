@@ -34,7 +34,8 @@ export class UsersService {
 
     return this.prisma.$transaction(async (tx) => {
       const existing = await tx.user.findUnique({ where: { phone: input.phone } });
-      if (existing) throw new ConflictException({ code: 'phone_taken', i18nKey: 'error.phone_taken' });
+      if (existing)
+        throw new ConflictException({ code: 'phone_taken', i18nKey: 'error.phone_taken' });
 
       const roleCodes = input.roles.length > 0 ? input.roles : [ROLE_CODES.EMPLOYEE];
       const roles = await tx.role.findMany({ where: { code: { in: roleCodes } } });

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Pre-commit: prettier --check on staged files.
+# Enable in a fresh clone with: `git config core.hooksPath .githooks`
+set -euo pipefail
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR |
+  grep -E '\.(ts|tsx|js|jsx|json|yml|yaml)$' || true)
+
+if [[ -z "$staged" ]]; then
+  exit 0
+fi
+
+# shellcheck disable=SC2086
+if ! npx --no-install prettier --check $staged >/dev/null 2>&1; then
+  echo "✗ prettier check failed. Run:"
+  echo "    npx prettier --write $staged"
+  echo "  then re-stage and commit."
+  exit 1
+fi

@@ -60,10 +60,7 @@ beforeAll(async () => {
         controller: wrapper.metatype?.name ?? '<anonymous>',
         method: methodName,
         path: `${controllerPath}/${routePath}`.replace(/\/+/g, '/'),
-        hasPublic: !!reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-          handler,
-          metatype,
-        ]),
+        hasPublic: !!reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [handler, metatype]),
         hasAuthenticated: !!reflector.getAllAndOverride<boolean>(IS_AUTHENTICATED_KEY, [
           handler,
           metatype,
@@ -98,7 +95,8 @@ describe('route table', () => {
     const violations: string[] = [];
 
     for (const route of routes) {
-      const hasPerm = Array.isArray(route.requiredPermissions) && route.requiredPermissions.length > 0;
+      const hasPerm =
+        Array.isArray(route.requiredPermissions) && route.requiredPermissions.length > 0;
       const marks = [route.hasPublic, route.hasAuthenticated, hasPerm].filter(Boolean).length;
 
       if (marks === 0) {
