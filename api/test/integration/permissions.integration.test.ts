@@ -7,9 +7,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import argon2 from 'argon2';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, type INestApplication } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+import type { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module.js';
+import { configureApp } from '../../src/bootstrap.js';
 import { PrismaService } from '../../src/common/prisma.service.js';
 import {
   ALL_PERMISSIONS,
@@ -25,9 +25,7 @@ let prisma: PrismaService;
 beforeAll(async () => {
   await setupTestDb();
   app = await NestFactory.create(AppModule, { logger: false });
-  app.use(cookieParser());
-  app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  configureApp(app);
   await app.init();
   prisma = app.get(PrismaService);
 });

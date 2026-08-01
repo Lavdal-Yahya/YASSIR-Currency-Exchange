@@ -60,6 +60,7 @@ describe('AuthService.login', () => {
     expect(token).toMatch(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/);
 
     await expect(auth.login(PHONE, WRONG_PIN, null)).rejects.toMatchObject({
+      code: 'invalid_credentials',
       status: 401,
     });
   });
@@ -92,8 +93,8 @@ describe('AuthService.login', () => {
 
     // Even the correct PIN is refused while locked
     const err = await auth.login(PHONE, PIN, null).catch((e) => e);
-    expect(err.getStatus()).toBe(401);
-    expect(err.getResponse().code).toBe('account_locked');
+    expect(err.status).toBe(401);
+    expect(err.code).toBe('account_locked');
 
     const actions = (await prisma.auditLog.findMany({ where: { actorUserId: userId } })).map(
       (r) => r.action,
@@ -137,9 +138,9 @@ describe('AuthService.login', () => {
 
     const unknown = await auth.login('+22299999999', PIN, null).catch((e) => e);
     const wrong = await auth.login(PHONE, WRONG_PIN, null).catch((e) => e);
-    expect(unknown.getStatus()).toBe(wrong.getStatus());
-    expect(unknown.getResponse().code).toBe(wrong.getResponse().code);
-    expect(unknown.getResponse().message).toBe(wrong.getResponse().message);
+    expect(unknown.status).toBe(wrong.status);
+    expect(unknown.code).toBe(wrong.code);
+    expect(unknown.message).toBe(wrong.message);
   });
 
   it('refuses an inactive user with the same error as unknown phone', async () => {
@@ -147,8 +148,8 @@ describe('AuthService.login', () => {
     await prisma.user.update({ where: { id: userId }, data: { isActive: false } });
 
     const err = await auth.login(PHONE, PIN, null).catch((e) => e);
-    expect(err.getStatus()).toBe(401);
-    expect(err.getResponse().code).toBe('invalid_credentials');
+    expect(err.status).toBe(401);
+    expect(err.code).toBe('invalid_credentials');
   });
 });
 

@@ -12,9 +12,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, type INestApplication } from '@nestjs/common';
-import cookieParser from 'cookie-parser';
+import type { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../src/app.module.js';
+import { configureApp } from '../../src/bootstrap.js';
 import { PrismaService } from '../../src/common/prisma.service.js';
 import { setupTestDb } from '../setup.js';
 
@@ -25,19 +25,8 @@ beforeAll(async () => {
   await setupTestDb(); // resets DB via prisma migrate reset
 
   app = await NestFactory.create(AppModule, { logger: false });
-  app.use(cookieParser());
-  app.setGlobalPrefix('api/v1');
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
+  configureApp(app);
   await app.init();
-
-  const httpServer = app.getHttpServer();
-  const instance = app.getHttpAdapter().getInstance();
-  if (typeof instance.set === 'function') {
-    instance.set('trust proxy', 'loopback, linklocal, uniquelocal');
-  }
-  // touch httpServer so its ref is retained (supertest needs it)
-  expect(httpServer).toBeDefined();
-
   prisma = app.get(PrismaService);
 });
 
