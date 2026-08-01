@@ -1,7 +1,6 @@
-// Prisma schema — datasource + generator only in P1-03.
-// Models arrive in P1-04 (auth: User, Role, Permission, RolePermission,
-// UserRole, AuditLog). Every subsequent phase adds models per its migration
-// section in docs/phases/phase-N.md.
+// Prisma schema. Models added phase by phase per docs/phases/phase-N.md.
+// P1-04 introduces the auth surface (User, Role, Permission, plus the join
+// tables and audit_log). No financial tables land until P3-01.
 
 generator client {
   provider      = "prisma-client-js"
@@ -11,4 +10,87 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// P1-04 · auth
+// ---------------------------------------------------------------------------
+
+model User {
+  id                String    @id @default(uuid()) @db.Uuid
+  phone             String    @unique
+  pinHash           String    @map("pin_hash")
+  fullName          String    @map("full_name")
+  isActive          Boolean   @default(true) @map("is_active")
+  lockedUntil       DateTime? @map("locked_until") @db.Timestamptz(6)
+  failedLoginCount  Int       @default(0) @map("failed_login_count")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  roles     UserRole[]
+  auditRows AuditLog[] @relation("audit_actor")
+
+  @@map("user")
+}
+
+model Role {
+  id       String  @id @default(uuid()) @db.Uuid
+  code     String  @unique
+  labelFr  String  @map("label_fr")
+  labelAr  String  @map("label_ar")
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("role")
+}
+
+model Permission {
+  id   String @id @default(uuid()) @db.Uuid
+  code String @unique
+
+  roles RolePermission[]
+
+  @@map("permission")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permission")
+}
+
+model UserRole {
+  userId String @map("user_id") @db.Uuid
+  roleId String @map("role_id") @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_role")
+}
+
+model AuditLog {
+  id           String   @id @default(uuid()) @db.Uuid
+  actorUserId  String?  @map("actor_user_id") @db.Uuid
+  action       String
+  entityType   String?  @map("entity_type")
+  entityId     String?  @map("entity_id")
+  before       Json?
+  after        Json?
+  reason       String?
+  ip           String?  @db.Inet
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  actor User? @relation("audit_actor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt(sort: Desc)], map: "audit_log_entity_created_idx")
+  @@index([actorUserId, createdAt(sort: Desc)], map: "audit_log_actor_created_idx")
+  @@map("audit_log")
 }
