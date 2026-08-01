@@ -23,13 +23,12 @@ const prisma = new PrismaClient();
 
 const OWNER_PHONE = process.env.BOOTSTRAP_OWNER_PHONE ?? '+22200000000';
 const OWNER_NAME = process.env.BOOTSTRAP_OWNER_NAME ?? 'Bootstrap Owner';
-const OWNER_PIN = process.env.BOOTSTRAP_OWNER_PIN ?? (process.env.NODE_ENV === 'production' ? '' : '1234');
+const OWNER_PIN =
+  process.env.BOOTSTRAP_OWNER_PIN ?? (process.env.NODE_ENV === 'production' ? '' : '1234');
 
 async function main(): Promise<void> {
   if (!OWNER_PIN) {
-    throw new Error(
-      'BOOTSTRAP_OWNER_PIN is required in production. Set it and re-run the seed.',
-    );
+    throw new Error('BOOTSTRAP_OWNER_PIN is required in production. Set it and re-run the seed.');
   }
   if (!/^\d{4,8}$/.test(OWNER_PIN)) {
     throw new Error('BOOTSTRAP_OWNER_PIN must be 4-8 digits.');
@@ -95,7 +94,9 @@ async function main(): Promise<void> {
         `seed: created bootstrap owner user (phone=${OWNER_PHONE}). Change the PIN on first login.`,
       );
     } else {
-      console.warn(`seed: owner user already exists (phone=${OWNER_PHONE}); leaving PIN untouched.`);
+      console.warn(
+        `seed: owner user already exists (phone=${OWNER_PHONE}); leaving PIN untouched.`,
+      );
     }
   });
 }
