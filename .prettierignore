@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+coverage
+.next
+api/prisma/generated
+package-lock.json
+design_handoff_exchange_bureau
+Groupe 1 Design Review
+
+# markdown: hand-formatted with intentional line breaks; do not reflow
+*.md
