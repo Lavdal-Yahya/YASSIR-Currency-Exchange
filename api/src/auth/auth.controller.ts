@@ -8,11 +8,14 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
+import { LoginThrottlerGuard } from './login-throttler.guard.js';
 import { Public } from '../common/decorators/public.decorator.js';
 import { CurrentUser, type AuthUser } from '../common/decorators/current-user.decorator.js';
 import type { Env } from '../config/env.schema.js';
@@ -42,6 +45,11 @@ export class AuthController {
   }
 
   @Public()
+  @UseGuards(LoginThrottlerGuard)
+  @Throttle({
+    ip: { limit: 5, ttl: 60_000 },
+    phone: { limit: 10, ttl: 3_600_000 },
+  })
   @Post('login')
   @HttpCode(HttpStatus.NO_CONTENT)
   async login(

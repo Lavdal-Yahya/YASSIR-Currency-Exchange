@@ -3,10 +3,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
+import { LoginThrottlerGuard } from './login-throttler.guard.js';
 import type { Env } from '../config/env.schema.js';
 
 @Module({
@@ -20,11 +22,19 @@ import type { Env } from '../config/env.schema.js';
         signOptions: { expiresIn: config.get('JWT_TTL', { infer: true }) },
       }),
     }),
+    // Two throttlers on POST /auth/login (P1-06):
+    //   ip    — 5 attempts / minute / IP
+    //   phone — 10 attempts / hour / phone number (custom getTracker)
+    ThrottlerModule.forRoot([
+      { name: 'ip', ttl: 60_000, limit: 5 },
+      { name: 'phone', ttl: 3_600_000, limit: 10 },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     JwtStrategy,
+    LoginThrottlerGuard,
     // Global — every route requires a JWT unless @Public.
     { provide: APP_GUARD, useClass: JwtAuthGuard },
   ],
