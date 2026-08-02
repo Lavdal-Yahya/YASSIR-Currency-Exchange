@@ -1,19 +1,24 @@
-# Production stack. All three services (db, api, web) live behind
-# Traefik, which terminates TLS and routes by host. Traefik discovers
-# services via docker labels; add a `traefik` service beside this stack
-# if the VPS doesn't already run one.
+# Production stack for the Contabo VPS (207.180.202.96). This VPS runs a
+# Coolify-managed Traefik on the external network `traefik-public`, and
+# another app on the same host already declares a service named `api` on
+# that network — so we set explicit container names (`cx-*`) to make our
+# services unambiguous. Anything reverse-proxying inside our stack must
+# use the container name, never the bare service name.
 #
 # Deploy:
-#   cd /srv/currency-exchange && git pull
-#   docker compose -f docker-compose.prod.yml pull
-#   docker compose -f docker-compose.prod.yml up -d --build
+#   cd ~/apps/currency-exchange && git pull
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
 #
 # Migrations run automatically on api boot (`prisma migrate deploy` in
-# the entrypoint). Take a manual pg_dump before deploying anything
-# that touches financial tables — this rule bites hardest at P3.
+# the entrypoint). Take a manual pg_dump before deploying anything that
+# touches financial tables — this rule bites hardest starting P3.
+
+name: currency-exchange
+
 services:
   db:
     image: postgres:16-alpine
+    container_name: cx-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?required}
@@ -33,13 +38,14 @@ services:
     build:
       context: .
       dockerfile: api/Dockerfile
+    container_name: cx-api
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@cx-db:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET:?required}
       JWT_TTL: ${JWT_TTL:-12h}
       COOKIE_NAME: ${COOKIE_NAME:-cx_session}
@@ -50,10 +56,13 @@ services:
       BOOTSTRAP_OWNER_NAME: ${BOOTSTRAP_OWNER_NAME:-Owner}
     networks:
       - internal
-      - web
+      # api joins traefik-public so Traefik can reach it directly for the
+      # /api/** router below — the web container never talks to api by
+      # hostname (Traefik does the path routing at the edge).
+      - traefik-public
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
+      - traefik.docker.network=traefik-public
       - traefik.http.routers.cx-api.rule=Host(`${APP_HOST:?required}`) && PathPrefix(`/api`)
       - traefik.http.routers.cx-api.entrypoints=websecure
       - traefik.http.routers.cx-api.tls=true
@@ -64,14 +73,18 @@ services:
     build:
       context: .
       dockerfile: web/Dockerfile
+    container_name: cx-web
     restart: unless-stopped
     depends_on:
       - api
     networks:
-      - web
+      - traefik-public
     labels:
       - traefik.enable=true
-      - traefik.docker.network=web
+      - traefik.docker.network=traefik-public
+      # Rule length gives cx-api higher automatic priority; we still
+      # pin cx-web to priority=1 so any future host-only rule on this
+      # domain sits below it.
       - traefik.http.routers.cx-web.rule=Host(`${APP_HOST:?required}`)
       - traefik.http.routers.cx-web.entrypoints=websecure
       - traefik.http.routers.cx-web.tls=true
@@ -85,8 +98,7 @@ volumes:
 networks:
   internal:
     driver: bridge
-  # `web` is external — created once on the VPS with:
-  #   docker network create web
-  # Traefik joins the same network so it can reach api and web by name.
-  web:
+  # Coolify-managed Traefik lives here. Created once on the VPS.
+  # Verify with: `docker network ls | grep traefik-public`
+  traefik-public:
     external: true

@@ -98,17 +98,22 @@ exactly one leg** (D-019). A trade without one is rejected, not converted.
 ## Deployment
 
 The production stack lives in `docker-compose.prod.yml`. All three services
-(db, api, web) sit behind an existing Traefik instance on the VPS that
-terminates TLS via Let's Encrypt and routes on `APP_HOST`. See
+(db, api, web) sit behind Coolify-managed Traefik on the Contabo VPS
+(`207.180.202.96`), on the external `traefik-public` docker network. TLS is
+issued by Let's Encrypt using the `letsencrypt` cert resolver and the
+`websecure` HTTPS entrypoint (both Coolify defaults). See
 `.env.production.example` for the required variables.
 
-First-time bring-up on a VPS that already runs Traefik on a `web` docker
-network:
+Prerequisite: an A record for `APP_HOST` pointing to `207.180.202.96` **must
+resolve before starting the stack**, or Let's Encrypt refuses to issue the
+cert and Traefik falls back to a self-signed one.
+
+First-time bring-up:
 
 ```bash
-ssh <vps>
-mkdir -p /srv/currency-exchange && cd /srv/currency-exchange
-git clone <repo> .
+ssh bouye@207.180.202.96
+git clone git@github.com:Lavdal-Yahya/YASSIR-Currency-Exchange.git ~/apps/currency-exchange
+cd ~/apps/currency-exchange
 cp .env.production.example .env.production   # then edit — every :?required var
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
 docker compose -f docker-compose.prod.yml --env-file .env.production run --rm api npm --workspace api run seed
@@ -117,17 +122,25 @@ docker compose -f docker-compose.prod.yml --env-file .env.production run --rm ap
 Ongoing deploys:
 
 ```bash
-ssh <vps>
-cd /srv/currency-exchange && git pull
+ssh bouye@207.180.202.96
+cd ~/apps/currency-exchange && git pull
 docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
-# migrate deploy runs automatically on api boot; check logs:
-docker compose -f docker-compose.prod.yml logs -f api
+docker compose -f docker-compose.prod.yml --env-file .env.production logs -f api
 ```
 
 Take a manual `pg_dump` before every deploy that touches a financial table.
 Nightly automated backups run to off-server storage — and a backup that has
 never been restored is not a backup, so the restore rehearsal in P8-07 is
 not optional.
+
+### VPS gotchas already applied
+
+- Container names pinned to `cx-db` / `cx-api` / `cx-web` — another app on
+  this host already has a service named `api`, so unique names avoid the
+  DNS collision inside `traefik-public`.
+- `api/src/main.ts` calls `app.listen(port, '0.0.0.0')` explicitly.
+- If you rebuild only `web`, network state can go stale — run
+  `up -d --build --force-recreate` when in doubt.
 
 ---
 
