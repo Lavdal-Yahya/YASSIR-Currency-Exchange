@@ -1,0 +1,92 @@
+# Production stack. All three services (db, api, web) live behind
+# Traefik, which terminates TLS and routes by host. Traefik discovers
+# services via docker labels; add a `traefik` service beside this stack
+# if the VPS doesn't already run one.
+#
+# Deploy:
+#   cd /srv/currency-exchange && git pull
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Migrations run automatically on api boot (`prisma migrate deploy` in
+# the entrypoint). Take a manual pg_dump before deploying anything
+# that touches financial tables — this rule bites hardest at P3.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?required}
+      POSTGRES_DB: ${POSTGRES_DB:?required}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET:?required}
+      JWT_TTL: ${JWT_TTL:-12h}
+      COOKIE_NAME: ${COOKIE_NAME:-cx_session}
+      BUSINESS_TZ: ${BUSINESS_TZ:-Africa/Nouakchott}
+      API_PORT: 3000
+      BOOTSTRAP_OWNER_PHONE: ${BOOTSTRAP_OWNER_PHONE:?required}
+      BOOTSTRAP_OWNER_PIN: ${BOOTSTRAP_OWNER_PIN:?required}
+      BOOTSTRAP_OWNER_NAME: ${BOOTSTRAP_OWNER_NAME:-Owner}
+    networks:
+      - internal
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.cx-api.rule=Host(`${APP_HOST:?required}`) && PathPrefix(`/api`)
+      - traefik.http.routers.cx-api.entrypoints=websecure
+      - traefik.http.routers.cx-api.tls=true
+      - traefik.http.routers.cx-api.tls.certresolver=letsencrypt
+      - traefik.http.services.cx-api.loadbalancer.server.port=3000
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - web
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=web
+      - traefik.http.routers.cx-web.rule=Host(`${APP_HOST:?required}`)
+      - traefik.http.routers.cx-web.entrypoints=websecure
+      - traefik.http.routers.cx-web.tls=true
+      - traefik.http.routers.cx-web.tls.certresolver=letsencrypt
+      - traefik.http.routers.cx-web.priority=1
+      - traefik.http.services.cx-web.loadbalancer.server.port=80
+
+volumes:
+  db_data:
+
+networks:
+  internal:
+    driver: bridge
+  # `web` is external — created once on the VPS with:
+  #   docker network create web
+  # Traefik joins the same network so it can reach api and web by name.
+  web:
+    external: true

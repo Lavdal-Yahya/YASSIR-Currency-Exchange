@@ -97,16 +97,37 @@ exactly one leg** (D-019). A trade without one is rejected, not converted.
 
 ## Deployment
 
+The production stack lives in `docker-compose.prod.yml`. All three services
+(db, api, web) sit behind an existing Traefik instance on the VPS that
+terminates TLS via Let's Encrypt and routes on `APP_HOST`. See
+`.env.production.example` for the required variables.
+
+First-time bring-up on a VPS that already runs Traefik on a `web` docker
+network:
+
 ```bash
 ssh <vps>
-cd /srv/<project> && git pull
-docker compose run --rm api npx prisma migrate deploy
-docker compose up -d --build
+mkdir -p /srv/currency-exchange && cd /srv/currency-exchange
+git clone <repo> .
+cp .env.production.example .env.production   # then edit — every :?required var
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+docker compose -f docker-compose.prod.yml --env-file .env.production run --rm api npm --workspace api run seed
 ```
 
-Take a manual database backup before every migration. Nightly automated backups
-run to off-server storage — and a backup that has never been restored is not a
-backup, so the restore rehearsal in P8-07 is not optional.
+Ongoing deploys:
+
+```bash
+ssh <vps>
+cd /srv/currency-exchange && git pull
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+# migrate deploy runs automatically on api boot; check logs:
+docker compose -f docker-compose.prod.yml logs -f api
+```
+
+Take a manual `pg_dump` before every deploy that touches a financial table.
+Nightly automated backups run to off-server storage — and a backup that has
+never been restored is not a backup, so the restore rehearsal in P8-07 is
+not optional.
 
 ---
 
@@ -123,7 +144,7 @@ still pass — the milestone banner does not lower the gates.
 
 ## Status
 
-**Current milestone:** v1 · **Current phase:** Phase 1 — Foundation (not started)
+**Current milestone:** v1 · **Current phase:** Phase 1 — Foundation (closing out)
 
 Active phase document: [`docs/phases/phase-1.md`](docs/phases/phase-1.md).
 Phase documents are written **one phase ahead, never all at once** — phase-2.md
