@@ -1,7 +1,9 @@
-> ⚠️ **Draft written blind.** Generated before Phase 1 closed out. Captures the
-> best current plan, but earlier phases will surface things this document did
-> not anticipate. Refine in the week before Phase 2 starts — do not treat it
-> as final.
+> Refined 2026-08-02 as Phase 1 closed out. Additions vs the pre-P1 draft:
+> D-022 (react-router-dom pin) recorded; the `cx-*` container naming
+> convention on the VPS is established; the API client + 401 broadcast
+> pattern (`window` CustomEvent) is the shape every mutation hook now
+> follows; the i18n parity test is live and every new key in this phase
+> lands in ar.json + fr.json in the same commit.
 
 # Phase 2 — Master data & the schema review (Detail)
 

@@ -157,7 +157,7 @@ still pass — the milestone banner does not lower the gates.
 
 ## Status
 
-**Current milestone:** v1 · **Current phase:** Phase 1 — Foundation (closing out)
+**Current milestone:** v1 · **Current phase:** Phase 2 — Master data & the schema review
 
 Active phase document: [`docs/phases/phase-1.md`](docs/phases/phase-1.md).
 Phase documents are written **one phase ahead, never all at once** — phase-2.md
