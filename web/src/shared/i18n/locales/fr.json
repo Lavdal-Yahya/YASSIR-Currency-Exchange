@@ -64,7 +64,10 @@
     "settings_not_initialized": "Paramètres non initialisés. Contactez un administrateur.",
     "go_live_already_set": "Le lancement a déjà été activé.",
     "invalid_timezone": "Fuseau horaire inconnu.",
-    "base_currency_inactive": "La devise de référence doit être active."
+    "base_currency_inactive": "La devise de référence doit être active.",
+    "payment_method_code_taken": "Ce code de moyen de paiement existe déjà.",
+    "payment_method_not_found": "Moyen de paiement introuvable.",
+    "cannot_deactivate_cash": "Le moyen \"Espèces\" ne peut pas être désactivé."
   },
   "profile": {
     "title": "Mon profil",

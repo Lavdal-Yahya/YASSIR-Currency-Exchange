@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
 import { CurrenciesModule } from './currencies/currencies.module.js';
 import { SettingsModule } from './settings/settings.module.js';
+import { PaymentMethodsModule } from './payment-methods/payment-methods.module.js';
 import { HealthModule } from './health/health.module.js';
 
 // Root module. Every feature module lives inside a folder and is
@@ -28,6 +29,7 @@ import { HealthModule } from './health/health.module.js';
     UsersModule,
     CurrenciesModule,
     SettingsModule,
+    PaymentMethodsModule,
     HealthModule,
   ],
 })

@@ -33,6 +33,11 @@ export const ERROR_I18N_KEYS = [
   'error.invalid_timezone',
   'error.base_currency_inactive',
 
+  // Payment methods (P2, D-020)
+  'error.payment_method_code_taken',
+  'error.payment_method_not_found',
+  'error.cannot_deactivate_cash',
+
   // Validation (P1)
   'error.validation',
   'error.internal',

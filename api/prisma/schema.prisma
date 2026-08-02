@@ -144,6 +144,34 @@ model Settings {
   @@map("settings")
 }
 
+// ---------------------------------------------------------------------------
+// P2-05 · payment_method lookup (D-020)
+// ---------------------------------------------------------------------------
+//
+// Not an enum — Mauritanian mobile-money providers change. A new one
+// should be a row the owner adds in Settings, not a migration + deploy.
+// Seeded with CASH / BANKILY / MASRIVI / SEDAD / OTHER; only OTHER has
+// requires_note = true. `code` is unique and never edited after create
+// — renaming a method would rewrite how last year's cash arrived
+// (architecture §3.6).
+//
+// Referenced by the `payment_method_id` column on ledger entries from
+// P3-02 (D-020). The relation itself is added when the ledger table
+// exists.
+
+model PaymentMethod {
+  id            String   @id @default(uuid()) @db.Uuid
+  code          String   @unique
+  labelFr       String   @map("label_fr")
+  labelAr       String   @map("label_ar")
+  isActive      Boolean  @default(true) @map("is_active")
+  requiresNote  Boolean  @default(false) @map("requires_note")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("payment_method")
+}
+
 model AuditLog {
   id           String   @id @default(uuid()) @db.Uuid
   actorUserId  String?  @map("actor_user_id") @db.Uuid

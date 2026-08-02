@@ -50,6 +50,26 @@ async function main(): Promise<void> {
       });
     }
 
+    // Payment methods (P2-05, D-020) — seeded lookup. Only OTHER carries
+    // requires_note=true. Rows are upserted by code so a re-run does
+    // not blindly overwrite an operator's label edits (only labels are
+    // safe to update; we leave those alone too so a translation change
+    // by an operator survives).
+    const SEED_PAYMENT_METHODS = [
+      { code: 'CASH', labelFr: 'Espèces', labelAr: 'نقدًا', requiresNote: false },
+      { code: 'BANKILY', labelFr: 'Bankily', labelAr: 'Bankily', requiresNote: false },
+      { code: 'MASRIVI', labelFr: 'Masrivi', labelAr: 'Masrivi', requiresNote: false },
+      { code: 'SEDAD', labelFr: 'Sedad', labelAr: 'Sedad', requiresNote: false },
+      { code: 'OTHER', labelFr: 'Autre', labelAr: 'أخرى', requiresNote: true },
+    ] as const;
+    for (const m of SEED_PAYMENT_METHODS) {
+      await tx.paymentMethod.upsert({
+        where: { code: m.code },
+        create: m,
+        update: {},
+      });
+    }
+
     // Settings (P2-02) — one row, id=1, base=MRU. If the row already
     // exists we leave every field alone (operators can change the tz
     // via the API without a re-seed clobbering their choice).

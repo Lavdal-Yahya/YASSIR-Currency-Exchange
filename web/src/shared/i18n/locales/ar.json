@@ -64,7 +64,10 @@
     "settings_not_initialized": "لم يتم تهيئة الإعدادات. تواصل مع المشرف.",
     "go_live_already_set": "تم تفعيل الإطلاق مسبقًا.",
     "invalid_timezone": "المنطقة الزمنية غير معروفة.",
-    "base_currency_inactive": "يجب أن تكون العملة المرجعية مفعلة."
+    "base_currency_inactive": "يجب أن تكون العملة المرجعية مفعلة.",
+    "payment_method_code_taken": "رمز وسيلة الدفع موجود مسبقًا.",
+    "payment_method_not_found": "وسيلة الدفع غير موجودة.",
+    "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\"."
   },
   "profile": {
     "title": "ملفي",
