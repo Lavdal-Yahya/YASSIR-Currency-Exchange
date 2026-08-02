@@ -22,6 +22,11 @@ export const ERROR_I18N_KEYS = [
   'error.phone_taken',
   'error.unknown_role',
 
+  // Currencies (P2)
+  'error.currency_code_taken',
+  'error.currency_not_found',
+  'error.currency_in_use',
+
   // Validation (P1)
   'error.validation',
   'error.internal',

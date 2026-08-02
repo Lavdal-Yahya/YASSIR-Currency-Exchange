@@ -76,6 +76,40 @@ model UserRole {
   @@map("user_role")
 }
 
+// ---------------------------------------------------------------------------
+// P2-01 · currencies (master data)
+// ---------------------------------------------------------------------------
+//
+// `code` is the ISO-4217-ish identifier we display everywhere ("MRU", "USD").
+// It is *not* immutable in the schema — the immutability check is enforced
+// in the service by counting rows in the ledger (P3+). Making it immutable
+// at the DB level would fight the initial seed & typo-correction window.
+//
+// `decimalPlaces` drives every rounding decision (D-009). USD=2, JPY=0,
+// high-precision internal book-keeping currencies can go up to 6.
+// `lowBalanceThreshold` is per-currency (spec §22.3 dashboard warning);
+// nullable = no warning configured.
+//
+// No `is_base` column — the base currency is a single FK on the settings
+// row (added in P2-02). Duplicating it here would risk two rows disagreeing.
+//
+// Deletion is refused at the application role level via a REVOKE in the
+// migration. See phase-2.md §3.
+
+model Currency {
+  id                    String   @id @default(uuid()) @db.Uuid
+  code                  String   @unique
+  name                  String
+  symbol                String?
+  decimalPlaces         Int      @map("decimal_places") @db.SmallInt
+  lowBalanceThreshold   Decimal? @map("low_balance_threshold") @db.Decimal(24, 4)
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("currency")
+}
+
 model AuditLog {
   id           String   @id @default(uuid()) @db.Uuid
   actorUserId  String?  @map("actor_user_id") @db.Uuid

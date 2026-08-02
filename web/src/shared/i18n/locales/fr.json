@@ -57,7 +57,10 @@
     "invalid_credentials": "Numéro ou code incorrect.",
     "account_locked": "Compte bloqué. Réessayez plus tard.",
     "phone_taken": "Ce numéro est déjà utilisé.",
-    "unknown_role": "Rôle inconnu."
+    "unknown_role": "Rôle inconnu.",
+    "currency_code_taken": "Ce code de devise existe déjà.",
+    "currency_not_found": "Devise introuvable.",
+    "currency_in_use": "Cette devise est encore utilisée et ne peut pas être désactivée."
   },
   "profile": {
     "title": "Mon profil",

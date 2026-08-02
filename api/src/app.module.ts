@@ -5,6 +5,7 @@ import { PrismaModule } from './common/prisma.module.js';
 import { AuditModule } from './audit/audit.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsersModule } from './users/users.module.js';
+import { CurrenciesModule } from './currencies/currencies.module.js';
 import { HealthModule } from './health/health.module.js';
 
 // Root module. Every feature module lives inside a folder and is
@@ -24,6 +25,7 @@ import { HealthModule } from './health/health.module.js';
     AuditModule,
     AuthModule,
     UsersModule,
+    CurrenciesModule,
     HealthModule,
   ],
 })

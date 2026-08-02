@@ -35,6 +35,21 @@ async function main(): Promise<void> {
   }
 
   await prisma.$transaction(async (tx) => {
+    // Currencies (P2-01) — MRU first because the settings row (P2-02) will
+    // FK to it. Idempotent upsert by code; leaves any operator-added
+    // currencies alone. `decimalPlaces` follows spec §36 conventions.
+    for (const c of [
+      { code: 'MRU', name: 'Ouguiya', symbol: 'UM', decimalPlaces: 2 },
+      { code: 'USD', name: 'US Dollar', symbol: '$', decimalPlaces: 2 },
+      { code: 'EUR', name: 'Euro', symbol: '€', decimalPlaces: 2 },
+    ] as const) {
+      await tx.currency.upsert({
+        where: { code: c.code },
+        create: c,
+        update: {},
+      });
+    }
+
     // Permissions — upsert by code so re-runs with new permission codes only
     // insert what is missing. Deletions are deliberate: an old code no longer
     // in ALL_PERMISSIONS is left in the DB with a warning, so a rename does

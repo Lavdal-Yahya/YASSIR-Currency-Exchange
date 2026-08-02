@@ -57,7 +57,10 @@
     "invalid_credentials": "الرقم أو الرمز غير صحيح.",
     "account_locked": "الحساب مغلق. حاول لاحقًا.",
     "phone_taken": "هذا الرقم مستخدم بالفعل.",
-    "unknown_role": "دور غير معروف."
+    "unknown_role": "دور غير معروف.",
+    "currency_code_taken": "رمز العملة موجود مسبقًا.",
+    "currency_not_found": "العملة غير موجودة.",
+    "currency_in_use": "هذه العملة لا تزال قيد الاستخدام ولا يمكن تعطيلها."
   },
   "profile": {
     "title": "ملفي",
