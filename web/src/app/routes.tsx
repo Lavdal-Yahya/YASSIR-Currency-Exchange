@@ -1,6 +1,8 @@
 import type { RouteObject } from 'react-router-dom';
 import { SessionGuard } from '../features/auth/components/SessionGuard';
 import { LoginPage } from '../features/auth/routes/LoginPage';
+import { ContactProfilePage } from '../features/contacts/routes/ContactProfilePage';
+import { ContactsListPage } from '../features/contacts/routes/ContactsListPage';
 import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesListPage';
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
@@ -26,6 +28,8 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { path: '/', element: <DashboardShell /> },
+          { path: '/contacts', element: <ContactsListPage /> },
+          { path: '/contacts/:id', element: <ContactProfilePage /> },
           { path: '/currencies', element: <CurrenciesListPage /> },
           { path: '/currencies/new', element: <CurrencyFormPage /> },
           { path: '/currencies/:id/edit', element: <CurrencyFormPage /> },

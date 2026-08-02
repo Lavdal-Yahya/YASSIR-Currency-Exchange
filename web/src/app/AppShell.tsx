@@ -14,6 +14,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/', labelKey: 'nav.dashboard', icon: '⌂', end: true },
+  { to: '/contacts', labelKey: 'nav.contacts', icon: '☏' },
   { to: '/currencies', labelKey: 'nav.currencies', icon: '¤' },
   { to: '/settings/profile', labelKey: 'nav.profile', icon: '☺' },
 ];
