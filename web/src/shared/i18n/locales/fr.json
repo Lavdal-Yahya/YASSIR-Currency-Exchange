@@ -36,6 +36,29 @@
     "cancel": "Annuler",
     "confirm": "Confirmer"
   },
+  "form": {
+    "phone_invalid": "Numéro invalide. Format attendu : +222…",
+    "pin_invalid": "Code PIN de 4 à 8 chiffres."
+  },
+  "error": {
+    "insufficient_balance": "Solde insuffisant.",
+    "payment_exceeds_debt": "Le paiement dépasse le montant dû.",
+    "currency_inactive": "Cette devise n'est pas active.",
+    "override_denied": "Dérogation refusée.",
+    "already_submitted": "Cette opération a déjà été soumise.",
+    "no_base_leg": "Chaque échange doit avoir MRU d'un côté.",
+    "method_note_required": "Note obligatoire pour ce moyen de paiement.",
+    "rate_service_down": "Taux du marché indisponible.",
+    "internal": "Une erreur est survenue côté serveur.",
+    "validation": "Vérifiez les champs saisis.",
+    "unauthorized": "Vous devez être connecté.",
+    "forbidden": "Action non autorisée.",
+    "too_many_requests": "Trop de tentatives. Réessayez plus tard.",
+    "invalid_credentials": "Numéro ou code incorrect.",
+    "account_locked": "Compte bloqué. Réessayez plus tard.",
+    "phone_taken": "Ce numéro est déjà utilisé.",
+    "unknown_role": "Rôle inconnu."
+  },
   "profile": {
     "title": "Mon profil",
     "language": "Langue",

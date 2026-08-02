@@ -151,3 +151,119 @@ a {
   background: var(--ink);
   color: var(--on-ink-bright);
 }
+
+/* Login screen — full-height, centered card. Sits outside AppShell so
+   no bottom nav appears. */
+.login-page {
+  display: grid;
+  place-items: center;
+  min-block-size: 100dvh;
+  padding: var(--sp-6);
+  padding-block: max(var(--sp-8), env(safe-area-inset-top))
+    max(var(--sp-8), env(safe-area-inset-bottom));
+}
+
+.login-page__frame {
+  inline-size: 100%;
+  max-inline-size: 360px;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+}
+
+/* Field primitives */
+.stack {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.field {
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.field input {
+  font: inherit;
+  padding-inline: var(--sp-3);
+  padding-block: 12px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  min-block-size: 44px;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field__error,
+.form__error {
+  color: var(--danger-text);
+  font-size: 13px;
+  margin: 0;
+}
+
+.btn {
+  min-block-size: 44px;
+  padding-inline: var(--sp-4);
+  border-radius: var(--r-md);
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--on-ink-bright);
+}
+
+.btn--primary:disabled {
+  background: var(--disabled-bg);
+  color: var(--disabled-text);
+}
+
+.btn--danger {
+  background: white;
+  color: var(--danger-text);
+  border-color: var(--hairline);
+}
+
+.profile-identity {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  margin-block-end: var(--sp-6);
+}
+
+.profile-identity__name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 var(--sp-1);
+}
+
+.profile-identity__phone {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  margin: 0;
+}
+
+.profile-actions {
+  margin-block-start: var(--sp-8);
+}
+
+.app-shell__loading {
+  min-block-size: 100dvh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}

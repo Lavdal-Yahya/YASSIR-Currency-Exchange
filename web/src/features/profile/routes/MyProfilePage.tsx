@@ -1,19 +1,33 @@
 import { useTranslation } from 'react-i18next';
+import { useSession } from '../../auth/api/useSession';
+import { LogoutButton } from '../../auth/components/LogoutButton';
 import { LanguageSwitcher } from '../../../shared/i18n/LanguageSwitcher';
-
-// Name and logout arrive with P1-14 (session guard). Today the profile
-// page exists so the language switcher has a natural home.
 
 export function MyProfilePage() {
   const { t } = useTranslation();
+  const session = useSession();
+  const user = session.data;
+
   return (
     <>
       <h1 className="page-title">{t('profile.title')}</h1>
+
+      {user && (
+        <section className="profile-identity">
+          <p className="profile-identity__name">{user.fullName}</p>
+          <p className="profile-identity__phone">{user.phone}</p>
+        </section>
+      )}
+
       <section aria-labelledby="profile-lang">
         <h2 id="profile-lang" className="section-label">
           {t('profile.language')}
         </h2>
         <LanguageSwitcher />
+      </section>
+
+      <section className="profile-actions">
+        <LogoutButton />
       </section>
     </>
   );
