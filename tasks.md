@@ -43,28 +43,28 @@ phone, with roles enforced server-side and every sensitive action already
 landing in the audit log.
 
 ### Setup
-- [ ] P1-01 Monorepo, workspaces, TypeScript strict, ESLint + Prettier, CI running lint + typecheck + tests
-- [ ] P1-02 Docker Compose for local dev (Postgres + API + web), `.env.example`, config module with schema validation
-- [ ] P1-03 Prisma init, first migration, seed script skeleton
+- [x] P1-01 Monorepo, workspaces, TypeScript strict, ESLint + Prettier, CI running lint + typecheck + tests
+- [x] P1-02 Docker Compose for local dev (Postgres + API + web), `.env.example`, config module with schema validation
+- [x] P1-03 Prisma init, first migration, seed script skeleton
 
 ### Backend
-- [ ] P1-04 User, Role, Permission schema; permission strings enumerated in one place
-- [ ] P1-05 Auth: phone + PIN login, argon2 hashing, JWT in httpOnly cookie, sliding session, logout
-- [ ] P1-06 Login rate limiting and lockout after repeated failures
-- [ ] P1-07 `@RequirePermission` guard, fail-closed by default; unit test enumerating the route table asserts no route lacks a decorator
-- [ ] P1-08 Audit log table + `AuditService`; wired to login, failed login, user create, user deactivate, permission change
-- [ ] P1-09 Domain error base class, HTTP exception filter, i18n key mapping, no stack traces on the wire
-- [ ] P1-10 `common/money.ts` (Decimal helpers, `roundTo`) and `common/period.ts` (timezone-aware boundaries) with unit tests
+- [x] P1-04 User, Role, Permission schema; permission strings enumerated in one place
+- [x] P1-05 Auth: phone + PIN login, argon2 hashing, JWT in httpOnly cookie, sliding session, logout
+- [x] P1-06 Login rate limiting and lockout after repeated failures
+- [x] P1-07 `@RequirePermission` guard, fail-closed by default; unit test enumerating the route table asserts no route lacks a decorator
+- [x] P1-08 Audit log table + `AuditService`; wired to login, failed login, user create, user deactivate, permission change
+- [x] P1-09 Domain error base class, HTTP exception filter, i18n key mapping, no stack traces on the wire
+- [x] P1-10 `common/money.ts` (Decimal helpers, `roundTo`) and `common/period.ts` (timezone-aware boundaries) with unit tests
 
 ### Frontend
-- [ ] P1-11 Vite + React app shell, router, layout with bottom nav sized for one-handed phone use
-- [ ] P1-12 API client with cookie auth, error → i18n mapping, global 401 handling
-- [ ] P1-13 i18n setup (AR + FR), language switcher, `dir` switching, logical-property CSS baseline
-- [ ] P1-14 Login screen, session guard, logout
-- [ ] P1-15 PWA: manifest, service worker, installability, offline banner component (banner only; write-blocking arrives with the first form)
+- [x] P1-11 Vite + React app shell, router, layout with bottom nav sized for one-handed phone use
+- [x] P1-12 API client with cookie auth, error → i18n mapping, global 401 handling
+- [x] P1-13 i18n setup (AR + FR), language switcher, `dir` switching, logical-property CSS baseline
+- [x] P1-14 Login screen, session guard, logout
+- [x] P1-15 PWA: manifest, service worker, installability, offline banner component (banner only; write-blocking arrives with the first form)
 
 ### Ops
-- [ ] P1-16 Deploy to VPS behind Traefik with TLS; document the deploy command in README
+- [x] P1-16 Deploy to VPS behind Traefik with TLS; document the deploy command in README
 
 **Definition of Done:** the app is reachable over HTTPS on the VPS and installs
 to a phone home screen; a user with no permissions receives 403 from a protected
