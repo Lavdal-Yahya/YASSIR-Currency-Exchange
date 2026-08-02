@@ -9,6 +9,10 @@
   },
   "nav": {
     "dashboard": "Tableau",
+    "contacts": "Contacts",
+    "currencies": "Devises",
+    "users": "Utilisateurs",
+    "settings": "Réglages",
     "profile": "Profil",
     "logout": "Déconnexion"
   },
@@ -34,11 +38,23 @@
     "loading": "Chargement…",
     "retry": "Réessayer",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "yes": "Oui",
+    "no": "Non",
+    "search": "Rechercher",
+    "back": "Retour"
   },
   "form": {
     "phone_invalid": "Numéro invalide. Format attendu : +222…",
-    "pin_invalid": "Code PIN de 4 à 8 chiffres."
+    "pin_invalid": "Code PIN de 4 à 8 chiffres.",
+    "required": "Champ obligatoire.",
+    "too_long": "Trop long."
   },
   "error": {
     "insufficient_balance": "Solde insuffisant.",
@@ -94,5 +110,123 @@
   "login": {
     "title": "Connexion",
     "welcome": "Bienvenue. Connectez-vous avec votre numéro et votre code PIN."
+  },
+  "currencies": {
+    "title": "Devises",
+    "new": "Nouvelle devise",
+    "edit": "Modifier la devise",
+    "empty": "Aucune devise pour l'instant.",
+    "include_inactive": "Afficher les inactives",
+    "code": "Code",
+    "code_invalid": "Code 3-10 caractères, majuscules ou chiffres.",
+    "code_immutable": "Le code n'est pas modifiable — c'est l'identifiant historique.",
+    "name": "Nom",
+    "symbol": "Symbole",
+    "decimal_places": "Décimales",
+    "decimal_places_hint": "USD utilise 2 → centimes ; JPY utilise 0 → yens entiers.",
+    "low_threshold": "Seuil d'alerte bas",
+    "low_threshold_label": "Seuil",
+    "threshold_invalid": "Nombre positif, ex. 100 ou 100.50.",
+    "deactivate": "Désactiver la devise",
+    "reactivate": "Réactiver la devise"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "new": "Nouveau contact",
+    "edit": "Modifier le contact",
+    "empty": "Aucun contact pour l'instant.",
+    "include_archived": "Afficher les archivés",
+    "customers_only": "Clients",
+    "suppliers_only": "Fournisseurs",
+    "all_types": "Tous",
+    "search_placeholder": "Nom ou numéro…",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "phone_optional": "Optionnel. Format : +222…",
+    "phone_invalid": "Format attendu : +222…",
+    "is_customer": "Client",
+    "is_supplier": "Fournisseur",
+    "notes": "Notes",
+    "notes_hint": "Contexte utile — historique, préférences, remarques.",
+    "archive": "Archiver",
+    "unarchive": "Restaurer",
+    "archived_badge": "Archivé",
+    "duplicate_title": "Numéro déjà utilisé",
+    "duplicate_body": "Un contact existe déjà avec ce numéro : {{name}}. Voulez-vous créer un contact distinct ?",
+    "duplicate_create_anyway": "Créer quand même",
+    "profile": {
+      "overview": "Aperçu",
+      "receivables": "À recevoir",
+      "payables": "À payer",
+      "trades": "Échanges",
+      "phase4_placeholder": "Disponible à partir de la phase 4.",
+      "phase5_placeholder": "Disponible à partir de la phase 5.",
+      "created_at": "Créé le",
+      "not_found": "Contact introuvable."
+    }
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "new": "Nouvel utilisateur",
+    "edit": "Modifier l'utilisateur",
+    "empty": "Aucun utilisateur.",
+    "include_inactive": "Afficher les désactivés",
+    "full_name": "Nom complet",
+    "phone": "Téléphone",
+    "pin": "Code PIN",
+    "pin_hint": "4 à 8 chiffres.",
+    "roles": "Rôles",
+    "role_owner": "Propriétaire",
+    "role_employee": "Employé",
+    "reset_pin": "Réinitialiser le PIN",
+    "reset_pin_new": "Nouveau PIN",
+    "deactivate": "Désactiver le compte",
+    "reactivate": "Réactiver le compte",
+    "permissions_matrix": "Matrice des permissions"
+  },
+  "settings": {
+    "title": "Réglages",
+    "tab_business": "Entreprise",
+    "tab_profile": "Mon profil",
+    "tab_payment_methods": "Moyens de paiement",
+    "tab_expense_categories": "Catégories de dépenses",
+    "tab_permissions": "Permissions",
+    "business": {
+      "title": "Entreprise",
+      "timezone": "Fuseau horaire",
+      "timezone_hint": "Détermine le découpage jour/semaine/mois utilisé par les rapports.",
+      "base_currency": "Devise de référence",
+      "base_currency_hint": "Chaque échange doit avoir cette devise d'un côté.",
+      "negative_balance_allow": "Autoriser les soldes négatifs (MRU seulement, propriétaire)",
+      "go_live": "Activer le lancement",
+      "go_live_locked": "Lancement activé le {{date}}. Non réversible.",
+      "go_live_confirm_title": "Activer le lancement ?",
+      "go_live_confirm_body": "Une fois activé, les soldes d'ouverture ne peuvent plus être édités librement. Cette action est irréversible.",
+      "go_live_confirm_action": "Activer"
+    },
+    "payment_methods": {
+      "title": "Moyens de paiement",
+      "add": "Ajouter",
+      "code": "Code",
+      "label_fr": "Libellé (fr)",
+      "label_ar": "Libellé (ar)",
+      "requires_note": "Note obligatoire",
+      "requires_note_locked": "OTHER exige toujours une note.",
+      "deactivate": "Désactiver",
+      "reactivate": "Réactiver",
+      "cash_locked": "Le moyen \"Espèces\" ne peut pas être désactivé."
+    },
+    "expense_categories": {
+      "title": "Catégories de dépenses",
+      "add": "Ajouter",
+      "name": "Nom",
+      "deactivate": "Désactiver",
+      "reactivate": "Réactiver"
+    },
+    "permissions": {
+      "title": "Matrice des permissions",
+      "role": "Rôle",
+      "readonly_note": "Lecture seule — les permissions sont éditées via les rôles utilisateurs."
+    }
   }
 }
