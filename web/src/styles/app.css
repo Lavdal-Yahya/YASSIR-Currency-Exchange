@@ -267,3 +267,17 @@ a {
   place-items: center;
   color: var(--muted);
 }
+
+/* Offline banner: pushes content down, never overlays it. Colors track
+   the danger-tint tokens from the design handoff. */
+.offline-banner {
+  background: var(--danger-tint);
+  border-block-end: 1px solid var(--danger-tint-border);
+  color: var(--danger-text);
+  font-size: 13px;
+  font-weight: 600;
+  padding-inline: var(--sp-4);
+  padding-block: var(--sp-2);
+  text-align: center;
+  padding-block-start: max(var(--sp-2), env(safe-area-inset-top));
+}
