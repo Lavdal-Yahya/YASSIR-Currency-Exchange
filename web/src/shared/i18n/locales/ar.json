@@ -1,0 +1,57 @@
+{
+  "auth": {
+    "phone": "رقم الهاتف",
+    "pin": "الرمز السري",
+    "submit": "تسجيل الدخول",
+    "wrong_credentials": "الرقم أو الرمز غير صحيح.",
+    "locked_out": "الحساب مغلق مؤقتًا. حاول بعد عدة دقائق.",
+    "logout": "تسجيل الخروج"
+  },
+  "nav": {
+    "dashboard": "الرئيسية",
+    "profile": "الملف",
+    "logout": "تسجيل الخروج"
+  },
+  "errors": {
+    "network": "لا يوجد اتصال. تحقق من الشبكة.",
+    "unknown": "حدث خطأ غير متوقع.",
+    "session_expired": "انتهت الجلسة. سجّل الدخول مجددًا.",
+    "too_many_requests": "محاولات كثيرة جدًا. حاول لاحقًا.",
+    "validation": "راجع الحقول المدخلة.",
+    "unauthorized": "يجب تسجيل الدخول.",
+    "forbidden": "غير مصرح بهذا الإجراء.",
+    "insufficient_balance": "الرصيد غير كافٍ.",
+    "payment_exceeds_debt": "المدفوع يتجاوز المطلوب.",
+    "currency_inactive": "هذه العملة غير مفعلة.",
+    "override_denied": "الإذن مرفوض.",
+    "already_submitted": "تم إرسال هذه العملية مسبقًا.",
+    "no_base_leg": "يجب أن يكون MRU في أحد طرفي كل صفقة.",
+    "method_note_required": "الملاحظة إلزامية لوسيلة الدفع هذه.",
+    "rate_service_down": "سعر السوق غير متاح.",
+    "internal": "حدث خطأ في الخادم."
+  },
+  "common": {
+    "loading": "جاري التحميل…",
+    "retry": "أعد المحاولة",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد"
+  },
+  "profile": {
+    "title": "ملفي",
+    "language": "اللغة",
+    "language_fr": "Français",
+    "language_ar": "العربية"
+  },
+  "dashboard": {
+    "title": "الرئيسية",
+    "placeholder_balances": "الرصيد حسب العملة · قادم في P3"
+  },
+  "notfound": {
+    "title": "الصفحة غير موجودة",
+    "back": "العودة إلى الرئيسية"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "welcome": "مرحبًا. سجّل الدخول برقمك ورمزك السري."
+  }
+}

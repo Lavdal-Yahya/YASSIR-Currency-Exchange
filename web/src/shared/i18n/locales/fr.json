@@ -1,0 +1,57 @@
+{
+  "auth": {
+    "phone": "Numéro de téléphone",
+    "pin": "Code PIN",
+    "submit": "Se connecter",
+    "wrong_credentials": "Numéro ou code incorrect.",
+    "locked_out": "Compte temporairement bloqué. Réessayez dans quelques minutes.",
+    "logout": "Se déconnecter"
+  },
+  "nav": {
+    "dashboard": "Tableau",
+    "profile": "Profil",
+    "logout": "Déconnexion"
+  },
+  "errors": {
+    "network": "Pas de connexion. Vérifiez votre réseau.",
+    "unknown": "Une erreur inattendue est survenue.",
+    "session_expired": "Session expirée. Reconnectez-vous.",
+    "too_many_requests": "Trop de tentatives. Réessayez plus tard.",
+    "validation": "Vérifiez les champs saisis.",
+    "unauthorized": "Vous devez être connecté.",
+    "forbidden": "Action non autorisée.",
+    "insufficient_balance": "Solde insuffisant.",
+    "payment_exceeds_debt": "Le paiement dépasse le montant dû.",
+    "currency_inactive": "Cette devise n'est pas active.",
+    "override_denied": "Dérogation refusée.",
+    "already_submitted": "Cette opération a déjà été soumise.",
+    "no_base_leg": "Chaque échange doit avoir MRU d'un côté.",
+    "method_note_required": "Note obligatoire pour ce moyen de paiement.",
+    "rate_service_down": "Taux du marché indisponible.",
+    "internal": "Une erreur est survenue côté serveur."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "language": "Langue",
+    "language_fr": "Français",
+    "language_ar": "العربية"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "placeholder_balances": "Solde par devise · à venir en P3"
+  },
+  "notfound": {
+    "title": "Page introuvable",
+    "back": "Retour au tableau"
+  },
+  "login": {
+    "title": "Connexion",
+    "welcome": "Bienvenue. Connectez-vous avec votre numéro et votre code PIN."
+  }
+}
