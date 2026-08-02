@@ -179,6 +179,25 @@ model Contact {
 }
 
 // ---------------------------------------------------------------------------
+// P2-04 · expense_category (lookup)
+// ---------------------------------------------------------------------------
+//
+// Categorises expense rows (P5). Kept as an editable table — the client
+// tunes the taxonomy over time. Referenced by `expense.category_id` from
+// P5-01; deactivation is preferred over delete for the same historical
+// reason as currency / payment_method / contact.
+
+model ExpenseCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("expense_category")
+}
+
+// ---------------------------------------------------------------------------
 // P2-05 · payment_method lookup (D-020)
 // ---------------------------------------------------------------------------
 //

@@ -70,7 +70,9 @@
     "cannot_deactivate_cash": "Le moyen \"Espèces\" ne peut pas être désactivé.",
     "contact_not_found": "Contact introuvable.",
     "duplicate_phone": "Un contact avec ce numéro existe déjà.",
-    "contact_role_required": "Le contact doit être client, fournisseur, ou les deux."
+    "contact_role_required": "Le contact doit être client, fournisseur, ou les deux.",
+    "expense_category_not_found": "Catégorie de dépense introuvable.",
+    "expense_category_name_taken": "Ce nom de catégorie existe déjà."
   },
   "profile": {
     "title": "Mon profil",

@@ -43,6 +43,10 @@ export const ERROR_I18N_KEYS = [
   'error.duplicate_phone',
   'error.contact_role_required',
 
+  // Expense categories (P2-04)
+  'error.expense_category_not_found',
+  'error.expense_category_name_taken',
+
   // Validation (P1)
   'error.validation',
   'error.internal',

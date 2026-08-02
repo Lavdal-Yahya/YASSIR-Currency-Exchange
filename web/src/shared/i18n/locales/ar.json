@@ -70,7 +70,9 @@
     "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\".",
     "contact_not_found": "جهة الاتصال غير موجودة.",
     "duplicate_phone": "يوجد بالفعل جهة اتصال بهذا الرقم.",
-    "contact_role_required": "يجب أن تكون جهة الاتصال عميلًا أو موردًا أو الاثنين."
+    "contact_role_required": "يجب أن تكون جهة الاتصال عميلًا أو موردًا أو الاثنين.",
+    "expense_category_not_found": "فئة المصروف غير موجودة.",
+    "expense_category_name_taken": "اسم الفئة مستخدم بالفعل."
   },
   "profile": {
     "title": "ملفي",
