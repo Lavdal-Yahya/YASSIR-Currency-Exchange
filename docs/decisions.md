@@ -368,3 +368,37 @@ pointing at which reversal caused it.
 Not in scope: warning when a reversal crosses a "closed period." No period is
 closed in this system — the audit log is the closure. If period closing is
 ever added, it becomes a new decision.
+
+---
+
+## D-022 · 2026-08-02 · Accepted
+**`react-router-dom` is pinned at `^7.18.2` despite an outstanding advisory in the `7.12.0 - 8.2.0` range, because that advisory is inapplicable to our deployment shape.**
+
+Two npm advisory ranges cover `react-router-dom` and have no clean overlap:
+
+- **`6.0.0 - 7.17.0`** — XSS via open redirects in `Link` / `useNavigate`,
+  unescaped `Location` header on prerendered redirects, protocol-relative
+  redirect confusion, and several SSR/RSC-only issues. Fixed in **≥7.18.2**.
+- **`7.12.0 - 8.2.0`** — RSC-mode CSRF bypass allowing action execution before
+  a 400 response. Fixed by <7.12 or ≥8.3.
+
+Every version currently published sits in at least one range. Pinning below
+7.12 (as an earlier attempt tried) still triggers the first bundle's
+client-side XSS/open-redirect CVEs, which *do* affect a plain SPA — those are
+the ones a currency-exchange operator can hit by pasting a crafted URL.
+
+The second advisory requires React Router **framework mode** (Remix or the
+React Router server) with server components and server actions. Our web
+workspace is a Vite SPA calling the NestJS REST API with a `SameSite=Lax`
+cookie — there is no `action` export, no server component, no framework-mode
+runtime. The exploit has no surface here.
+
+Reassess this decision if the frontend adopts SSR, RSC, or React Router
+framework mode — the deployment premise would then no longer hold. Reassess
+also when the advisory ranges are reconciled upstream so a single version
+clears both; at that point the pin becomes plain hygiene rather than a
+recorded acceptance.
+
+Rejected: `overrides` block or `npm audit fix --force`. Both shift the problem
+without documenting it, and both re-trip `npm audit` on the next lockfile
+regeneration.
