@@ -1,0 +1,120 @@
+@import './tokens.css';
+
+/* Modern reset — narrow, opinionated only where the design demands. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--surface);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* App shell layout. Bottom nav pinned; content scrolls above it and
+   respects the iOS home-indicator safe area. */
+
+.app-shell {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-block-size: 100dvh;
+}
+
+.app-shell__main {
+  padding-inline: var(--sp-4);
+  padding-block: var(--sp-6);
+  padding-block-end: calc(var(--sp-6) + env(safe-area-inset-bottom));
+  overflow-y: auto;
+}
+
+.bottom-nav {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: stretch;
+  background: var(--ink);
+  color: var(--on-ink);
+  border-block-start: 1px solid var(--on-ink-hairline);
+  padding-block-end: env(safe-area-inset-bottom);
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  min-block-size: 56px;
+  padding-block: var(--sp-2);
+  padding-inline: var(--sp-2);
+  color: var(--on-ink-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  /* 44×44 target minimum — the row min-block-size handles the vertical. */
+}
+
+.bottom-nav__item[aria-current='page'] {
+  color: var(--on-ink-bright);
+}
+
+.bottom-nav__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 var(--sp-4);
+}
+
+.page-lede {
+  color: var(--muted);
+  margin: 0 0 var(--sp-6);
+}
+
+.placeholder-card {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  color: var(--muted);
+}
