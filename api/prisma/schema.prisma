@@ -107,7 +107,41 @@ model Currency {
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  baseForSettings Settings[] @relation("settings_base_currency")
+
   @@map("currency")
+}
+
+// ---------------------------------------------------------------------------
+// P2-02 · settings (single-row)
+// ---------------------------------------------------------------------------
+//
+// The one row. `id = 1` is enforced by a CHECK in the migration so a
+// second row cannot exist. `baseCurrencyId` FKs to Currency; the seed
+// pins it to MRU. `businessTimezone` is what common/period.ts reads at
+// runtime — the env var stays as a test-boot fallback (D-012).
+//
+// `goLiveAt` is set exactly once and never cleared (checked in the
+// service). Before it is set, opening balances are editable (P3-10);
+// after, only owner-authorized adjustments.
+//
+// `negativeBalanceOverrideAllowed` is the tri-state toggle for D-015 —
+// even when true, non-base currencies still refuse a negative balance
+// at the DB level (P3 constraint). MRU can be overdrawn only by owners
+// with a reason.
+
+model Settings {
+  id                              Int      @id @default(1)
+  baseCurrencyId                  String   @map("base_currency_id") @db.Uuid
+  businessTimezone                String   @default("Africa/Nouakchott") @map("business_timezone")
+  negativeBalanceOverrideAllowed  Boolean  @default(false) @map("negative_balance_override_allowed")
+  goLiveAt                        DateTime? @map("go_live_at") @db.Timestamptz(6)
+  updatedAt                       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  updatedByUserId                 String?  @map("updated_by_user_id") @db.Uuid
+
+  baseCurrency Currency @relation("settings_base_currency", fields: [baseCurrencyId], references: [id], onDelete: Restrict)
+
+  @@map("settings")
 }
 
 model AuditLog {

@@ -27,6 +27,12 @@ export const ERROR_I18N_KEYS = [
   'error.currency_not_found',
   'error.currency_in_use',
 
+  // Settings (P2)
+  'error.settings_not_initialized',
+  'error.go_live_already_set',
+  'error.invalid_timezone',
+  'error.base_currency_inactive',
+
   // Validation (P1)
   'error.validation',
   'error.internal',

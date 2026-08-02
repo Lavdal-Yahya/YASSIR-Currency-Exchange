@@ -35,19 +35,34 @@ const WEEKDAY_INDEX: Record<string, number> = {
   Sunday: 7,
 };
 
-let overrideTz: string | undefined;
+// Module-level cache of the active business timezone. SettingsService
+// populates it at boot and re-populates on every settings update. Tests
+// also write here (see setBusinessTimezoneForTest below).
+//
+// Kept sync deliberately: every report boundary calculation would
+// otherwise become async, cascading through the entire reports layer.
+let cachedTz: string | undefined;
 
 // getBusinessTimezone — resolution order:
-//   1. explicit override (set by tests via setBusinessTimezoneForTest)
-//   2. settings row (P2-02 will hook in here)
-//   3. BUSINESS_TZ env var
-//   4. 'Africa/Nouakchott' hard-coded fallback
+//   1. cachedTz (populated by SettingsService.onModuleInit and by tests)
+//   2. BUSINESS_TZ env var (fallback used before settings has loaded, and
+//      by integration tests that boot without seeding the row)
+//   3. 'Africa/Nouakchott' hard-coded fallback
 export function getBusinessTimezone(): string {
-  return overrideTz ?? process.env.BUSINESS_TZ ?? 'Africa/Nouakchott';
+  return cachedTz ?? process.env.BUSINESS_TZ ?? 'Africa/Nouakchott';
 }
 
+// The general setter — called by SettingsService whenever the settings
+// row is (re)loaded. Pass undefined to clear the cache and fall back to
+// the env var (used by test suites that reset state).
+export function setBusinessTimezone(tz: string | undefined): void {
+  cachedTz = tz;
+}
+
+// Retained as an alias for clarity in test files that pre-date the
+// settings row (P1-10 tests). Newer call sites use setBusinessTimezone.
 export function setBusinessTimezoneForTest(tz: string | undefined): void {
-  overrideTz = tz;
+  cachedTz = tz;
 }
 
 function partsInZone(instant: Date, tz: string): Parts {

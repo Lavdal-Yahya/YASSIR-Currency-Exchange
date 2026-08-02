@@ -60,7 +60,11 @@
     "unknown_role": "دور غير معروف.",
     "currency_code_taken": "رمز العملة موجود مسبقًا.",
     "currency_not_found": "العملة غير موجودة.",
-    "currency_in_use": "هذه العملة لا تزال قيد الاستخدام ولا يمكن تعطيلها."
+    "currency_in_use": "هذه العملة لا تزال قيد الاستخدام ولا يمكن تعطيلها.",
+    "settings_not_initialized": "لم يتم تهيئة الإعدادات. تواصل مع المشرف.",
+    "go_live_already_set": "تم تفعيل الإطلاق مسبقًا.",
+    "invalid_timezone": "المنطقة الزمنية غير معروفة.",
+    "base_currency_inactive": "يجب أن تكون العملة المرجعية مفعلة."
   },
   "profile": {
     "title": "ملفي",

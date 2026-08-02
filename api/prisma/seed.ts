@@ -50,6 +50,20 @@ async function main(): Promise<void> {
       });
     }
 
+    // Settings (P2-02) — one row, id=1, base=MRU. If the row already
+    // exists we leave every field alone (operators can change the tz
+    // via the API without a re-seed clobbering their choice).
+    const mru = await tx.currency.findUniqueOrThrow({ where: { code: 'MRU' } });
+    await tx.settings.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        baseCurrencyId: mru.id,
+        businessTimezone: process.env.BUSINESS_TZ ?? 'Africa/Nouakchott',
+      },
+      update: {},
+    });
+
     // Permissions — upsert by code so re-runs with new permission codes only
     // insert what is missing. Deletions are deliberate: an old code no longer
     // in ALL_PERMISSIONS is left in the DB with a warning, so a rename does

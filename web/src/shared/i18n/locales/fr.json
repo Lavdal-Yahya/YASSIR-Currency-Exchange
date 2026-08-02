@@ -60,7 +60,11 @@
     "unknown_role": "Rôle inconnu.",
     "currency_code_taken": "Ce code de devise existe déjà.",
     "currency_not_found": "Devise introuvable.",
-    "currency_in_use": "Cette devise est encore utilisée et ne peut pas être désactivée."
+    "currency_in_use": "Cette devise est encore utilisée et ne peut pas être désactivée.",
+    "settings_not_initialized": "Paramètres non initialisés. Contactez un administrateur.",
+    "go_live_already_set": "Le lancement a déjà été activé.",
+    "invalid_timezone": "Fuseau horaire inconnu.",
+    "base_currency_inactive": "La devise de référence doit être active."
   },
   "profile": {
     "title": "Mon profil",
