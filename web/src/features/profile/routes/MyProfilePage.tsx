@@ -10,8 +10,6 @@ export function MyProfilePage() {
 
   return (
     <>
-      <h1 className="page-title">{t('profile.title')}</h1>
-
       {user && (
         <section className="profile-identity">
           <p className="profile-identity__name">{user.fullName}</p>

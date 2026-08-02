@@ -17,7 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/contacts', labelKey: 'nav.contacts', icon: '☏' },
   { to: '/currencies', labelKey: 'nav.currencies', icon: '¤' },
   { to: '/users', labelKey: 'nav.users', icon: '☺' },
-  { to: '/settings/profile', labelKey: 'nav.profile', icon: '⚙' },
+  { to: '/settings', labelKey: 'nav.settings', icon: '⚙' },
 ];
 
 export function AppShell() {

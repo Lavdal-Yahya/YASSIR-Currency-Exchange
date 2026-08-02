@@ -7,6 +7,11 @@ import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesList
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
 import { MyProfilePage } from '../features/profile/routes/MyProfilePage';
+import { SettingsBusinessPage } from '../features/settings/routes/SettingsBusinessPage';
+import { SettingsExpenseCategoriesPage } from '../features/settings/routes/SettingsExpenseCategoriesPage';
+import { SettingsLayout } from '../features/settings/routes/SettingsLayout';
+import { SettingsPaymentMethodsPage } from '../features/settings/routes/SettingsPaymentMethodsPage';
+import { SettingsPermissionsPage } from '../features/settings/routes/SettingsPermissionsPage';
 import { UserFormPage } from '../features/users/routes/UserFormPage';
 import { UsersListPage } from '../features/users/routes/UsersListPage';
 import { AppRoot } from './AppRoot';
@@ -30,15 +35,31 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { path: '/', element: <DashboardShell /> },
+
           { path: '/contacts', element: <ContactsListPage /> },
           { path: '/contacts/:id', element: <ContactProfilePage /> },
+
           { path: '/currencies', element: <CurrenciesListPage /> },
           { path: '/currencies/new', element: <CurrencyFormPage /> },
           { path: '/currencies/:id/edit', element: <CurrencyFormPage /> },
+
           { path: '/users', element: <UsersListPage /> },
           { path: '/users/new', element: <UserFormPage /> },
           { path: '/users/:id/edit', element: <UserFormPage /> },
-          { path: '/settings/profile', element: <MyProfilePage /> },
+
+          {
+            path: '/settings',
+            element: <SettingsLayout />,
+            children: [
+              { index: true, element: <SettingsBusinessPage /> },
+              { path: 'business', element: <SettingsBusinessPage /> },
+              { path: 'profile', element: <MyProfilePage /> },
+              { path: 'payment-methods', element: <SettingsPaymentMethodsPage /> },
+              { path: 'expense-categories', element: <SettingsExpenseCategoriesPage /> },
+              { path: 'permissions', element: <SettingsPermissionsPage /> },
+            ],
+          },
+
           { path: '*', element: <NotFoundPage /> },
         ],
       },
