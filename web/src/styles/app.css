@@ -268,6 +268,284 @@ a {
   color: var(--muted);
 }
 
+/* Page header — title + optional action button on the right */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-block-end: var(--sp-4);
+}
+
+.page-header .page-title {
+  margin: 0;
+}
+
+/* Toolbar for filters / search */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.toolbar input[type='search'] {
+  font: inherit;
+  padding-inline: var(--sp-3);
+  padding-block: 8px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  min-block-size: 40px;
+  flex: 1;
+  min-inline-size: 200px;
+}
+
+.toolbar select {
+  font: inherit;
+  padding-inline: var(--sp-2);
+  padding-block: 8px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  min-block-size: 40px;
+}
+
+/* Card list — mobile-first replacement for a data table */
+.card-list {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.card-row {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-2);
+  text-align: start;
+}
+
+.card-row:is(button, a) {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  inline-size: 100%;
+}
+
+.card-row__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.card-row__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card-row__mono {
+  font-family: var(--font-mono);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card-row__meta {
+  color: var(--muted);
+  font-size: 13px;
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding-inline: var(--sp-2);
+  padding-block: 2px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--hairline);
+  background: var(--hairline-soft);
+  color: var(--muted);
+}
+
+.badge--in {
+  color: var(--in-text);
+  background: var(--in-tint);
+  border-color: var(--in-tint-border);
+}
+
+.badge--out {
+  color: var(--out-text);
+  background: var(--out-tint);
+  border-color: var(--out-tint-border);
+}
+
+.badge--danger {
+  color: var(--danger-text);
+  background: var(--danger-tint);
+  border-color: var(--danger-tint-border);
+}
+
+.empty-state {
+  background: white;
+  border: 1px dashed var(--hairline-strong);
+  border-radius: var(--r-lg);
+  padding: var(--sp-6);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Detail page — tabs + panels */
+.tabs {
+  display: flex;
+  gap: var(--sp-1);
+  overflow-x: auto;
+  border-block-end: 1px solid var(--hairline);
+  margin-block-end: var(--sp-4);
+}
+
+.tabs__item {
+  padding-inline: var(--sp-3);
+  padding-block: var(--sp-3);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;
+  white-space: nowrap;
+  min-block-size: 40px;
+}
+
+.tabs__item[aria-current='page'] {
+  color: var(--ink);
+  border-block-end-color: var(--ink);
+}
+
+/* Dialog — used by the duplicate-phone confirm */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 18, 32, 0.5);
+  display: grid;
+  place-items: center;
+  padding: var(--sp-4);
+  z-index: 50;
+}
+
+.dialog {
+  background: white;
+  border-radius: var(--r-xl);
+  padding: var(--sp-6);
+  max-inline-size: 420px;
+  inline-size: 100%;
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.dialog__title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dialog__actions {
+  display: flex;
+  gap: var(--sp-2);
+  justify-content: flex-end;
+}
+
+.btn--ghost {
+  background: white;
+  color: var(--ink);
+  border-color: var(--hairline);
+}
+
+.btn--secondary {
+  background: white;
+  color: var(--ink);
+  border-color: var(--hairline-strong);
+}
+
+.field textarea {
+  font: inherit;
+  padding-inline: var(--sp-3);
+  padding-block: 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  min-block-size: 96px;
+  resize: vertical;
+}
+
+.field__hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-block-size: 36px;
+}
+
+/* Permission matrix — role columns × permission rows */
+.matrix {
+  inline-size: 100%;
+  border-collapse: collapse;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.matrix th,
+.matrix td {
+  padding: var(--sp-2) var(--sp-3);
+  border-block-end: 1px solid var(--hairline);
+  font-size: 13px;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.matrix thead th {
+  background: var(--hairline-soft);
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.matrix tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.matrix td:not(:first-child),
+.matrix th:not(:first-child) {
+  text-align: center;
+}
+
+.matrix__group td {
+  background: var(--hairline-soft);
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
 /* Offline banner: pushes content down, never overlays it. Colors track
    the danger-tint tokens from the design handoff. */
 .offline-banner {

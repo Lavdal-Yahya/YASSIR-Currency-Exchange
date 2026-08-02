@@ -145,6 +145,59 @@ model Settings {
 }
 
 // ---------------------------------------------------------------------------
+// P2-03 · contact (customers + suppliers, one row per person)
+// ---------------------------------------------------------------------------
+//
+// A single row for a person who transacts with the bureau. `isCustomer` and
+// `isSupplier` are independent booleans — the same person can be both, and
+// the CHECK constraint refuses a row that is neither (spec §10.2, phase-2.md
+// §3). Flipping either flag preserves the row's ID and notes.
+//
+// `phone` is nullable — walk-in customers may not want to give one, and the
+// duplicate-phone rule is a **warning, not a block** (spec §10.3). The
+// service returns 409 with `warning: duplicate_phone` on POST; a second POST
+// with `confirmDuplicate: true` proceeds. Enforcing uniqueness at the DB
+// would remove the operator's ability to say "yes it's a different person
+// with the same number".
+//
+// `isArchived` replaces delete. Once a contact appears on a trade or debt
+// their row must remain readable for historical statements.
+
+model Contact {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  phone       String?
+  isCustomer  Boolean  @default(true) @map("is_customer")
+  isSupplier  Boolean  @default(false) @map("is_supplier")
+  isArchived  Boolean  @default(false) @map("is_archived")
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([phone], map: "contact_phone_idx")
+  @@map("contact")
+}
+
+// ---------------------------------------------------------------------------
+// P2-04 · expense_category (lookup)
+// ---------------------------------------------------------------------------
+//
+// Categorises expense rows (P5). Kept as an editable table — the client
+// tunes the taxonomy over time. Referenced by `expense.category_id` from
+// P5-01; deactivation is preferred over delete for the same historical
+// reason as currency / payment_method / contact.
+
+model ExpenseCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("expense_category")
+}
+
+// ---------------------------------------------------------------------------
 // P2-05 · payment_method lookup (D-020)
 // ---------------------------------------------------------------------------
 //

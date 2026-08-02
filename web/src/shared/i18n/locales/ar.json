@@ -9,6 +9,10 @@
   },
   "nav": {
     "dashboard": "الرئيسية",
+    "contacts": "جهات الاتصال",
+    "currencies": "العملات",
+    "users": "المستخدمون",
+    "settings": "الإعدادات",
     "profile": "الملف",
     "logout": "تسجيل الخروج"
   },
@@ -34,11 +38,23 @@
     "loading": "جاري التحميل…",
     "retry": "أعد المحاولة",
     "cancel": "إلغاء",
-    "confirm": "تأكيد"
+    "confirm": "تأكيد",
+    "save": "حفظ",
+    "create": "إنشاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "active": "مفعّل",
+    "inactive": "غير مفعّل",
+    "yes": "نعم",
+    "no": "لا",
+    "search": "بحث",
+    "back": "رجوع"
   },
   "form": {
     "phone_invalid": "رقم غير صالح. التنسيق المتوقع: +222…",
-    "pin_invalid": "الرمز السري من 4 إلى 8 أرقام."
+    "pin_invalid": "الرمز السري من 4 إلى 8 أرقام.",
+    "required": "حقل إلزامي.",
+    "too_long": "طويل جدًا."
   },
   "error": {
     "insufficient_balance": "الرصيد غير كافٍ.",
@@ -67,7 +83,15 @@
     "base_currency_inactive": "يجب أن تكون العملة المرجعية مفعلة.",
     "payment_method_code_taken": "رمز وسيلة الدفع موجود مسبقًا.",
     "payment_method_not_found": "وسيلة الدفع غير موجودة.",
-    "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\"."
+    "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\".",
+    "contact_not_found": "جهة الاتصال غير موجودة.",
+    "duplicate_phone": "يوجد بالفعل جهة اتصال بهذا الرقم.",
+    "contact_role_required": "يجب أن تكون جهة الاتصال عميلًا أو موردًا أو الاثنين.",
+    "expense_category_not_found": "فئة المصروف غير موجودة.",
+    "expense_category_name_taken": "اسم الفئة مستخدم بالفعل.",
+    "user_not_found": "المستخدم غير موجود.",
+    "cannot_deactivate_self": "لا يمكنك تعطيل حسابك الخاص.",
+    "cannot_strip_own_owner_role": "لا يمكنك إزالة دور المالك من حسابك."
   },
   "profile": {
     "title": "ملفي",
@@ -86,5 +110,123 @@
   "login": {
     "title": "تسجيل الدخول",
     "welcome": "مرحبًا. سجّل الدخول برقمك ورمزك السري."
+  },
+  "currencies": {
+    "title": "العملات",
+    "new": "عملة جديدة",
+    "edit": "تعديل العملة",
+    "empty": "لا توجد عملات بعد.",
+    "include_inactive": "عرض غير المفعّلة",
+    "code": "الرمز",
+    "code_invalid": "من 3 إلى 10 أحرف كبيرة أو أرقام.",
+    "code_immutable": "الرمز غير قابل للتعديل — هذا المعرف التاريخي.",
+    "name": "الاسم",
+    "symbol": "الرمز الطباعي",
+    "decimal_places": "الخانات العشرية",
+    "decimal_places_hint": "USD تستخدم 2 → سنتات ؛ JPY تستخدم 0 → ين كامل.",
+    "low_threshold": "حد التنبيه للرصيد المنخفض",
+    "low_threshold_label": "الحد",
+    "threshold_invalid": "رقم موجب مثل 100 أو 100.50.",
+    "deactivate": "تعطيل العملة",
+    "reactivate": "إعادة تفعيل العملة"
+  },
+  "contacts": {
+    "title": "جهات الاتصال",
+    "new": "جهة اتصال جديدة",
+    "edit": "تعديل جهة الاتصال",
+    "empty": "لا توجد جهات اتصال بعد.",
+    "include_archived": "عرض المؤرشفة",
+    "customers_only": "العملاء",
+    "suppliers_only": "الموردون",
+    "all_types": "الكل",
+    "search_placeholder": "الاسم أو الرقم…",
+    "name": "الاسم",
+    "phone": "الهاتف",
+    "phone_optional": "اختياري. التنسيق: +222…",
+    "phone_invalid": "التنسيق المتوقع: +222…",
+    "is_customer": "عميل",
+    "is_supplier": "مورد",
+    "notes": "ملاحظات",
+    "notes_hint": "سياق مفيد — تاريخ، تفضيلات، ملاحظات.",
+    "archive": "أرشفة",
+    "unarchive": "استعادة",
+    "archived_badge": "مؤرشف",
+    "duplicate_title": "الرقم مستخدم بالفعل",
+    "duplicate_body": "يوجد بالفعل جهة اتصال بهذا الرقم: {{name}}. هل تريد إنشاء جهة اتصال منفصلة؟",
+    "duplicate_create_anyway": "إنشاء على أي حال",
+    "profile": {
+      "overview": "نظرة عامة",
+      "receivables": "المستحقات",
+      "payables": "المدفوعات",
+      "trades": "الصفقات",
+      "phase4_placeholder": "متاح ابتداءً من المرحلة 4.",
+      "phase5_placeholder": "متاح ابتداءً من المرحلة 5.",
+      "created_at": "أُنشئ في",
+      "not_found": "جهة الاتصال غير موجودة."
+    }
+  },
+  "users": {
+    "title": "المستخدمون",
+    "new": "مستخدم جديد",
+    "edit": "تعديل المستخدم",
+    "empty": "لا يوجد مستخدمون.",
+    "include_inactive": "عرض المعطّلين",
+    "full_name": "الاسم الكامل",
+    "phone": "الهاتف",
+    "pin": "الرمز السري",
+    "pin_hint": "من 4 إلى 8 أرقام.",
+    "roles": "الأدوار",
+    "role_owner": "المالك",
+    "role_employee": "الموظف",
+    "reset_pin": "إعادة تعيين الرمز",
+    "reset_pin_new": "رمز جديد",
+    "deactivate": "تعطيل الحساب",
+    "reactivate": "إعادة تفعيل الحساب",
+    "permissions_matrix": "مصفوفة الصلاحيات"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "tab_business": "الشركة",
+    "tab_profile": "ملفي",
+    "tab_payment_methods": "وسائل الدفع",
+    "tab_expense_categories": "فئات المصاريف",
+    "tab_permissions": "الصلاحيات",
+    "business": {
+      "title": "الشركة",
+      "timezone": "المنطقة الزمنية",
+      "timezone_hint": "تحدد تقسيم اليوم/الأسبوع/الشهر المستخدم في التقارير.",
+      "base_currency": "العملة المرجعية",
+      "base_currency_hint": "يجب أن تكون هذه العملة في أحد طرفي كل صفقة.",
+      "negative_balance_allow": "السماح بالأرصدة السالبة (MRU فقط، المالك)",
+      "go_live": "تفعيل الإطلاق",
+      "go_live_locked": "تم التفعيل في {{date}}. لا يمكن التراجع.",
+      "go_live_confirm_title": "تفعيل الإطلاق؟",
+      "go_live_confirm_body": "بعد التفعيل، لن يمكن تعديل أرصدة الافتتاح بحرية. هذا الإجراء غير قابل للعكس.",
+      "go_live_confirm_action": "تفعيل"
+    },
+    "payment_methods": {
+      "title": "وسائل الدفع",
+      "add": "إضافة",
+      "code": "الرمز",
+      "label_fr": "التسمية (fr)",
+      "label_ar": "التسمية (ar)",
+      "requires_note": "ملاحظة إلزامية",
+      "requires_note_locked": "OTHER يتطلب دائمًا ملاحظة.",
+      "deactivate": "تعطيل",
+      "reactivate": "إعادة تفعيل",
+      "cash_locked": "لا يمكن تعطيل وسيلة \"نقدًا\"."
+    },
+    "expense_categories": {
+      "title": "فئات المصاريف",
+      "add": "إضافة",
+      "name": "الاسم",
+      "deactivate": "تعطيل",
+      "reactivate": "إعادة تفعيل"
+    },
+    "permissions": {
+      "title": "مصفوفة الصلاحيات",
+      "role": "الدور",
+      "readonly_note": "للقراءة فقط — الصلاحيات تُعدل عبر أدوار المستخدمين."
+    }
   }
 }

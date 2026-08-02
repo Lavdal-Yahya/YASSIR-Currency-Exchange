@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router-dom';
 
-// Bottom nav, sized for one-handed phone use per phase-1.md §5. Five items
-// maximum per the design handoff quality floor; today only two are wired
-// (Dashboard, Profile). More arrive as the phase list grows.
+// Bottom nav, sized for one-handed phone use per phase-1.md §5. Nav grows
+// task by task through Phase 2 — P2-08 adds Currencies; contacts, users
+// and settings arrive as their features land.
 
 interface NavItem {
   to: string;
@@ -14,7 +14,10 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/', labelKey: 'nav.dashboard', icon: '⌂', end: true },
-  { to: '/settings/profile', labelKey: 'nav.profile', icon: '☺' },
+  { to: '/contacts', labelKey: 'nav.contacts', icon: '☏' },
+  { to: '/currencies', labelKey: 'nav.currencies', icon: '¤' },
+  { to: '/users', labelKey: 'nav.users', icon: '☺' },
+  { to: '/settings', labelKey: 'nav.settings', icon: '⚙' },
 ];
 
 export function AppShell() {
