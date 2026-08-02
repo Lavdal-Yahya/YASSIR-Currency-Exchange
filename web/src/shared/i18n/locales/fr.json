@@ -67,7 +67,10 @@
     "base_currency_inactive": "La devise de référence doit être active.",
     "payment_method_code_taken": "Ce code de moyen de paiement existe déjà.",
     "payment_method_not_found": "Moyen de paiement introuvable.",
-    "cannot_deactivate_cash": "Le moyen \"Espèces\" ne peut pas être désactivé."
+    "cannot_deactivate_cash": "Le moyen \"Espèces\" ne peut pas être désactivé.",
+    "contact_not_found": "Contact introuvable.",
+    "duplicate_phone": "Un contact avec ce numéro existe déjà.",
+    "contact_role_required": "Le contact doit être client, fournisseur, ou les deux."
   },
   "profile": {
     "title": "Mon profil",

@@ -38,6 +38,11 @@ export const ERROR_I18N_KEYS = [
   'error.payment_method_not_found',
   'error.cannot_deactivate_cash',
 
+  // Contacts (P2-03)
+  'error.contact_not_found',
+  'error.duplicate_phone',
+  'error.contact_role_required',
+
   // Validation (P1)
   'error.validation',
   'error.internal',

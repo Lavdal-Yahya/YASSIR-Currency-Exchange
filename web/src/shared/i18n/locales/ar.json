@@ -67,7 +67,10 @@
     "base_currency_inactive": "يجب أن تكون العملة المرجعية مفعلة.",
     "payment_method_code_taken": "رمز وسيلة الدفع موجود مسبقًا.",
     "payment_method_not_found": "وسيلة الدفع غير موجودة.",
-    "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\"."
+    "cannot_deactivate_cash": "لا يمكن تعطيل وسيلة \"نقدًا\".",
+    "contact_not_found": "جهة الاتصال غير موجودة.",
+    "duplicate_phone": "يوجد بالفعل جهة اتصال بهذا الرقم.",
+    "contact_role_required": "يجب أن تكون جهة الاتصال عميلًا أو موردًا أو الاثنين."
   },
   "profile": {
     "title": "ملفي",
