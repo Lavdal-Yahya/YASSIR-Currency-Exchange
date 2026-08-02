@@ -7,6 +7,8 @@ import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesList
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
 import { MyProfilePage } from '../features/profile/routes/MyProfilePage';
+import { UserFormPage } from '../features/users/routes/UserFormPage';
+import { UsersListPage } from '../features/users/routes/UsersListPage';
 import { AppRoot } from './AppRoot';
 import { AppShell } from './AppShell';
 import { NotFoundPage } from './NotFoundPage';
@@ -33,6 +35,9 @@ export const routes: RouteObject[] = [
           { path: '/currencies', element: <CurrenciesListPage /> },
           { path: '/currencies/new', element: <CurrencyFormPage /> },
           { path: '/currencies/:id/edit', element: <CurrencyFormPage /> },
+          { path: '/users', element: <UsersListPage /> },
+          { path: '/users/new', element: <UserFormPage /> },
+          { path: '/users/:id/edit', element: <UserFormPage /> },
           { path: '/settings/profile', element: <MyProfilePage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
