@@ -72,7 +72,10 @@
     "duplicate_phone": "Un contact avec ce numéro existe déjà.",
     "contact_role_required": "Le contact doit être client, fournisseur, ou les deux.",
     "expense_category_not_found": "Catégorie de dépense introuvable.",
-    "expense_category_name_taken": "Ce nom de catégorie existe déjà."
+    "expense_category_name_taken": "Ce nom de catégorie existe déjà.",
+    "user_not_found": "Utilisateur introuvable.",
+    "cannot_deactivate_self": "Vous ne pouvez pas désactiver votre propre compte.",
+    "cannot_strip_own_owner_role": "Vous ne pouvez pas retirer votre propre rôle de propriétaire."
   },
   "profile": {
     "title": "Mon profil",

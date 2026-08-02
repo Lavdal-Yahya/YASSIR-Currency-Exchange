@@ -47,6 +47,11 @@ export const ERROR_I18N_KEYS = [
   'error.expense_category_not_found',
   'error.expense_category_name_taken',
 
+  // User management (P2-06)
+  'error.user_not_found',
+  'error.cannot_deactivate_self',
+  'error.cannot_strip_own_owner_role',
+
   // Validation (P1)
   'error.validation',
   'error.internal',
