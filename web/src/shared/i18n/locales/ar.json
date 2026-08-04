@@ -32,6 +32,9 @@
     "no_base_leg": "يجب أن يكون MRU في أحد طرفي كل صفقة.",
     "method_note_required": "الملاحظة إلزامية لوسيلة الدفع هذه.",
     "rate_service_down": "سعر السوق غير متاح.",
+    "rate_total_mismatch": "السعر × المبلغ لا يعطي الإجمالي بالضبط. تحقّق.",
+    "payment_method_required": "وسيلة الدفع مطلوبة عند وجود دفعة فورية.",
+    "trade_missing_contact": "الصفقة بدون جهة يجب أن تُدفع بالكامل.",
     "internal": "حدث خطأ في الخادم."
   },
   "common": {
@@ -66,6 +69,9 @@
     "no_base_leg": "يجب أن يكون MRU في أحد طرفي كل صفقة.",
     "method_note_required": "الملاحظة إلزامية لوسيلة الدفع هذه.",
     "rate_service_down": "سعر السوق غير متاح.",
+    "rate_total_mismatch": "السعر × المبلغ لا يعطي الإجمالي بالضبط. تحقّق.",
+    "payment_method_required": "وسيلة الدفع مطلوبة عند وجود دفعة فورية.",
+    "trade_missing_contact": "الصفقة بدون جهة يجب أن تُدفع بالكامل.",
     "internal": "حدث خطأ في الخادم.",
     "validation": "راجع الحقول المدخلة.",
     "unauthorized": "يجب تسجيل الدخول.",

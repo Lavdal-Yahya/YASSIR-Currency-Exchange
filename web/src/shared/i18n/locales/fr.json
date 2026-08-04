@@ -32,6 +32,9 @@
     "no_base_leg": "Chaque échange doit avoir MRU d'un côté.",
     "method_note_required": "Note obligatoire pour ce moyen de paiement.",
     "rate_service_down": "Taux du marché indisponible.",
+    "rate_total_mismatch": "Taux × montant ne donne pas exactement le total. Vérifiez.",
+    "payment_method_required": "Moyen de paiement requis dès qu'il y a un paiement immédiat.",
+    "trade_missing_contact": "Un échange sans contact doit être entièrement payé.",
     "internal": "Une erreur est survenue côté serveur."
   },
   "common": {
@@ -66,6 +69,9 @@
     "no_base_leg": "Chaque échange doit avoir MRU d'un côté.",
     "method_note_required": "Note obligatoire pour ce moyen de paiement.",
     "rate_service_down": "Taux du marché indisponible.",
+    "rate_total_mismatch": "Taux × montant ne donne pas exactement le total. Vérifiez.",
+    "payment_method_required": "Moyen de paiement requis dès qu'il y a un paiement immédiat.",
+    "trade_missing_contact": "Un échange sans contact doit être entièrement payé.",
     "internal": "Une erreur est survenue côté serveur.",
     "validation": "Vérifiez les champs saisis.",
     "unauthorized": "Vous devez être connecté.",
