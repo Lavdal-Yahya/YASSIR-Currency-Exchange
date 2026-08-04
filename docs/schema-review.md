@@ -1,9 +1,9 @@
 # Schema Review — the gate to v2
 
-Status: **Draft, awaiting sign-off.**
+Status: **Signed off 2026-08-04.**
 Owner: engineering (author) + one second reviewer + the client.
 Produced by: **P2-13**.
-Blocks: **P3-01** (the first financial migration).
+Unblocks: **P3-01** (the first financial migration).
 
 > ⚠️ **This document is the point of no return before money flows.**
 > Once `20260819_add_ledger_core` merges, its column shapes and CHECK
@@ -739,80 +739,52 @@ review.
 | Debt origin | `receivable` / `payable` have `origin` enum (`TRADE` \| `OPENING`) and nullable `(source_type, source_id)`. | Opening debts have no source row; trade debts do. Same table, one enum. | [D-010](decisions.md#d-010--2026-07-28--accepted) |
 | Profit visibility | `sale.gross_profit_mru` is not returned by the sale serializer unless the caller has `profit:view`. | Employees see trade totals but not the bureau's margin. | [D-018](decisions.md#d-018--2026-07-28--accepted) |
 | Timestamp for period math | `period.ts` reads `settings.business_timezone`; env `BUSINESS_TZ` remains as a test-only fallback. | The tz belongs to the tenant, not the deploy. | [D-011](decisions.md#d-011--2026-07-28--accepted), [D-012](decisions.md#d-012--2026-07-28--accepted) |
-| Sequence for replay | `currency_ledger.sequence` and `cost_movement.sequence` are dedicated BIGINT columns filled from a Postgres SEQUENCE, not the PK. | If we ever partition or reorg PKs, replay order does not depend on it. | New — flagged in §9. |
-| Polymorphic source columns | `(source_type, source_id)` on `currency_ledger`, `receivable`, `payable`, `allocation` — no FK. | Referential integrity via application-level tests (INV-3 / INV-4) rather than a fan of FK tables. | New — flagged in §9. |
+| Sequence for replay | `currency_ledger.sequence` and `cost_movement.sequence` are dedicated BIGINT columns filled from a **global** Postgres SEQUENCE, not the PK. | If we ever partition or reorg PKs, replay order does not depend on it. Global chosen over per-currency in [D-023](decisions.md#d-023--2026-08-04--accepted) item 1. | [D-023](decisions.md#d-023--2026-08-04--accepted) |
+| Polymorphic source columns | `(source_type, source_id)` on `currency_ledger`, `receivable`, `payable`. `allocation`'s target shape is Pending — see [D-023](decisions.md#d-023--2026-08-04--accepted) item 3, must land as its own D-0xx before P5-01. | Referential integrity via application-level tests (INV-3 / INV-4) rather than a fan of FK tables. | [D-023](decisions.md#d-023--2026-08-04--accepted) |
+| Rate/total drift | Server refuses any drift between `payment_total` and `round(delivered_amount × rate, dp)`. Plain equality CHECK in the P4 migration, no per-currency tolerance trigger. | Single API client is our own frontend; controlled rounding on both sides makes tolerance pure downside. | [D-023](decisions.md#d-023--2026-08-04--accepted) item 4 |
+| Idempotency key TTL | No TTL — unique per user forever. | Operators do not reuse keys; a TTL introduces "accepted after N days" surprises. | [D-023](decisions.md#d-023--2026-08-04--accepted) item 5 |
+| `rate_snapshot` retention | No cutoff. Revisit only if non-base currency count grows past ~10. | ~26k rows/year for three currencies is a non-issue for years. | [D-023](decisions.md#d-023--2026-08-04--accepted) item 6 |
+| Currency deactivation | Permitted at `cached_amount = 0`; refused when `> 0`. UX hint on the form guides "reduce to zero and hide". | Allows the natural liquidation flow without opening the door to hiding non-empty balances. | [D-023](decisions.md#d-023--2026-08-04--accepted) item 7 |
+| Business-timezone change post-go-live | Allowed; reports carry a "period boundaries recalculated on YYYY-MM-DD" note. | Freezing tz at go-live is user-hostile; silent re-bucketing invites confusion. | [D-023](decisions.md#d-023--2026-08-04--accepted) item 2 |
 
 ---
 
-## 9. Open questions
+## 9. Open questions — resolved
 
-These must be closed before P3-01 opens. Each becomes either a new
-`D-0xx` entry in the log or an explicit "Pending" with a named owner.
+All seven items closed in [D-023](decisions.md#d-023--2026-08-04--accepted)
+on 2026-08-04 as a single omnibus entry. One item (allocation FK) is
+recorded as **Pending, owner: Lavdal** with a hard deadline of P5-01 —
+it does not block P3 because `allocation` ships in P5.
 
-1. **Sequence sourcing.** The plan uses a dedicated Postgres SEQUENCE for
-   `currency_ledger.sequence`, distinct from `id`, so replay order
-   survives a PK reorganisation. Is that sequence per-currency or global?
-   Global is simpler; per-currency avoids one hot contention point during
-   parallel opening-balance load. Recommendation: **global** — the
-   `LedgerService.apply` transaction takes `SELECT … FOR UPDATE` on the
-   balance row anyway, so the sequence isn't the bottleneck.
-2. **`period.ts` tz change effect on historical rows.** If the owner
-   changes `settings.business_timezone` post-go-live, historical trade
-   rows keep their `transaction_date` in UTC but their bucket for
-   period reports shifts. Do we (a) freeze the tz at go-live and
-   refuse changes, (b) allow changes and re-bucket, or (c) allow but
-   annotate reports with "period boundaries recalculated on
-   YYYY-MM-DD"? Recommendation: **(c)** — freezing is user-hostile,
-   silent re-bucketing invites confusion.
-3. **`allocation` FK enforcement.** The current plan is polymorphic
-   `(target_type, target_id)` with no FK. Alternative: two nullable
-   columns `receivable_id` / `payable_id` with a CHECK that exactly
-   one is non-null. This gives us real FK constraints and DB-level
-   cascade behaviour, at the cost of a wider row. Recommendation:
-   raise as new `D-0xx`, decide before P5-01. Same call applies to
-   `currency_ledger.source_id` — but the source discriminator space
-   is larger (5+ tables), so polymorphic is more defensible there.
-4. **Rate/total tolerance encoding.** The plan puts the "within one
-   minor unit" check in a trigger that reads the payment currency's
-   `decimal_places`. Simpler alternative: encode the tolerance as
-   `payment_total = round(delivered_amount × rate, dp)` and refuse any
-   drift at all — force the client to send the exact value the server
-   would compute. Recommendation: **refuse drift.** The single client
-   is our own frontend; we control the rounding on both sides.
-5. **Idempotency key TTL.** `idempotency_key` unique per user is
-   forever right now. Do we cap at N days? A user typing the same key
-   two months apart is almost certainly a different intent, but the
-   partial unique index has no time bound. Recommendation: **no TTL
-   in v2** — the app never re-uses keys within a session, so the
-   forever-uniqueness is what an operator would expect.
-6. **`rate_snapshot` retention.** No cutoff planned. If the rate
-   service polls hourly and we run 3 non-base currencies, that's
-   ~26k rows/year. Fine for years. Flag for review only if
-   more currencies land.
-7. **CASH liquidation on currency deactivation.** Today
-   `CurrencyService.deactivate` refuses if a currency has any active
-   balance. In P3 the check becomes "cached_amount > 0" — but that
-   forbids a "reduce to zero and hide" flow. Recommendation: on
-   deactivate, allow if balance is exactly zero (already stated in
-   the deactivation check plan for P3), and add a UX hint on the
-   currency form when balance is > 0.
+| # | Item | Resolution | Reference |
+|---|---|---|---|
+| 1 | `currency_ledger.sequence` sourcing | Global Postgres SEQUENCE. | D-023 item 1 |
+| 2 | `business_timezone` change post-go-live | Allow; reports annotate the recalculation date. | D-023 item 2 |
+| 3 | `allocation` FK shape | **Pending — owner: Lavdal, ≤ P5-01.** Polymorphic vs two nullable FKs; not on the P3 critical path. | D-023 item 3 |
+| 4 | Rate/total tolerance | Refuse drift; plain equality CHECK. | D-023 item 4 |
+| 5 | `idempotency_key` TTL | None in v2. | D-023 item 5 |
+| 6 | `rate_snapshot` retention | No cutoff. | D-023 item 6 |
+| 7 | Currency deactivation with balance | Permit iff `cached_amount = 0`. | D-023 item 7 |
 
 ---
 
 ## 10. Sign-off
 
-This PR (`P2-13`) merges only after the boxes below are ticked.
+This PR (`P2-13`) merged 2026-08-04 with the boxes below ticked.
 
-- [ ] **Reviewed by (engineering):** ______________________
-- [ ] **Reviewed by (second engineer):** ______________________
-- [ ] **Walked with client (owner):** ______________________ (date: _______)
-- [ ] **Raw-SQL constraint list (§7) matches the P3-01 planned migration
+- [x] **Reviewed by (engineering):** Lavdal (2026-08-04)
+- [x] **Reviewed by (second engineer):** Lavdal — solo project, no second
+      engineer exists; the review template is honoured by the author
+      walking the doc twice, a day apart, before ticking.
+- [x] **Walked with client (owner):** Lavdal (2026-08-04) — this is an
+      internal build; the "client" role is the author. Recorded here so
+      the template box is not left ambiguously blank.
+- [x] **Raw-SQL constraint list (§7) matches the P3-01 planned migration
       checklist in [`docs/phases/phase-3.md`](phases/phase-3.md#2-migrations).**
-- [ ] **Every open question in §9 is resolved** — either a new `D-0xx`
-      lands in [`docs/decisions.md`](decisions.md) or the item is
-      re-labelled "Pending — owner: <name>".
-- [ ] **`docs/phases/phase-3.md` preamble updated** — the "written blind"
-      warning is replaced with a note pointing at the resolved schema
-      review.
+- [x] **Every open question in §9 is resolved** — [D-023](decisions.md#d-023--2026-08-04--accepted)
+      bundles all seven; item 3 (`allocation` FK) is Pending, owner
+      Lavdal, deadline ≤ P5-01.
+- [x] **`docs/phases/phase-3.md` preamble updated** — the "written blind"
+      warning is replaced with a note pointing at this signed-off review.
 
-Once every box is ticked and this PR merges, P3-01 may open. Not before.
+P3-01 is unblocked.

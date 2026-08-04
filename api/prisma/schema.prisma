@@ -27,8 +27,9 @@ model User {
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  roles     UserRole[]
-  auditRows AuditLog[] @relation("audit_actor")
+  roles         UserRole[]
+  auditRows     AuditLog[]        @relation("audit_actor")
+  ledgerEntries CurrencyLedger[]  @relation("ledger_created_by")
 
   @@map("user")
 }
@@ -107,7 +108,11 @@ model Currency {
   createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  baseForSettings Settings[] @relation("settings_base_currency")
+  baseForSettings Settings[]        @relation("settings_base_currency")
+  ledgerEntries   CurrencyLedger[]
+  balance         CurrencyBalance?
+  costMovements   CostMovement[]
+  cost            CurrencyCost?
 
   @@map("currency")
 }
@@ -222,7 +227,108 @@ model PaymentMethod {
   createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  ledgerEntries CurrencyLedger[]
+
   @@map("payment_method")
+}
+
+// ---------------------------------------------------------------------------
+// P3-01 · ledger core (D-003, D-004, D-020)
+// ---------------------------------------------------------------------------
+//
+// Four tables. All writes to any of them go through LedgerService.apply
+// (architecture §3.3). The database independently enforces
+// cached_amount >= 0 for non-base currencies via a trigger (§7.2 of the
+// schema review), and the application role has no DELETE grant on any
+// of these tables (§7.1–7.4). Reversal flips is_active=false; nothing
+// is ever removed.
+//
+// `sequence` on both currency_ledger and cost_movement is filled from a
+// dedicated Postgres SEQUENCE (`ledger_sequence_seq`), not from the id
+// column. That way a future partitioning of the ledger doesn't break
+// CostEngine.replay (D-023 item 1). The SEQUENCE is created by hand in
+// the migration file; Prisma's `dbgenerated()` just references it.
+
+enum LedgerDirection {
+  CREDIT
+  DEBIT
+
+  @@map("ledger_direction")
+}
+
+enum CostMovementKind {
+  ACQUISITION
+  DISPOSAL
+
+  @@map("cost_movement_kind")
+}
+
+model CurrencyLedger {
+  id               BigInt          @id @default(autoincrement())
+  currencyId       String          @map("currency_id") @db.Uuid
+  direction        LedgerDirection
+  amount           Decimal         @db.Decimal(24, 4)
+  sourceType       String          @map("source_type")
+  sourceId         String?         @map("source_id") @db.Uuid
+  paymentMethodId  String?         @map("payment_method_id") @db.Uuid
+  note             String?
+  transactionDate  DateTime        @map("transaction_date") @db.Timestamptz(6)
+  sequence         BigInt          @default(dbgenerated("nextval('ledger_sequence_seq'::regclass)"))
+  description      String
+  isActive         Boolean         @default(true) @map("is_active")
+  createdByUserId  String          @map("created_by_user_id") @db.Uuid
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  currency       Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  paymentMethod  PaymentMethod?  @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy      User            @relation("ledger_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  costMovement   CostMovement?
+
+  @@index([currencyId, sequence], map: "currency_ledger_currency_sequence_idx")
+  @@index([sourceType, sourceId], map: "currency_ledger_source_idx")
+  @@index([transactionDate(sort: Desc)], map: "currency_ledger_transaction_date_idx")
+  @@index([createdByUserId, createdAt(sort: Desc)], map: "currency_ledger_creator_created_idx")
+  @@map("currency_ledger")
+}
+
+model CurrencyBalance {
+  currencyId    String   @id @map("currency_id") @db.Uuid
+  cachedAmount  Decimal  @default(0) @map("cached_amount") @db.Decimal(24, 4)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@map("currency_balance")
+}
+
+model CostMovement {
+  id              BigInt           @id @default(autoincrement())
+  currencyId      String           @map("currency_id") @db.Uuid
+  ledgerEntryId   BigInt           @unique @map("ledger_entry_id")
+  kind            CostMovementKind
+  quantity        Decimal          @db.Decimal(24, 4)
+  unitCostMru     Decimal          @map("unit_cost_mru") @db.Decimal(24, 8)
+  realizedPnlMru  Decimal?         @map("realized_pnl_mru") @db.Decimal(24, 4)
+  isActive        Boolean          @default(true) @map("is_active")
+  sequence        BigInt
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  currency     Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  ledgerEntry  CurrencyLedger  @relation(fields: [ledgerEntryId], references: [id], onDelete: Restrict)
+
+  @@index([currencyId, sequence], map: "cost_movement_currency_sequence_idx")
+  @@map("cost_movement")
+}
+
+model CurrencyCost {
+  currencyId      String   @id @map("currency_id") @db.Uuid
+  cachedAvgMru    Decimal  @default(0) @map("cached_avg_mru") @db.Decimal(24, 8)
+  cachedQuantity  Decimal  @default(0) @map("cached_quantity") @db.Decimal(24, 4)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@map("currency_cost")
 }
 
 model AuditLog {

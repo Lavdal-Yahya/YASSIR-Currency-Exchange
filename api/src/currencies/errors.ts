@@ -30,7 +30,7 @@ export class CurrencyInUseError extends DomainError {
   readonly i18nKey = 'error.currency_in_use';
   readonly status = HttpStatus.UNPROCESSABLE_ENTITY;
 
-  constructor(currencyCode: string, usage: Record<string, number>) {
+  constructor(currencyCode: string, usage: Record<string, number | string>) {
     super(`currency ${currencyCode} still referenced: ${JSON.stringify(usage)}`, {
       code: currencyCode,
       usage,
