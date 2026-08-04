@@ -18,6 +18,10 @@ export default defineConfig({
     fileParallelism: false, // shared Postgres
     testTimeout: 30_000,
     hookTimeout: 60_000,
-    setupFiles: ['reflect-metadata'],
+    // The invariants setup file (P3-06) registers an afterEach that
+    // verifies INV-1/4/6/8/9 after every integration test. Tests that
+    // predate the settings row are silently skipped by the guard in
+    // setup-invariants.ts.
+    setupFiles: ['reflect-metadata', './test/setup-invariants.ts'],
   },
 });
