@@ -113,6 +113,9 @@ model Currency {
   balance         CurrencyBalance?
   costMovements   CostMovement[]
   cost            CurrencyCost?
+  openingBalance  OpeningBalance?
+  receivables     Receivable[]
+  payables        Payable[]
 
   @@map("currency")
 }
@@ -178,6 +181,9 @@ model Contact {
   notes       String?
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  receivables Receivable[]
+  payables    Payable[]
 
   @@index([phone], map: "contact_phone_idx")
   @@map("contact")
@@ -329,6 +335,108 @@ model CurrencyCost {
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
 
   @@map("currency_cost")
+}
+
+// ---------------------------------------------------------------------------
+// P3-08 · opening balances (D-003) + P3-09 · opening debts (D-010)
+// ---------------------------------------------------------------------------
+//
+// opening_balance is written exactly once per currency during pre-go-live
+// (settings.go_live_at is null). Each row produces exactly one
+// currency_ledger CREDIT and one cost_movement ACQUISITION via
+// LedgerService.apply — the openings service is the first ledger writer
+// in the system.
+//
+// receivable / payable are the debt tables, shipped as skeletons here
+// (schema-review §3.2) because opening debts (P3-09) need somewhere to
+// land. Full lifecycle — allocations, payment_status recomputation,
+// settlements — arrives in P5. The columns are all present now so P5
+// doesn't need another migration.
+//
+// (source_type, source_id) is polymorphic. D-023 item 3 tracks the
+// possibility of splitting into receivable_id/payable_id on allocation
+// (a different table) before P5-01; the same trade-off does not apply
+// here — no FK fan is worth it for two source types.
+
+enum DebtOrigin {
+  TRADE
+  OPENING
+
+  @@map("debt_origin")
+}
+
+enum DebtStatus {
+  OPEN
+  CLOSED
+  REVERSED
+
+  @@map("debt_status")
+}
+
+enum DebtPaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+
+  @@map("debt_payment_status")
+}
+
+model OpeningBalance {
+  id                  String   @id @default(uuid()) @db.Uuid
+  currencyId          String   @unique @map("currency_id") @db.Uuid
+  quantity            Decimal  @db.Decimal(24, 4)
+  openingAvgCostMru   Decimal  @map("opening_avg_cost_mru") @db.Decimal(24, 8)
+  effectiveDate       DateTime @map("effective_date") @db.Date
+  createdByUserId     String   @map("created_by_user_id") @db.Uuid
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@map("opening_balance")
+}
+
+model Receivable {
+  id                 String            @id @default(uuid()) @db.Uuid
+  contactId          String            @map("contact_id") @db.Uuid
+  currencyId         String            @map("currency_id") @db.Uuid
+  originalAmount     Decimal           @map("original_amount") @db.Decimal(24, 4)
+  outstandingAmount  Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
+  origin             DebtOrigin
+  sourceType         String?           @map("source_type")
+  sourceId           String?           @map("source_id") @db.Uuid
+  status             DebtStatus        @default(OPEN)
+  paymentStatus      DebtPaymentStatus @default(UNPAID) @map("payment_status")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  contact  Contact  @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@index([contactId, currencyId, status], map: "receivable_contact_currency_status_idx")
+  @@index([origin, sourceType, sourceId], map: "receivable_origin_source_idx")
+  @@map("receivable")
+}
+
+model Payable {
+  id                 String            @id @default(uuid()) @db.Uuid
+  contactId          String            @map("contact_id") @db.Uuid
+  currencyId         String            @map("currency_id") @db.Uuid
+  originalAmount     Decimal           @map("original_amount") @db.Decimal(24, 4)
+  outstandingAmount  Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
+  origin             DebtOrigin
+  sourceType         String?           @map("source_type")
+  sourceId           String?           @map("source_id") @db.Uuid
+  status             DebtStatus        @default(OPEN)
+  paymentStatus      DebtPaymentStatus @default(UNPAID) @map("payment_status")
+  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  contact  Contact  @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@index([contactId, currencyId, status], map: "payable_contact_currency_status_idx")
+  @@index([origin, sourceType, sourceId], map: "payable_origin_source_idx")
+  @@map("payable")
 }
 
 model AuditLog {
