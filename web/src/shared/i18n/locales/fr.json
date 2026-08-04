@@ -48,7 +48,8 @@
     "yes": "Oui",
     "no": "Non",
     "search": "Rechercher",
-    "back": "Retour"
+    "back": "Retour",
+    "choose": "Choisir…"
   },
   "form": {
     "phone_invalid": "Numéro invalide. Format attendu : +222…",
@@ -231,5 +232,47 @@
       "role": "Rôle",
       "readonly_note": "Lecture seule — les permissions sont éditées via les rôles utilisateurs."
     }
+  },
+  "balances": {
+    "title": "Soldes",
+    "empty": "Aucun solde encore.",
+    "low": "Bas",
+    "avg_cost": "Coût moyen",
+    "last_movement": "Dernier mouvement"
+  },
+  "openings": {
+    "title": "Soldes d'ouverture",
+    "add_currency": "Nouvelle devise",
+    "add_debt": "Nouvelle dette",
+    "currency_openings": "Ouvertures de devise",
+    "balances_empty": "Aucune ouverture de devise.",
+    "debt_openings": "Ouvertures de dette",
+    "debts_empty": "Aucune ouverture de dette.",
+    "opening_row_title": "Ouverture {{amount}}",
+    "avg_cost": "Coût moyen",
+    "avg_cost_mru": "Coût moyen (MRU)",
+    "avg_cost_hint": "Coût MRU par unité de la devise à l'ouverture.",
+    "effective_date": "Date effective",
+    "receivable": "Créance",
+    "payable": "Dette fournisseur",
+    "go_live_locked_title": "Ouvertures verrouillées",
+    "go_live_locked_body": "Le lancement a été activé. Toute correction requiert une autorisation propriétaire.",
+    "new_currency_title": "Nouveau solde d'ouverture",
+    "new_debt_title": "Nouvelle dette d'ouverture",
+    "write_warning": "Cette action écrit une écriture au grand livre. Après le lancement, la correction requiert une autorisation propriétaire.",
+    "debt_note": "Les dettes d'ouverture ne déplacent pas d'argent — elles enregistrent seulement ce qui est dû.",
+    "currency": "Devise",
+    "currency_required": "Sélectionnez une devise.",
+    "quantity": "Quantité",
+    "quantity_invalid": "Quantité invalide.",
+    "avg_cost_invalid": "Coût moyen invalide.",
+    "date_invalid": "Date invalide.",
+    "side": "Sens",
+    "side_receivable": "Créance (client nous doit)",
+    "side_payable": "Dette (nous devons au fournisseur)",
+    "contact": "Contact",
+    "contact_required": "Sélectionnez un contact.",
+    "amount": "Montant",
+    "amount_invalid": "Montant invalide."
   }
 }
