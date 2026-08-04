@@ -1,11 +1,14 @@
-> **Schema review signed off 2026-08-04.** Original "written blind" warning
-> superseded. `docs/schema-review.md` is the authoritative source for
-> column shapes and raw-SQL constraints; anything in this document that
-> disagrees with the schema review is stale — trust the review.
+> **Phase 3 closed 2026-08-04.** All 12 tasks (P3-01 → P3-12) merged via
+> PRs #2, #3, #4, promoted to `main` in PR #5. The active phase document
+> is now [`phase-4.md`](phase-4.md); this file stays as the historical
+> record of what was built and why.
+>
+> Schema review signed off 2026-08-04 — `docs/schema-review.md` is the
+> authoritative source for column shapes and raw-SQL constraints; anything
+> in this document that disagrees with the schema review is stale.
 > [D-023](../decisions.md#d-023--2026-08-04--accepted) records the
 > resolutions to §9 open questions, including one Pending item
-> (`allocation` FK shape) that is deferred to before P5-01 and does not
-> block P3.
+> (`allocation` FK shape) that is deferred to before P5-01.
 
 # Phase 3 — The ledger core (Detail)
 

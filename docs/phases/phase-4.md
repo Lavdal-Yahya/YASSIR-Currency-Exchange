@@ -1,7 +1,34 @@
-> ⚠️ **Draft written blind.** Generated before Phase 3 closed out. The
-> `LedgerService` shape landed in Phase 3 is the ground truth for this
-> phase; nothing here overrides it. Refine in the week before Phase 4
-> starts.
+> **Phase 3 closed 2026-08-04.** Refinement pass applied. The
+> `LedgerService.apply(tx, movements[])` signature that landed in P3 is
+> the ground truth — read `api/src/ledger/ledger.service.ts` and
+> `api/src/ledger/ledger.types.ts` before writing purchase/sale services;
+> nothing in this document overrides them.
+>
+> Concrete shapes the trade services inherit (do **not** rediscover):
+>
+> - `Movement` carries `direction`, `currencyId`, `amount` (Decimal),
+>   `sourceType`, `sourceId`, `transactionDate`, `description`, optional
+>   `paymentMethodId` + `paymentMethodNote` (D-020), plus
+>   `unitCostMru` (required for non-base CREDIT) and `disposalValueMru`
+>   (optional for non-base DEBIT, drives realized P&L).
+> - `LedgerService.apply` refuses non-base DEBIT that would go negative
+>   (D-015) — no override path for non-base. Base-currency negative
+>   requires owner + reason + audit entry.
+> - `CostEngine` runs inside the same transaction, skips the base
+>   currency entirely, writes `cost_movement` + updates `currency_cost`
+>   by WAC. `CostEngine.replay(currencyId)` is idempotent and is what
+>   P6-04 reversal will call — trade services do not need to call replay.
+> - Every write on `currency_ledger` / `currency_balance` /
+>   `cost_movement` / `currency_cost` must be inside `LedgerService`.
+>   `PurchaseService` / `SaleService` build the `movements[]` array and
+>   hand it in — they must not touch those tables directly, not even to
+>   read the balance mid-transaction.
+> - INV-1, INV-4, INV-6, INV-8, INV-9 already run in `afterEach` on
+>   every integration test. Any P4 test that leaves the ledger
+>   inconsistent will fail even if the assertions inside the test pass.
+> - Openings module (`api/src/openings/`) is the reference for a
+>   ledger-writing service that stays inside the chokepoint — copy its
+>   transaction shape, not the raw Prisma call pattern.
 
 # Phase 4 — Trades (Detail)
 

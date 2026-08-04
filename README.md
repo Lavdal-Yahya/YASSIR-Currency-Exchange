@@ -157,12 +157,15 @@ still pass — the milestone banner does not lower the gates.
 
 ## Status
 
-**Current milestone:** v2 · **Current phase:** Phase 3 — The ledger core
+**Current milestone:** v2 · **Current phase:** Phase 4 — Trades
 
-Active phase document: [`docs/phases/phase-3.md`](docs/phases/phase-3.md).
-Phase 2 closed 2026-08-04 with the schema review signed off; v1 milestone
-achieved. Phase documents are written **one phase ahead, never all at once**
-— phase-4.md gets its refinement pass when phase-3 is closing out.
+Active phase document: [`docs/phases/phase-4.md`](docs/phases/phase-4.md).
+Phase 3 closed 2026-08-04: `LedgerService.apply` is the sole write path,
+`CostEngine` handles WAC + realized P&L, opening balances flow through the
+ledger, standing invariants INV-1/4/6/8/9 run afterEach every test, and
+`check-invariants.ts` runs standalone. 113 integration tests green.
+Phase documents are written **one phase ahead, never all at once** —
+phase-5.md gets its refinement pass when phase-4 is closing out.
 
 Open decisions: **D-023 item 3** — `allocation` FK shape (polymorphic vs
 two nullable FKs). Pending, owner Lavdal, deadline ≤ P5-01. Does not block

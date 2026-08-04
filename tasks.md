@@ -137,20 +137,20 @@ opening balances — the system's first and safest ledger writer.
 > 2,000-line PR with forms and translations is theatre.
 
 ### PR-A — core
-- [ ] P3-01 Migration: `currency_ledger`, `currency_balance`, `cost_movement`, `currency_cost`, with CHECK constraints added as raw SQL and eyeballed in the generated file
-- [ ] P3-02 `LedgerService.apply(tx, movements[])`: required `tx`, sorted `FOR UPDATE` locking, pre-write validation, ledger insert, balance-cache update; `Movement` carries an optional `paymentMethodId` persisted onto the entry (D-020)
-- [ ] P3-03 Negative-balance policy: blocked by default, owner-only override with mandatory reason, refused entirely for non-base currencies (D-015), audit-logged
-- [ ] P3-04 `CostEngine`: acquisition at MRU value, disposal at weighted average, realized gain/loss, ordered by ledger sequence not transaction date (D-008)
-- [ ] P3-05 Balance and cost read APIs (per currency, all currencies, last movement date)
-- [ ] P3-06 Standing invariants INV-1, INV-4, INV-6, INV-8, INV-9 wired into the suite's global `afterEach`
-- [ ] P3-07 Tests: single movement; multi-currency batch; insufficient balance rejection with useful error data; override accepted for base and refused for non-base; **two concurrent operations against the same balance, one must lose**; rollback leaves no partial ledger
+- [x] P3-01 Migration: `currency_ledger`, `currency_balance`, `cost_movement`, `currency_cost`, with CHECK constraints added as raw SQL and eyeballed in the generated file
+- [x] P3-02 `LedgerService.apply(tx, movements[])`: required `tx`, sorted `FOR UPDATE` locking, pre-write validation, ledger insert, balance-cache update; `Movement` carries an optional `paymentMethodId` persisted onto the entry (D-020)
+- [x] P3-03 Negative-balance policy: blocked by default, owner-only override with mandatory reason, refused entirely for non-base currencies (D-015), audit-logged
+- [x] P3-04 `CostEngine`: acquisition at MRU value, disposal at weighted average, realized gain/loss, ordered by ledger sequence not transaction date (D-008)
+- [x] P3-05 Balance and cost read APIs (per currency, all currencies, last movement date)
+- [x] P3-06 Standing invariants INV-1, INV-4, INV-6, INV-8, INV-9 wired into the suite's global `afterEach`
+- [x] P3-07 Tests: single movement; multi-currency batch; insufficient balance rejection with useful error data; override accepted for base and refused for non-base; **two concurrent operations against the same balance, one must lose**; rollback leaves no partial ledger
 
 ### PR-B — opening balances
-- [ ] P3-08 Opening currency balances: quantity + opening average cost + effective date, written through `LedgerService`
-- [ ] P3-09 Opening customer and supplier debts with `origin = OPENING` and null source (D-010)
-- [ ] P3-10 Go-live lock: opening entries editable only while the go-live flag is unset; afterwards owner-authorized adjustments only
-- [ ] P3-11 Opening balance screens and the balances dashboard card
-- [ ] P3-12 `api/scripts/check-invariants.ts` runnable standalone against any database
+- [x] P3-08 Opening currency balances: quantity + opening average cost + effective date, written through `LedgerService`
+- [x] P3-09 Opening customer and supplier debts with `origin = OPENING` and null source (D-010)
+- [x] P3-10 Go-live lock: opening entries editable only while the go-live flag is unset; afterwards owner-authorized adjustments only
+- [x] P3-11 Opening balance screens and the balances dashboard card
+- [x] P3-12 `api/scripts/check-invariants.ts` runnable standalone against any database
 
 **Definition of Done:** a grep over every write site for `currency_ledger`,
 `currency_balance`, `cost_movement`, and `currency_cost` — **including raw SQL,
