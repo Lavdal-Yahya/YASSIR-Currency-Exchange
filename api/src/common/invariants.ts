@@ -12,10 +12,10 @@ import { Decimal } from './money.js';
 // invariant holds. Combined via checkAll(); tests fail on any non-empty
 // list.
 //
-// Conventions §5 lists all nine invariants; P3 wires 1, 4, 6, 8, 9.
-// The rest come online when their target tables gain real data:
+// Conventions §5 lists all nine invariants; P3 wires 1, 4, 6, 8, 9;
+// P4 adds INV-7 now that purchase/sale rows exist. The rest come
+// online when their target tables gain real data:
 //   INV-2, INV-3, INV-5 — P5 (receivable/payable + allocations)
-//   INV-7             — P4 (purchase/sale)
 
 export interface InvariantResult {
   id: string;
@@ -199,11 +199,66 @@ export async function checkInv9(prisma: ReadClient): Promise<InvariantResult> {
   };
 }
 
+// INV-7 · Every purchase and every sale has exactly one base-currency
+// leg. Enforced at write time by the check_trade_has_base_leg trigger
+// and by NoBaseCurrencyLegError in the trade services (D-019); INV-7
+// asserts the invariant continues to hold across the entire history,
+// including reversed rows — a bug in reversal that flipped the wrong
+// column would show up here.
+export async function checkInv7(prisma: ReadClient): Promise<InvariantResult> {
+  const failures: string[] = [];
+  const settings = await prisma.settings.findUnique({ where: { id: 1 } });
+  if (!settings) {
+    return {
+      id: 'INV-7',
+      description: 'every trade has exactly one base-currency leg',
+      failures: ['settings row missing — cannot resolve base currency'],
+    };
+  }
+  const baseId = settings.baseCurrencyId;
+
+  // Purchases: delivered XOR payment must be base_currency_id.
+  const badPurchases = await prisma.$queryRaw<
+    { id: string; delivered_currency_id: string; payment_currency_id: string }[]
+  >`
+    SELECT "id", "delivered_currency_id", "payment_currency_id"
+    FROM "purchase"
+    WHERE ("delivered_currency_id" = ${baseId}::uuid)
+        = ("payment_currency_id"   = ${baseId}::uuid)
+  `;
+  for (const row of badPurchases) {
+    failures.push(
+      `purchase ${row.id}: delivered=${row.delivered_currency_id} payment=${row.payment_currency_id} — none-or-both are the base currency`,
+    );
+  }
+
+  const badSales = await prisma.$queryRaw<
+    { id: string; delivered_currency_id: string; payment_currency_id: string }[]
+  >`
+    SELECT "id", "delivered_currency_id", "payment_currency_id"
+    FROM "sale"
+    WHERE ("delivered_currency_id" = ${baseId}::uuid)
+        = ("payment_currency_id"   = ${baseId}::uuid)
+  `;
+  for (const row of badSales) {
+    failures.push(
+      `sale ${row.id}: delivered=${row.delivered_currency_id} payment=${row.payment_currency_id} — none-or-both are the base currency`,
+    );
+  }
+
+  return {
+    id: 'INV-7',
+    description: 'every trade has exactly one base-currency leg',
+    failures,
+  };
+}
+
 export async function checkAll(prisma: ReadClient): Promise<InvariantResult[]> {
   return Promise.all([
     checkInv1(prisma),
     checkInv4(prisma),
     checkInv6(prisma),
+    checkInv7(prisma),
     checkInv8(prisma),
     checkInv9(prisma),
   ]);
