@@ -468,6 +468,25 @@ describe('CostEngine — weighted-average cost', () => {
     expect(disposal.realizedPnlMru?.toString()).toBe('500');
   });
 
+  it('LedgerService.apply forwards disposalValueMru to CostEngine (P4 prerequisite)', async () => {
+    // Regression for the pre-P4 gap: the previous test above proves
+    // CostEngine records realized P&L when called directly, but a bug
+    // in LedgerService dropped the field before it reached the engine.
+    // Trade services build Movement[] with disposalValueMru and expect
+    // it to survive the trip.
+    const f = await seed();
+    await prisma.$transaction((tx) =>
+      ledger.apply(tx, [movement(f, f.usdId, 'CREDIT', '100', { unitCostMru: '40.00' })]),
+    );
+    await prisma.$transaction((tx) =>
+      ledger.apply(tx, [movement(f, f.usdId, 'DEBIT', '100', { disposalValueMru: '4500' })]),
+    );
+    const disposal = await prisma.costMovement.findFirstOrThrow({
+      where: { currencyId: f.usdId, kind: 'DISPOSAL' },
+    });
+    expect(disposal.realizedPnlMru?.toString()).toBe('500');
+  });
+
   it('resets WAC to 0 when quantity hits 0', async () => {
     const f = await seed();
     await prisma.$transaction((tx) =>

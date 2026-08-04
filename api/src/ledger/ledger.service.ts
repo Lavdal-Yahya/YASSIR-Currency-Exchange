@@ -180,11 +180,15 @@ export class LedgerService {
 
     // ---- 4. Insert ledger rows in batch ---------------------------------
     // Prisma's createMany returns count only — we need the rows with their
-    // assigned id and sequence. So we issue one INSERT ... RETURNING via
-    // raw SQL, then read them back through Prisma's typed API for the
-    // caller-facing shape. Reads happen inside the same tx so we still
-    // see the just-written rows.
+    // assigned id and sequence. So we insert one at a time through the
+    // typed API. Reads happen inside the same tx so we still see the
+    // just-written rows.
+    //
+    // Capture the (ledger row) → (originating Movement) mapping now,
+    // before the sort below reorders the array — CostEngine needs the
+    // originating movement to source unitCostMru / disposalValueMru.
     const inserted: LedgerEntry[] = [];
+    const originatingByLedgerId = new Map<string, Movement>();
     for (const m of movements) {
       const amount = m.amount instanceof Decimal ? m.amount : new Decimal(m.amount);
       const created = await tx.currencyLedger.create({
@@ -202,12 +206,13 @@ export class LedgerService {
         },
       });
       inserted.push(created);
+      originatingByLedgerId.set(created.id.toString(), m);
     }
 
-    // Sort by sequence ascending — the write order of a batch may differ
-    // from insertion order if Prisma reorders, and CostEngine.replay reads
-    // by sequence. Insert-time order matches sequence order in practice
-    // (sequence is a global nextval), but the sort is cheap insurance.
+    // Sort by sequence ascending — CostEngine (D-008) reads by sequence,
+    // and while insertion order matches sequence order in practice
+    // (global nextval, single writer inside one tx), the sort is cheap
+    // insurance against Prisma reordering.
     inserted.sort((a, b) => {
       const s = a.sequence - b.sequence;
       return s === 0n ? 0 : s > 0n ? 1 : -1;
@@ -227,16 +232,21 @@ export class LedgerService {
     }
 
     // ---- 6. Hand rows to CostEngine in sequence order --------------------
+    // Match originating movement via the id-keyed map captured at insert
+    // time — matching by (currencyId, direction, sourceType) collapses
+    // when a batch has two movements sharing all three, which is rare
+    // today but conceivable for future compound operations.
     for (const entry of inserted) {
-      const originating = movements.find(
-        (m) =>
-          m.currencyId === entry.currencyId &&
-          m.direction === entry.direction &&
-          m.sourceType === entry.sourceType,
-      );
+      const originating = originatingByLedgerId.get(entry.id.toString());
+      if (!originating) {
+        throw new LedgerContractError('missing originating movement for ledger row', {
+          ledgerEntryId: entry.id.toString(),
+        });
+      }
       await this.costs.apply(tx, entry, {
         baseCurrencyId,
-        unitCostMru: originating?.unitCostMru,
+        unitCostMru: originating.unitCostMru,
+        disposalValueMru: originating.disposalValueMru,
       });
     }
 
