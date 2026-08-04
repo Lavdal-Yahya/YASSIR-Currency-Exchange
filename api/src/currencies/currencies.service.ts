@@ -6,28 +6,34 @@ import type { CreateCurrencyDto } from './dto/create-currency.dto.js';
 import type { UpdateCurrencyDto } from './dto/update-currency.dto.js';
 import { CurrencyCodeTakenError, CurrencyInUseError, CurrencyNotFoundError } from './errors.js';
 
-// CurrenciesService — metadata-only in P2. `code` is not exposed as
-// updateable (see UpdateCurrencyDto). Deactivation counts references
-// in "usage tables" — today none exist (ledger arrives in P3), so the
-// count is trivially zero. The guard code is here now so P3 flips a
-// single boolean rather than restructuring the flow.
+// CurrenciesService — metadata + the deactivation-usage guard.
+//
+// From P3 onward, deactivation counts real ledger entries and cost
+// movements. A currency with a non-zero balance is refused (D-023
+// item 7: reduce to zero and hide is the recommended flow, and the
+// currency form shows a UX hint when balance > 0). Purchase / sale
+// counts stay at 0 in P3 and light up in P4 when those tables land.
 
 interface UsageCounts {
-  // Populated from P3 onward. In P2 every count is 0.
   ledgerEntries: number;
-  balanceRows: number;
   costMovements: number;
+  cachedBalance: string; // display in the error payload
   purchases: number;
   sales: number;
 }
 
-// P2 stub — no usage tables exist yet. Extract behind an interface so
-// the P3 wiring is a service replacement, not a service edit.
-async function usageFor(_tx: Prisma.TransactionClient, _currencyId: string): Promise<UsageCounts> {
+async function usageFor(tx: Prisma.TransactionClient, currencyId: string): Promise<UsageCounts> {
+  const [ledger, cost, balance] = await Promise.all([
+    tx.currencyLedger.count({ where: { currencyId, isActive: true } }),
+    tx.costMovement.count({ where: { currencyId, isActive: true } }),
+    tx.currencyBalance.findUnique({ where: { currencyId } }),
+  ]);
   return {
-    ledgerEntries: 0,
-    balanceRows: 0,
-    costMovements: 0,
+    ledgerEntries: ledger,
+    costMovements: cost,
+    cachedBalance: balance?.cachedAmount.toString() ?? '0',
+    // Trade tables (P4-01) land later; keep the shape so the P4
+    // service can flip a boolean instead of restructuring the flow.
     purchases: 0,
     sales: 0,
   };
@@ -128,9 +134,22 @@ export class CurrenciesService {
       if (!current.isActive) return current;
 
       const usage = await usageFor(tx, id);
-      const nonZero = Object.entries(usage).filter(([, count]) => count > 0);
-      if (nonZero.length > 0) {
-        throw new CurrencyInUseError(current.code, Object.fromEntries(nonZero));
+      // D-023 item 7: deactivation is refused when there's a live
+      // balance. Zero-balance currencies can be hidden; any positive
+      // balance must first be traded away.
+      const cachedBalance = Number.parseFloat(usage.cachedBalance);
+      const usageWithoutBalance = {
+        ledgerEntries: usage.ledgerEntries,
+        costMovements: usage.costMovements,
+        purchases: usage.purchases,
+        sales: usage.sales,
+      };
+      const nonZero = Object.entries(usageWithoutBalance).filter(([, count]) => count > 0);
+      if (cachedBalance !== 0) {
+        throw new CurrencyInUseError(current.code, {
+          ...Object.fromEntries(nonZero),
+          cachedBalance: usage.cachedBalance,
+        });
       }
 
       const updated = await tx.currency.update({
