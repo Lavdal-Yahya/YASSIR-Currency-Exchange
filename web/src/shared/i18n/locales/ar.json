@@ -91,7 +91,10 @@
     "expense_category_name_taken": "اسم الفئة مستخدم بالفعل.",
     "user_not_found": "المستخدم غير موجود.",
     "cannot_deactivate_self": "لا يمكنك تعطيل حسابك الخاص.",
-    "cannot_strip_own_owner_role": "لا يمكنك إزالة دور المالك من حسابك."
+    "cannot_strip_own_owner_role": "لا يمكنك إزالة دور المالك من حسابك.",
+    "opening_after_go_live": "الأرصدة الافتتاحية مقفلة بعد الانطلاق.",
+    "opening_already_exists": "يوجد رصيد افتتاحي لهذه العملة بالفعل.",
+    "opening_not_found": "الرصيد الافتتاحي غير موجود."
   },
   "profile": {
     "title": "ملفي",

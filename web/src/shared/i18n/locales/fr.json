@@ -91,7 +91,10 @@
     "expense_category_name_taken": "Ce nom de catégorie existe déjà.",
     "user_not_found": "Utilisateur introuvable.",
     "cannot_deactivate_self": "Vous ne pouvez pas désactiver votre propre compte.",
-    "cannot_strip_own_owner_role": "Vous ne pouvez pas retirer votre propre rôle de propriétaire."
+    "cannot_strip_own_owner_role": "Vous ne pouvez pas retirer votre propre rôle de propriétaire.",
+    "opening_after_go_live": "Les soldes d'ouverture sont verrouillés après le lancement.",
+    "opening_already_exists": "Un solde d'ouverture existe déjà pour cette devise.",
+    "opening_not_found": "Solde d'ouverture introuvable."
   },
   "profile": {
     "title": "Mon profil",
