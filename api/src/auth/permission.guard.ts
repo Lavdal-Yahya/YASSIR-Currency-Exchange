@@ -54,6 +54,10 @@ export class PermissionGuard implements CanActivate {
     }
 
     const codes = await this.loadPermissionsForUser(req.user.id);
+    // Stash for downstream controllers that need a second, conditional
+    // permission check (e.g. openings PATCH after go-live — P3-10).
+    // Loading is one query per request; caching prevents a second.
+    req.user.permissions = codes;
     const hasAny = required.some((code) => codes.has(code));
     if (!hasAny) throw new ForbiddenException();
     return true;

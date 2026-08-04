@@ -66,6 +66,11 @@ export const ERROR_I18N_KEYS = [
   'error.no_base_leg',
   'error.method_note_required',
   'error.rate_service_down',
+
+  // Openings (P3-08 → P3-10)
+  'error.opening_after_go_live',
+  'error.opening_already_exists',
+  'error.opening_not_found',
 ] as const;
 
 export type ErrorI18nKey = (typeof ERROR_I18N_KEYS)[number];
