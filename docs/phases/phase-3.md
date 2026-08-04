@@ -1,8 +1,11 @@
-> ⚠️ **Draft written blind.** Generated before Phase 2 closed out. This is
-> the most dangerous phase in the project — the schema review (P2-13) will
-> surface things this document does not anticipate. Refine in the week
-> before Phase 3 starts and do not treat any migration or CHECK constraint
-> listed here as final until the schema review has signed off on it.
+> **Schema review signed off 2026-08-04.** Original "written blind" warning
+> superseded. `docs/schema-review.md` is the authoritative source for
+> column shapes and raw-SQL constraints; anything in this document that
+> disagrees with the schema review is stale — trust the review.
+> [D-023](../decisions.md#d-023--2026-08-04--accepted) records the
+> resolutions to §9 open questions, including one Pending item
+> (`allocation` FK shape) that is deferred to before P5-01 and does not
+> block P3.
 
 # Phase 3 — The ledger core (Detail)
 
@@ -25,10 +28,12 @@ behaviour. Get this one right or every other DoD is decoration.
 
 Phase 2's DoD must pass in full. Specifically:
 
-- **`docs/schema-review.md` is signed off** — the sign-off checklist at
-  the bottom shows two names and a client walkthrough date. If it is not
-  signed off, do not start P3-01. The migration file that starts P3 is the
-  point of no return; the paper review is the last chance.
+- **`docs/schema-review.md` is signed off** — status line at the top
+  reads "Signed off 2026-08-04" and §10 checklist is ticked (author
+  double-walked in lieu of a second engineer; solo project). §9 open
+  questions are closed in [D-023](../decisions.md#d-023--2026-08-04--accepted),
+  with the `allocation` FK item deferred to ≤ P5-01 (Pending, owner
+  Lavdal — does not block P3).
 - Every raw-SQL constraint enumerated in the schema review is copied into
   P3-01 verbatim. A CHECK on paper is not a CHECK in the database.
 - `common/period.ts` reads timezone from `settings`, not from an env var.

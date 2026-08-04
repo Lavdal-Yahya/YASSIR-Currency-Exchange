@@ -82,23 +82,23 @@ full remaining schema has been reviewed on paper before the first irreversible
 migration.
 
 ### Backend
-- [ ] P2-01 Currency CRUD: code, name, symbol, `decimal_places`, active flag, low-balance threshold; deactivate-not-delete enforced by a usage check
-- [ ] P2-02 Settings module: base currency, business timezone, negative-balance policy, go-live flag
-- [ ] P2-03 Contact CRUD with `is_customer` / `is_supplier` flags, archive-not-delete, duplicate-phone **warning** (not a block, spec §10.3)
-- [ ] P2-04 Expense category CRUD
-- [ ] P2-05 Payment method lookup: seeded with Cash / Bankily / Masrivi / Sedad / Other, with `is_active` and `requires_note`; owner can add and deactivate, never delete (D-020)
-- [ ] P2-06 User management: create, deactivate, admin PIN reset, role assignment
-- [ ] P2-07 Audit wiring for currency, contact, settings, and user changes
+- [x] P2-01 Currency CRUD: code, name, symbol, `decimal_places`, active flag, low-balance threshold; deactivate-not-delete enforced by a usage check
+- [x] P2-02 Settings module: base currency, business timezone, negative-balance policy, go-live flag
+- [x] P2-03 Contact CRUD with `is_customer` / `is_supplier` flags, archive-not-delete, duplicate-phone **warning** (not a block, spec §10.3)
+- [x] P2-04 Expense category CRUD
+- [x] P2-05 Payment method lookup: seeded with Cash / Bankily / Masrivi / Sedad / Other, with `is_active` and `requires_note`; owner can add and deactivate, never delete (D-020)
+- [x] P2-06 User management: create, deactivate, admin PIN reset, role assignment
+- [x] P2-07 Audit wiring for currency, contact, settings, and user changes
 
 ### Frontend
-- [ ] P2-08 Currency list + form, including a clear `decimal_places` explanation
-- [ ] P2-09 Contact list with search and filters, contact form, duplicate warning UI
-- [ ] P2-10 Contact profile shell — tabs present, financial tabs visible but empty with "arrives in Phase 4/5" placeholders
-- [ ] P2-11 Users, roles, and permission matrix screens
-- [ ] P2-12 Settings screen, including the payment method list
+- [x] P2-08 Currency list + form, including a clear `decimal_places` explanation
+- [x] P2-09 Contact list with search and filters, contact form, duplicate warning UI
+- [x] P2-10 Contact profile shell — tabs present, financial tabs visible but empty with "arrives in Phase 4/5" placeholders
+- [x] P2-11 Users, roles, and permission matrix screens
+- [x] P2-12 Settings screen, including the payment method list
 
 ### Gate
-- [ ] P2-13 **Schema review document** (`docs/schema-review.md`): every remaining table through Phase 7 laid out on paper — ledger, cost movements, purchases, sales, receivables, payables, payments, allocations, expenses, openings, rate snapshots — with the raw-SQL constraints Prisma can't express, deliberate deviations from the spec with reasoning, and paste-ready `D-0xx` entries. Ends in a sign-off checklist.
+- [x] P2-13 **Schema review document** (`docs/schema-review.md`): every remaining table through Phase 7 laid out on paper — ledger, cost movements, purchases, sales, receivables, payables, payments, allocations, expenses, openings, rate snapshots — with the raw-SQL constraints Prisma can't express, deliberate deviations from the spec with reasoning, and paste-ready `D-0xx` entries. Ends in a sign-off checklist. **Signed off 2026-08-04 — see D-023 for §9 resolutions.**
 
 **Definition of Done:** a currency used by nothing can be deactivated but never
 deleted, proven over HTTP; two contacts with the same phone can both be created

@@ -402,3 +402,64 @@ recorded acceptance.
 Rejected: `overrides` block or `npm audit fix --force`. Both shift the problem
 without documenting it, and both re-trip `npm audit` on the next lockfile
 regeneration.
+
+---
+
+## D-023 · 2026-08-04 · Accepted
+**Schema review (P2-13) §9 open questions — resolutions bundled here so P3-01 is unblocked.**
+
+Recorded as one omnibus entry rather than seven separate rows because the
+questions are all local schema-shape decisions with no cross-cutting
+consequence. Any one of them that later grows teeth gets promoted to its own
+D-0xx and this entry cross-referenced.
+
+1. **`currency_ledger.sequence` — global Postgres SEQUENCE, not per-currency.**
+   `LedgerService.apply` already takes `SELECT … FOR UPDATE` on the balance
+   row inside the transaction, so the sequence is never the bottleneck.
+   Global is simpler; per-currency saves nothing measurable and adds a shard
+   the schema does not otherwise need.
+
+2. **`settings.business_timezone` change post-go-live — allow, annotate.**
+   Report headers carry a "period boundaries recalculated on YYYY-MM-DD"
+   note when `businessTimezone` was last changed. Freezing the tz at go-live
+   is user-hostile; silent re-bucketing invites confusion. The annotation
+   makes the recalculation visible without making it destructive.
+
+3. **`allocation` FK enforcement — Pending, owner: Lavdal, decision date ≤ P5-01.**
+   Two candidates: polymorphic `(target_type, target_id)` with no FK (current
+   plan) vs two nullable columns `receivable_id` / `payable_id` with a CHECK
+   that exactly one is non-null. This deliberately does *not* block P3 — the
+   `allocation` table ships in P5, not P3, and the choice is orthogonal to
+   the ledger core. Recorded here so it doesn't fall off the radar; must
+   land as its own D-0xx before P5-01 opens.
+
+4. **Rate/total tolerance — refuse drift entirely.**
+   `payment_total = round(delivered_amount × rate, dp)` must match exactly;
+   the server rejects any drift rather than absorbing "less than one minor
+   unit". The single API client is our own frontend and we control the
+   rounding on both sides, so tolerance buys nothing and hides bugs. The
+   trigger reading per-currency `decimal_places` is replaced by a plain
+   equality CHECK in the P4 migration.
+
+5. **`idempotency_key` — no TTL in v2.** The uniqueness index has no time
+   bound. Operators never reuse keys within a session, so forever-unique
+   matches expected behaviour; a TTL introduces a class of "second submit
+   accepted after N days" surprises. Revisit only if the key space grows
+   past the point where the unique index cost matters.
+
+6. **`rate_snapshot` retention — no cutoff.** At ~26k rows/year for three
+   non-base currencies, retention is not a size problem for years. Flag
+   only if the non-base currency count grows past ~10 or the poll cadence
+   drops below the current hourly.
+
+7. **Currency deactivation with balance — permit only when `cached_amount = 0`.**
+   The P3 check tightens to "cached_amount > 0 refuses"; a currency at
+   exactly zero may be deactivated. The currency form shows a UX hint when
+   `cached_amount > 0` explaining the "reduce to zero and hide" path.
+
+Rejected paths, one line each: per-currency sequences (moot given the
+balance lock); tz-freeze at go-live (user-hostile); FK-fan on
+`currency_ledger.source_id` (5+ source tables — polymorphic is defensible
+there even if not on `allocation`); rate/total tolerance window (encourages
+sloppy clients); TTL'd idempotency keys (surprise vector); scheduled
+`rate_snapshot` prune (premature).

@@ -157,14 +157,16 @@ still pass — the milestone banner does not lower the gates.
 
 ## Status
 
-**Current milestone:** v1 · **Current phase:** Phase 2 — Master data & the schema review
+**Current milestone:** v2 · **Current phase:** Phase 3 — The ledger core
 
-Active phase document: [`docs/phases/phase-1.md`](docs/phases/phase-1.md).
-Phase documents are written **one phase ahead, never all at once** — phase-2.md
-appears when phase-1 is closing out.
+Active phase document: [`docs/phases/phase-3.md`](docs/phases/phase-3.md).
+Phase 2 closed 2026-08-04 with the schema review signed off; v1 milestone
+achieved. Phase documents are written **one phase ahead, never all at once**
+— phase-4.md gets its refinement pass when phase-3 is closing out.
 
-Open decisions: none. D-016 (trade reversal policy) was resolved 2026-08-01 by
-D-021 — recompute-and-restate. P6-04 is unblocked; v3 kickoff no longer waits.
+Open decisions: **D-023 item 3** — `allocation` FK shape (polymorphic vs
+two nullable FKs). Pending, owner Lavdal, deadline ≤ P5-01. Does not block
+P3. All other §9 open questions from the schema review closed in D-023.
 
 Change requests accepted since the specification was signed:
 
