@@ -16,7 +16,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "check:invariants": "tsx scripts/check-invariants.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.28",

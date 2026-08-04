@@ -6,6 +6,10 @@ import { ContactsListPage } from '../features/contacts/routes/ContactsListPage';
 import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesListPage';
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
+import { BalancesDashboardPage } from '../features/openings/routes/BalancesDashboardPage';
+import { OpeningCurrencyFormPage } from '../features/openings/routes/OpeningCurrencyFormPage';
+import { OpeningDebtFormPage } from '../features/openings/routes/OpeningDebtFormPage';
+import { OpeningsHomePage } from '../features/openings/routes/OpeningsHomePage';
 import { MyProfilePage } from '../features/profile/routes/MyProfilePage';
 import { SettingsBusinessPage } from '../features/settings/routes/SettingsBusinessPage';
 import { SettingsExpenseCategoriesPage } from '../features/settings/routes/SettingsExpenseCategoriesPage';
@@ -42,6 +46,11 @@ export const routes: RouteObject[] = [
           { path: '/currencies', element: <CurrenciesListPage /> },
           { path: '/currencies/new', element: <CurrencyFormPage /> },
           { path: '/currencies/:id/edit', element: <CurrencyFormPage /> },
+
+          { path: '/balances', element: <BalancesDashboardPage /> },
+          { path: '/openings', element: <OpeningsHomePage /> },
+          { path: '/openings/currency/new', element: <OpeningCurrencyFormPage /> },
+          { path: '/openings/debt/new', element: <OpeningDebtFormPage /> },
 
           { path: '/users', element: <UsersListPage /> },
           { path: '/users/new', element: <UserFormPage /> },
