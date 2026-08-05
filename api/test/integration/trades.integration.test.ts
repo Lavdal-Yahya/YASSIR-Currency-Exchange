@@ -859,6 +859,160 @@ describe('POST /purchases — walk-in constraints', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 11b. Case B / Case B' — delivered=MRU, payment=non-base
+// ---------------------------------------------------------------------------
+//
+// The primary trade shape at this bureau is "delivered=non-base,
+// payment=MRU" (Case A: purchase of USD paid in MRU; Case A': sale of
+// USD for MRU). But per D-019 exactly one leg is MRU — either leg can
+// be the base one, and the buildTradeMovements branches for
+// baseSide='delivered' handle the mirror case. Cover it explicitly:
+// a purchase Case B disposes non-base as the payment leg (partial),
+// and a sale Case B' acquires non-base as the payment leg (partial).
+
+describe('POST /purchases — Case B (delivered=MRU, payment=non-base)', () => {
+  it('partial purchase of MRU with USD: DISPOSAL of USD carries proportional disposalValueMru', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    // Opening 100 USD at cost 39 MRU/USD.
+    await request(app.getHttpServer())
+      .post('/api/v1/openings/currency')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        currencyId: seed.usdId,
+        quantity: '100',
+        openingAvgCostMru: '39.00',
+        effectiveDate: '2026-08-01',
+      })
+      .expect(201);
+
+    // Bureau receives 2000 MRU by paying 20 USD immediately (payment
+    // total 50 USD; partial). rate = 0.025 USD per 1 MRU
+    // (2000 × 0.025 = 50 ✓).
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/purchases')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: seed.contactId,
+        deliveredCurrencyId: seed.mruId,
+        deliveredAmount: '2000',
+        paymentCurrencyId: seed.usdId,
+        rate: '0.025',
+        immediatePayment: '20',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+    expect(res.body.paymentStatus).toBe('PARTIALLY_PAID');
+
+    // Ledger: CREDIT MRU 2000, DEBIT USD 20.
+    const ledger = await prisma.currencyLedger.findMany({
+      where: { sourceType: 'purchase', sourceId: res.body.id },
+      orderBy: { sequence: 'asc' },
+    });
+    expect(ledger).toHaveLength(2);
+    const mruRow = ledger.find((r) => r.currencyId === seed.mruId)!;
+    const usdRow = ledger.find((r) => r.currencyId === seed.usdId)!;
+    expect(mruRow.direction).toBe('CREDIT');
+    expect(mruRow.amount.toString()).toBe('2000');
+    expect(usdRow.direction).toBe('DEBIT');
+    expect(usdRow.amount.toString()).toBe('20');
+
+    // Cost movement for the USD DISPOSAL:
+    //   disposalValueMru = delivered_amount × (immediate / total)
+    //                    = 2000 × (20 / 50) = 800
+    //   cost_of_disposal = 20 × 39 = 780
+    //   realized_pnl_mru = 800 − 780 = 20
+    const disposal = await prisma.costMovement.findFirstOrThrow({
+      where: { currencyId: seed.usdId, kind: 'DISPOSAL' },
+    });
+    expect(disposal.quantity.toString()).toBe('20');
+    expect(disposal.realizedPnlMru?.toString()).toBe('20');
+
+    // No cost row for MRU (base — skipped by CostEngine).
+    const mruCost = await prisma.costMovement.count({
+      where: { currencyId: seed.mruId },
+    });
+    expect(mruCost).toBe(0);
+
+    // Payable = 30 USD outstanding.
+    const payable = await prisma.payable.findFirstOrThrow({
+      where: { sourceType: 'purchase', sourceId: res.body.id },
+    });
+    expect(payable.currencyId).toBe(seed.usdId);
+    expect(payable.originalAmount.toString()).toBe('30');
+  });
+});
+
+describe('POST /sales — Case B′ (delivered=MRU, payment=non-base)', () => {
+  it('partial sale of MRU for USD: ACQUISITION of USD carries proportional unit_cost_mru', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    // Give the bureau 10000 MRU to hand out; USD starts at 0.
+    await openMruBalance(seed, '10000');
+
+    // Bureau gives 2000 MRU in exchange for 50 USD total; 20 USD
+    // immediate, 30 outstanding. rate = 0.025 USD per 1 MRU.
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/sales')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: seed.contactId,
+        deliveredCurrencyId: seed.mruId,
+        deliveredAmount: '2000',
+        paymentCurrencyId: seed.usdId,
+        rate: '0.025',
+        immediatePayment: '20',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+    expect(res.body.paymentStatus).toBe('PARTIALLY_PAID');
+
+    // Delivered=MRU (base) → cost_of_currency_sold_mru + gross_profit
+    // both snapshotted 0 per D-006. (There is no non-base disposal to
+    // book cost against.)
+    expect(res.body.costOfCurrencySoldMru).toBe('0');
+    expect(res.body.grossProfitMru).toBe('0');
+
+    // Ledger: DEBIT MRU 2000, CREDIT USD 20.
+    const ledger = await prisma.currencyLedger.findMany({
+      where: { sourceType: 'sale', sourceId: res.body.id },
+      orderBy: { sequence: 'asc' },
+    });
+    expect(ledger).toHaveLength(2);
+    const mruRow = ledger.find((r) => r.currencyId === seed.mruId)!;
+    const usdRow = ledger.find((r) => r.currencyId === seed.usdId)!;
+    expect(mruRow.direction).toBe('DEBIT');
+    expect(mruRow.amount.toString()).toBe('2000');
+    expect(usdRow.direction).toBe('CREDIT');
+    expect(usdRow.amount.toString()).toBe('20');
+
+    // Cost movement for the USD ACQUISITION:
+    //   mruValue  = delivered_amount × (immediate / total)
+    //             = 2000 × (20 / 50) = 800
+    //   unit_cost = mruValue / immediate = 800 / 20 = 40 MRU/USD
+    const acquisition = await prisma.costMovement.findFirstOrThrow({
+      where: { currencyId: seed.usdId, kind: 'ACQUISITION' },
+    });
+    expect(acquisition.quantity.toString()).toBe('20');
+    expect(new Decimal(acquisition.unitCostMru.toString()).toString()).toBe('40');
+
+    // WAC cache: quantity 20 USD, avg 40 MRU/USD.
+    const cache = await prisma.currencyCost.findUniqueOrThrow({
+      where: { currencyId: seed.usdId },
+    });
+    expect(cache.cachedQuantity.toString()).toBe('20');
+    expect(new Decimal(cache.cachedAvgMru.toString()).toString()).toBe('40');
+
+    // Receivable = 30 USD outstanding.
+    const receivable = await prisma.receivable.findFirstOrThrow({
+      where: { sourceType: 'sale', sourceId: res.body.id },
+    });
+    expect(receivable.currencyId).toBe(seed.usdId);
+    expect(receivable.originalAmount.toString()).toBe('30');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 12. INV-7 fires when it should — deliberately break it in a scratch DB
 // ---------------------------------------------------------------------------
 
