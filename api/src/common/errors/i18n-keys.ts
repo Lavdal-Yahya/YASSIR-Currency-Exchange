@@ -66,6 +66,11 @@ export const ERROR_I18N_KEYS = [
   'error.no_base_leg',
   'error.method_note_required',
   'error.rate_service_down',
+  // D-024 — rate/total strict equality
+  'error.rate_total_mismatch',
+  // P4 trade services (D-020 + spec §15.1)
+  'error.payment_method_required',
+  'error.trade_missing_contact',
 
   // Openings (P3-08 → P3-10)
   'error.opening_after_go_live',

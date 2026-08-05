@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
+import { useContactTrades } from '../../trades/api/useTrades';
 import {
   useArchiveContact,
   useContact,
@@ -90,9 +91,7 @@ export function ContactProfilePage() {
         {tab === 'payables' ? (
           <p className="placeholder-card">{t('contacts.profile.phase5_placeholder')}</p>
         ) : null}
-        {tab === 'trades' ? (
-          <p className="placeholder-card">{t('contacts.profile.phase4_placeholder')}</p>
-        ) : null}
+        {tab === 'trades' ? <ContactTradesTab contactId={id} /> : null}
       </div>
 
       <div className="profile-actions">
@@ -121,6 +120,55 @@ export function ContactProfilePage() {
       </div>
     </>
   );
+}
+
+function ContactTradesTab({ contactId }: { contactId: string }) {
+  const { t } = useTranslation();
+  const q = useContactTrades(contactId);
+
+  if (q.isLoading) return <Loading />;
+  if (q.error) return <ErrorMessage error={q.error} />;
+  if (!q.data || q.data.data.length === 0) {
+    return <p className="empty-state">{t('contacts.profile.trades_empty')}</p>;
+  }
+
+  return (
+    <ul className="card-list" aria-label={t('contacts.profile.trades')}>
+      {q.data.data.map((item) => {
+        const path = item.kind === 'purchase' ? `/purchases/${item.id}` : `/sales/${item.id}`;
+        const badge = item.kind === 'purchase' ? t('purchases.title') : t('sales.title');
+        return (
+          <li key={`${item.kind}-${item.id}`}>
+            <Link to={path} className="card-row">
+              <div className="card-row__header">
+                <h3 className="card-row__title">
+                  {item.deliveredAmount}{' '}
+                  <span className="card-row__currency">{item.deliveredCurrencyId.slice(0, 3)}</span>
+                </h3>
+                <span className="badge badge--out">{badge}</span>
+              </div>
+              <div className="card-row__meta">
+                <span className="card-row__mono">
+                  {new Date(item.transactionDate).toLocaleDateString()}
+                </span>
+                <span className={`badge badge--${payStatusClass(item.paymentStatus)}`}>
+                  {item.kind === 'purchase'
+                    ? t(`purchases.payment_status.${item.paymentStatus}`)
+                    : t(`sales.payment_status.${item.paymentStatus}`)}
+                </span>
+              </div>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function payStatusClass(status: string) {
+  if (status === 'PAID') return 'in';
+  if (status === 'PARTIALLY_PAID') return 'warn';
+  return 'danger';
 }
 
 function OverviewPanel({ contact: c }: { contact: Contact }) {

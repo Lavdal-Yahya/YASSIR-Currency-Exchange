@@ -16,6 +16,12 @@ import { SettingsExpenseCategoriesPage } from '../features/settings/routes/Setti
 import { SettingsLayout } from '../features/settings/routes/SettingsLayout';
 import { SettingsPaymentMethodsPage } from '../features/settings/routes/SettingsPaymentMethodsPage';
 import { SettingsPermissionsPage } from '../features/settings/routes/SettingsPermissionsPage';
+import { PurchaseDetailPage } from '../features/trades/routes/PurchaseDetailPage';
+import { PurchaseFormPage } from '../features/trades/routes/PurchaseFormPage';
+import { PurchasesListPage } from '../features/trades/routes/PurchasesListPage';
+import { SaleDetailPage } from '../features/trades/routes/SaleDetailPage';
+import { SaleFormPage } from '../features/trades/routes/SaleFormPage';
+import { SalesListPage } from '../features/trades/routes/SalesListPage';
 import { UserFormPage } from '../features/users/routes/UserFormPage';
 import { UsersListPage } from '../features/users/routes/UsersListPage';
 import { AppRoot } from './AppRoot';
@@ -39,6 +45,14 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { path: '/', element: <DashboardShell /> },
+
+          { path: '/purchases', element: <PurchasesListPage /> },
+          { path: '/purchases/new', element: <PurchaseFormPage /> },
+          { path: '/purchases/:id', element: <PurchaseDetailPage /> },
+
+          { path: '/sales', element: <SalesListPage /> },
+          { path: '/sales/new', element: <SaleFormPage /> },
+          { path: '/sales/:id', element: <SaleDetailPage /> },
 
           { path: '/contacts', element: <ContactsListPage /> },
           { path: '/contacts/:id', element: <ContactProfilePage /> },

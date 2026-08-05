@@ -17,28 +17,30 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id                String    @id @default(uuid()) @db.Uuid
-  phone             String    @unique
-  pinHash           String    @map("pin_hash")
-  fullName          String    @map("full_name")
-  isActive          Boolean   @default(true) @map("is_active")
-  lockedUntil       DateTime? @map("locked_until") @db.Timestamptz(6)
-  failedLoginCount  Int       @default(0) @map("failed_login_count")
-  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id               String    @id @default(uuid()) @db.Uuid
+  phone            String    @unique
+  pinHash          String    @map("pin_hash")
+  fullName         String    @map("full_name")
+  isActive         Boolean   @default(true) @map("is_active")
+  lockedUntil      DateTime? @map("locked_until") @db.Timestamptz(6)
+  failedLoginCount Int       @default(0) @map("failed_login_count")
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   roles         UserRole[]
-  auditRows     AuditLog[]        @relation("audit_actor")
-  ledgerEntries CurrencyLedger[]  @relation("ledger_created_by")
+  auditRows     AuditLog[]       @relation("audit_actor")
+  ledgerEntries CurrencyLedger[] @relation("ledger_created_by")
+  purchases     Purchase[]       @relation("purchase_created_by")
+  sales         Sale[]           @relation("sale_created_by")
 
   @@map("user")
 }
 
 model Role {
-  id       String  @id @default(uuid()) @db.Uuid
-  code     String  @unique
-  labelFr  String  @map("label_fr")
-  labelAr  String  @map("label_ar")
+  id      String @id @default(uuid()) @db.Uuid
+  code    String @unique
+  labelFr String @map("label_fr")
+  labelAr String @map("label_ar")
 
   users       UserRole[]
   permissions RolePermission[]
@@ -98,24 +100,28 @@ model UserRole {
 // migration. See phase-2.md §3.
 
 model Currency {
-  id                    String   @id @default(uuid()) @db.Uuid
-  code                  String   @unique
-  name                  String
-  symbol                String?
-  decimalPlaces         Int      @map("decimal_places") @db.SmallInt
-  lowBalanceThreshold   Decimal? @map("low_balance_threshold") @db.Decimal(24, 4)
-  isActive              Boolean  @default(true) @map("is_active")
-  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt             DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                  String   @id @default(uuid()) @db.Uuid
+  code                String   @unique
+  name                String
+  symbol              String?
+  decimalPlaces       Int      @map("decimal_places") @db.SmallInt
+  lowBalanceThreshold Decimal? @map("low_balance_threshold") @db.Decimal(24, 4)
+  isActive            Boolean  @default(true) @map("is_active")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  baseForSettings Settings[]        @relation("settings_base_currency")
-  ledgerEntries   CurrencyLedger[]
-  balance         CurrencyBalance?
-  costMovements   CostMovement[]
-  cost            CurrencyCost?
-  openingBalance  OpeningBalance?
-  receivables     Receivable[]
-  payables        Payable[]
+  baseForSettings    Settings[]       @relation("settings_base_currency")
+  ledgerEntries      CurrencyLedger[]
+  balance            CurrencyBalance?
+  costMovements      CostMovement[]
+  cost               CurrencyCost?
+  openingBalance     OpeningBalance?
+  receivables        Receivable[]
+  payables           Payable[]
+  purchasesDelivered Purchase[]       @relation("purchase_delivered_currency")
+  purchasesPayment   Purchase[]       @relation("purchase_payment_currency")
+  salesDelivered     Sale[]           @relation("sale_delivered_currency")
+  salesPayment       Sale[]           @relation("sale_payment_currency")
 
   @@map("currency")
 }
@@ -139,13 +145,13 @@ model Currency {
 // with a reason.
 
 model Settings {
-  id                              Int      @id @default(1)
-  baseCurrencyId                  String   @map("base_currency_id") @db.Uuid
-  businessTimezone                String   @default("Africa/Nouakchott") @map("business_timezone")
-  negativeBalanceOverrideAllowed  Boolean  @default(false) @map("negative_balance_override_allowed")
-  goLiveAt                        DateTime? @map("go_live_at") @db.Timestamptz(6)
-  updatedAt                       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  updatedByUserId                 String?  @map("updated_by_user_id") @db.Uuid
+  id                             Int       @id @default(1)
+  baseCurrencyId                 String    @map("base_currency_id") @db.Uuid
+  businessTimezone               String    @default("Africa/Nouakchott") @map("business_timezone")
+  negativeBalanceOverrideAllowed Boolean   @default(false) @map("negative_balance_override_allowed")
+  goLiveAt                       DateTime? @map("go_live_at") @db.Timestamptz(6)
+  updatedAt                      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  updatedByUserId                String?   @map("updated_by_user_id") @db.Uuid
 
   baseCurrency Currency @relation("settings_base_currency", fields: [baseCurrencyId], references: [id], onDelete: Restrict)
 
@@ -172,18 +178,20 @@ model Settings {
 // their row must remain readable for historical statements.
 
 model Contact {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String
-  phone       String?
-  isCustomer  Boolean  @default(true) @map("is_customer")
-  isSupplier  Boolean  @default(false) @map("is_supplier")
-  isArchived  Boolean  @default(false) @map("is_archived")
-  notes       String?
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id         String   @id @default(uuid()) @db.Uuid
+  name       String
+  phone      String?
+  isCustomer Boolean  @default(true) @map("is_customer")
+  isSupplier Boolean  @default(false) @map("is_supplier")
+  isArchived Boolean  @default(false) @map("is_archived")
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   receivables Receivable[]
   payables    Payable[]
+  purchases   Purchase[]
+  sales       Sale[]
 
   @@index([phone], map: "contact_phone_idx")
   @@map("contact")
@@ -224,16 +232,18 @@ model ExpenseCategory {
 // exists.
 
 model PaymentMethod {
-  id            String   @id @default(uuid()) @db.Uuid
-  code          String   @unique
-  labelFr       String   @map("label_fr")
-  labelAr       String   @map("label_ar")
-  isActive      Boolean  @default(true) @map("is_active")
-  requiresNote  Boolean  @default(false) @map("requires_note")
-  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id           String   @id @default(uuid()) @db.Uuid
+  code         String   @unique
+  labelFr      String   @map("label_fr")
+  labelAr      String   @map("label_ar")
+  isActive     Boolean  @default(true) @map("is_active")
+  requiresNote Boolean  @default(false) @map("requires_note")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   ledgerEntries CurrencyLedger[]
+  purchases     Purchase[]
+  sales         Sale[]
 
   @@map("payment_method")
 }
@@ -270,25 +280,25 @@ enum CostMovementKind {
 }
 
 model CurrencyLedger {
-  id               BigInt          @id @default(autoincrement())
-  currencyId       String          @map("currency_id") @db.Uuid
-  direction        LedgerDirection
-  amount           Decimal         @db.Decimal(24, 4)
-  sourceType       String          @map("source_type")
-  sourceId         String?         @map("source_id") @db.Uuid
-  paymentMethodId  String?         @map("payment_method_id") @db.Uuid
-  note             String?
-  transactionDate  DateTime        @map("transaction_date") @db.Timestamptz(6)
-  sequence         BigInt          @default(dbgenerated("nextval('ledger_sequence_seq'::regclass)"))
-  description      String
-  isActive         Boolean         @default(true) @map("is_active")
-  createdByUserId  String          @map("created_by_user_id") @db.Uuid
-  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  id              BigInt          @id @default(autoincrement())
+  currencyId      String          @map("currency_id") @db.Uuid
+  direction       LedgerDirection
+  amount          Decimal         @db.Decimal(24, 4)
+  sourceType      String          @map("source_type")
+  sourceId        String?         @map("source_id") @db.Uuid
+  paymentMethodId String?         @map("payment_method_id") @db.Uuid
+  note            String?
+  transactionDate DateTime        @map("transaction_date") @db.Timestamptz(6)
+  sequence        BigInt          @default(dbgenerated("nextval('ledger_sequence_seq'::regclass)"))
+  description     String
+  isActive        Boolean         @default(true) @map("is_active")
+  createdByUserId String          @map("created_by_user_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  currency       Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
-  paymentMethod  PaymentMethod?  @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
-  createdBy      User            @relation("ledger_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  costMovement   CostMovement?
+  currency      Currency       @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  paymentMethod PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy     User           @relation("ledger_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  costMovement  CostMovement?
 
   @@index([currencyId, sequence], map: "currency_ledger_currency_sequence_idx")
   @@index([sourceType, sourceId], map: "currency_ledger_source_idx")
@@ -298,9 +308,9 @@ model CurrencyLedger {
 }
 
 model CurrencyBalance {
-  currencyId    String   @id @map("currency_id") @db.Uuid
-  cachedAmount  Decimal  @default(0) @map("cached_amount") @db.Decimal(24, 4)
-  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  currencyId   String   @id @map("currency_id") @db.Uuid
+  cachedAmount Decimal  @default(0) @map("cached_amount") @db.Decimal(24, 4)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
 
@@ -308,29 +318,29 @@ model CurrencyBalance {
 }
 
 model CostMovement {
-  id              BigInt           @id @default(autoincrement())
-  currencyId      String           @map("currency_id") @db.Uuid
-  ledgerEntryId   BigInt           @unique @map("ledger_entry_id")
-  kind            CostMovementKind
-  quantity        Decimal          @db.Decimal(24, 4)
-  unitCostMru     Decimal          @map("unit_cost_mru") @db.Decimal(24, 8)
-  realizedPnlMru  Decimal?         @map("realized_pnl_mru") @db.Decimal(24, 4)
-  isActive        Boolean          @default(true) @map("is_active")
-  sequence        BigInt
-  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  id             BigInt           @id @default(autoincrement())
+  currencyId     String           @map("currency_id") @db.Uuid
+  ledgerEntryId  BigInt           @unique @map("ledger_entry_id")
+  kind           CostMovementKind
+  quantity       Decimal          @db.Decimal(24, 4)
+  unitCostMru    Decimal          @map("unit_cost_mru") @db.Decimal(24, 8)
+  realizedPnlMru Decimal?         @map("realized_pnl_mru") @db.Decimal(24, 4)
+  isActive       Boolean          @default(true) @map("is_active")
+  sequence       BigInt
+  createdAt      DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  currency     Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
-  ledgerEntry  CurrencyLedger  @relation(fields: [ledgerEntryId], references: [id], onDelete: Restrict)
+  currency    Currency       @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  ledgerEntry CurrencyLedger @relation(fields: [ledgerEntryId], references: [id], onDelete: Restrict)
 
   @@index([currencyId, sequence], map: "cost_movement_currency_sequence_idx")
   @@map("cost_movement")
 }
 
 model CurrencyCost {
-  currencyId      String   @id @map("currency_id") @db.Uuid
-  cachedAvgMru    Decimal  @default(0) @map("cached_avg_mru") @db.Decimal(24, 8)
-  cachedQuantity  Decimal  @default(0) @map("cached_quantity") @db.Decimal(24, 4)
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  currencyId     String   @id @map("currency_id") @db.Uuid
+  cachedAvgMru   Decimal  @default(0) @map("cached_avg_mru") @db.Decimal(24, 8)
+  cachedQuantity Decimal  @default(0) @map("cached_quantity") @db.Decimal(24, 4)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
 
@@ -382,13 +392,13 @@ enum DebtPaymentStatus {
 }
 
 model OpeningBalance {
-  id                  String   @id @default(uuid()) @db.Uuid
-  currencyId          String   @unique @map("currency_id") @db.Uuid
-  quantity            Decimal  @db.Decimal(24, 4)
-  openingAvgCostMru   Decimal  @map("opening_avg_cost_mru") @db.Decimal(24, 8)
-  effectiveDate       DateTime @map("effective_date") @db.Date
-  createdByUserId     String   @map("created_by_user_id") @db.Uuid
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id                String   @id @default(uuid()) @db.Uuid
+  currencyId        String   @unique @map("currency_id") @db.Uuid
+  quantity          Decimal  @db.Decimal(24, 4)
+  openingAvgCostMru Decimal  @map("opening_avg_cost_mru") @db.Decimal(24, 8)
+  effectiveDate     DateTime @map("effective_date") @db.Date
+  createdByUserId   String   @map("created_by_user_id") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
 
@@ -396,18 +406,18 @@ model OpeningBalance {
 }
 
 model Receivable {
-  id                 String            @id @default(uuid()) @db.Uuid
-  contactId          String            @map("contact_id") @db.Uuid
-  currencyId         String            @map("currency_id") @db.Uuid
-  originalAmount     Decimal           @map("original_amount") @db.Decimal(24, 4)
-  outstandingAmount  Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
-  origin             DebtOrigin
-  sourceType         String?           @map("source_type")
-  sourceId           String?           @map("source_id") @db.Uuid
-  status             DebtStatus        @default(OPEN)
-  paymentStatus      DebtPaymentStatus @default(UNPAID) @map("payment_status")
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                String            @id @default(uuid()) @db.Uuid
+  contactId         String            @map("contact_id") @db.Uuid
+  currencyId        String            @map("currency_id") @db.Uuid
+  originalAmount    Decimal           @map("original_amount") @db.Decimal(24, 4)
+  outstandingAmount Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
+  origin            DebtOrigin
+  sourceType        String?           @map("source_type")
+  sourceId          String?           @map("source_id") @db.Uuid
+  status            DebtStatus        @default(OPEN)
+  paymentStatus     DebtPaymentStatus @default(UNPAID) @map("payment_status")
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   contact  Contact  @relation(fields: [contactId], references: [id], onDelete: Restrict)
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
@@ -418,18 +428,18 @@ model Receivable {
 }
 
 model Payable {
-  id                 String            @id @default(uuid()) @db.Uuid
-  contactId          String            @map("contact_id") @db.Uuid
-  currencyId         String            @map("currency_id") @db.Uuid
-  originalAmount     Decimal           @map("original_amount") @db.Decimal(24, 4)
-  outstandingAmount  Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
-  origin             DebtOrigin
-  sourceType         String?           @map("source_type")
-  sourceId           String?           @map("source_id") @db.Uuid
-  status             DebtStatus        @default(OPEN)
-  paymentStatus      DebtPaymentStatus @default(UNPAID) @map("payment_status")
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id                String            @id @default(uuid()) @db.Uuid
+  contactId         String            @map("contact_id") @db.Uuid
+  currencyId        String            @map("currency_id") @db.Uuid
+  originalAmount    Decimal           @map("original_amount") @db.Decimal(24, 4)
+  outstandingAmount Decimal           @map("outstanding_amount") @db.Decimal(24, 4)
+  origin            DebtOrigin
+  sourceType        String?           @map("source_type")
+  sourceId          String?           @map("source_id") @db.Uuid
+  status            DebtStatus        @default(OPEN)
+  paymentStatus     DebtPaymentStatus @default(UNPAID) @map("payment_status")
+  createdAt         DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   contact  Contact  @relation(fields: [contactId], references: [id], onDelete: Restrict)
   currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
@@ -439,17 +449,128 @@ model Payable {
   @@map("payable")
 }
 
+// ---------------------------------------------------------------------------
+// P4-01 · trades (D-005, D-013, D-019, D-023 item 4, D-024)
+// ---------------------------------------------------------------------------
+//
+// Purchase = bureau receives `delivered_currency`, pays `payment_currency`.
+// Sale     = bureau gives  `delivered_currency`, receives `payment_currency`.
+//
+// Exactly one leg is the base currency (D-019). Enforced by trigger
+// `check_trade_has_base_leg` on both tables. The trade services build
+// Movement[] arrays with the correct base/non-base direction and hand
+// them to LedgerService.apply (architecture §3.3) — no direct writes
+// to the ledger/balance/cost tables from here.
+//
+// `outstanding_amount` mirrors `payment_total − immediate_payment`
+// exactly and is immutable in v2. Once the payment lifecycle lands in
+// P5, an allocation drops it and flips `payment_status`.
+//
+// `idempotency_key` + `idempotency_body_hash` live on the trade row
+// per schema-review §4.1 (partial unique on `(created_by_user_id,
+// idempotency_key)`). No TTL per D-023 item 5.
+
+enum TradeStatus {
+  CONFIRMED
+  CANCELLED
+  REVERSED
+
+  @@map("trade_status")
+}
+
+enum TradePaymentStatus {
+  UNPAID
+  PARTIALLY_PAID
+  PAID
+
+  @@map("trade_payment_status")
+}
+
+model Purchase {
+  id                  String             @id @default(uuid()) @db.Uuid
+  contactId           String?            @map("contact_id") @db.Uuid
+  deliveredCurrencyId String             @map("delivered_currency_id") @db.Uuid
+  deliveredAmount     Decimal            @map("delivered_amount") @db.Decimal(24, 4)
+  paymentCurrencyId   String             @map("payment_currency_id") @db.Uuid
+  paymentTotal        Decimal            @map("payment_total") @db.Decimal(24, 4)
+  rate                Decimal            @db.Decimal(24, 8)
+  immediatePayment    Decimal            @default(0) @map("immediate_payment") @db.Decimal(24, 4)
+  outstandingAmount   Decimal            @map("outstanding_amount") @db.Decimal(24, 4)
+  status              TradeStatus        @default(CONFIRMED)
+  paymentStatus       TradePaymentStatus @map("payment_status")
+  paymentMethodId     String?            @map("payment_method_id") @db.Uuid
+  paymentMethodNote   String?            @map("payment_method_note")
+  reference           String?
+  notes               String?
+  transactionDate     DateTime           @map("transaction_date") @db.Timestamptz(6)
+  idempotencyKey      String?            @map("idempotency_key")
+  idempotencyBodyHash String?            @map("idempotency_body_hash")
+  createdByUserId     String             @map("created_by_user_id") @db.Uuid
+  createdAt           DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  contact           Contact?       @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  deliveredCurrency Currency       @relation("purchase_delivered_currency", fields: [deliveredCurrencyId], references: [id], onDelete: Restrict)
+  paymentCurrency   Currency       @relation("purchase_payment_currency", fields: [paymentCurrencyId], references: [id], onDelete: Restrict)
+  paymentMethod     PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy         User           @relation("purchase_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([transactionDate(sort: Desc), status], map: "purchase_transaction_status_idx")
+  @@index([contactId, transactionDate(sort: Desc)], map: "purchase_contact_transaction_idx")
+  @@map("purchase")
+}
+
+model Sale {
+  id                    String             @id @default(uuid()) @db.Uuid
+  contactId             String?            @map("contact_id") @db.Uuid
+  deliveredCurrencyId   String             @map("delivered_currency_id") @db.Uuid
+  deliveredAmount       Decimal            @map("delivered_amount") @db.Decimal(24, 4)
+  paymentCurrencyId     String             @map("payment_currency_id") @db.Uuid
+  paymentTotal          Decimal            @map("payment_total") @db.Decimal(24, 4)
+  rate                  Decimal            @db.Decimal(24, 8)
+  immediatePayment      Decimal            @default(0) @map("immediate_payment") @db.Decimal(24, 4)
+  outstandingAmount     Decimal            @map("outstanding_amount") @db.Decimal(24, 4)
+  status                TradeStatus        @default(CONFIRMED)
+  paymentStatus         TradePaymentStatus @map("payment_status")
+  paymentMethodId       String?            @map("payment_method_id") @db.Uuid
+  paymentMethodNote     String?            @map("payment_method_note")
+  reference             String?
+  notes                 String?
+  transactionDate       DateTime           @map("transaction_date") @db.Timestamptz(6)
+  idempotencyKey        String?            @map("idempotency_key")
+  idempotencyBodyHash   String?            @map("idempotency_body_hash")
+  createdByUserId       String             @map("created_by_user_id") @db.Uuid
+  createdAt             DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  // Snapshot cost + profit at confirmation. NEVER updated (architecture §3.6);
+  // reversal recomputes and restates via CostEngine.replay (D-021).
+  costOfCurrencySoldMru Decimal            @map("cost_of_currency_sold_mru") @db.Decimal(24, 4)
+  grossProfitMru        Decimal            @map("gross_profit_mru") @db.Decimal(24, 4)
+  recipientName         String?            @map("recipient_name")
+  destination           String?
+
+  contact           Contact?       @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  deliveredCurrency Currency       @relation("sale_delivered_currency", fields: [deliveredCurrencyId], references: [id], onDelete: Restrict)
+  paymentCurrency   Currency       @relation("sale_payment_currency", fields: [paymentCurrencyId], references: [id], onDelete: Restrict)
+  paymentMethod     PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy         User           @relation("sale_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([transactionDate(sort: Desc), status], map: "sale_transaction_status_idx")
+  @@index([contactId, transactionDate(sort: Desc)], map: "sale_contact_transaction_idx")
+  @@map("sale")
+}
+
 model AuditLog {
-  id           String   @id @default(uuid()) @db.Uuid
-  actorUserId  String?  @map("actor_user_id") @db.Uuid
-  action       String
-  entityType   String?  @map("entity_type")
-  entityId     String?  @map("entity_id")
-  before       Json?
-  after        Json?
-  reason       String?
-  ip           String?  @db.Inet
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  id          String   @id @default(uuid()) @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  action      String
+  entityType  String?  @map("entity_type")
+  entityId    String?  @map("entity_id")
+  before      Json?
+  after       Json?
+  reason      String?
+  ip          String?  @db.Inet
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   actor User? @relation("audit_actor", fields: [actorUserId], references: [id], onDelete: SetNull)
 

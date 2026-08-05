@@ -3,9 +3,9 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { AppShell } from './AppShell';
 
-// Smoke test: the shell renders its bottom nav (5 items in Phase 2) and
-// marks the current route as active. This catches nav-list drift when
-// a phase adds an item and forgets the label parity check.
+// Smoke test: the shell renders its bottom nav (5 items, updated in Phase 4
+// to replace currencies+users with purchases+sales) and marks the current
+// route as active.
 
 function renderAt(path: string) {
   return render(
@@ -13,9 +13,9 @@ function renderAt(path: string) {
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/" element={<div>dashboard-content</div>} />
+          <Route path="/purchases" element={<div>purchases-content</div>} />
+          <Route path="/sales" element={<div>sales-content</div>} />
           <Route path="/contacts" element={<div>contacts-content</div>} />
-          <Route path="/currencies" element={<div>currencies-content</div>} />
-          <Route path="/users" element={<div>users-content</div>} />
           <Route path="/settings/*" element={<div>settings-content</div>} />
         </Route>
       </Routes>
@@ -24,12 +24,12 @@ function renderAt(path: string) {
 }
 
 describe('AppShell', () => {
-  it('renders every Phase-2 nav item', () => {
+  it('renders every Phase-4 nav item', () => {
     renderAt('/');
     expect(screen.getByRole('link', { name: /Tableau/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Achats/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Ventes/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Contacts/ })).toBeTruthy();
-    expect(screen.getByRole('link', { name: /Devises/ })).toBeTruthy();
-    expect(screen.getByRole('link', { name: /Utilisateurs/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Réglages/ })).toBeTruthy();
   });
 

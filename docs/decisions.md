@@ -463,3 +463,45 @@ balance lock); tz-freeze at go-live (user-hostile); FK-fan on
 there even if not on `allocation`); rate/total tolerance window (encourages
 sloppy clients); TTL'd idempotency keys (surprise vector); scheduled
 `rate_snapshot` prune (premature).
+
+---
+
+## D-024 · 2026-08-04 · Accepted
+**Rate/total strict equality means the server refuses inputs whose product isn't NUMERIC-exact; a service-layer `RateTotalMismatchError` translates the check for the operator.**
+
+D-023 item 4 landed as `CHECK (payment_total = delivered_amount * rate)`
+on `purchase` and `sale`. Postgres NUMERIC is arbitrary-precision, so
+the CHECK holds iff the two sides agree exactly — no per-currency
+rounding tolerance. This diverges from D-009 (rounding half-up to the
+payment currency's `decimal_places`) in exactly one way: the server
+does *not* rescue an operator who submits `rate` and `payment_total`
+whose product carries residual precision past the currency's dp. The
+operator has to pick numbers that multiply out cleanly.
+
+Two things make this workable:
+
+1. **The frontend is our only API client.** `PurchaseForm` and
+   `SaleForm` (P4-09/P4-10) let the operator type any one of the three
+   figures (delivered, rate, total) and derive the other two; the
+   derivation rounds so the product is exact. An operator typing all
+   three explicitly is either lucky (they agree) or wrong (they don't
+   — and we tell them at 422 time, not with a 500).
+
+2. **The service catches the mismatch before the CHECK fires.**
+   `RateTotalMismatchError` (`error.rate_total_mismatch`, 422) carries
+   structured data `{ delivered, rate, providedTotal, expectedTotal }`.
+   The DB CHECK is the last line of defence; the service is the friendly
+   one. A raw `check_violation` from Postgres never reaches the wire.
+
+Cost accepted: the operator can no longer say "I'll take a fill at
+whatever rate and let the total round". Given the client's real
+business (USD/MRU at hand-written rates), this rules out zero known
+use cases. If a future rate feed proposes fractional rates that don't
+multiply out cleanly, the frontend derivation still holds — the feed
+value gets rounded when it's used as one input, and the operator sees
+the derived pair.
+
+Rejected: per-currency-`decimal_places` trigger with `round(delivered ×
+rate, dp)`. Superseded by D-023 item 4 in one direction — kept out
+here so the two decisions read as one story instead of two competing
+ones.

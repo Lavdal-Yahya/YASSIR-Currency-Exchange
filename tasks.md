@@ -172,15 +172,15 @@ basis, and profit — including cross-pair trades with no MRU leg.
 > UI. PR-B: forms, lists, detail screens.
 
 ### PR-A — core
-- [ ] P4-01 Migration: `purchase`, `sale`, `receivable`, `payable`, with split lifecycle/payment status enums (D-013)
-- [ ] P4-02 `PurchaseService.create`: one transaction covering the purchase row, acquisition of the received currency, disposal of the immediate payment, payable for the outstanding, audit entry
-- [ ] P4-03 `SaleService.create`: the mirror, plus `cost_of_currency_sold` and `gross_profit` snapshotted at confirmation
-- [ ] P4-04 Base-leg rule (D-019): reject a trade with zero or two base-currency legs; server derives rate from total or total from rate, rounding per D-009
-- [ ] P4-04b Payment method captured on the immediate-payment leg of both purchases and sales; note required when the method demands one (D-020)
-- [ ] P4-05 Validation set per spec §11.5 / §12.4, with sufficiency checked against the cash actually moving (D-014)
-- [ ] P4-06 Idempotency keys on trade creation; repeat key inside the window returns `DuplicateSubmissionError`
-- [ ] P4-07 Invariant INV-7 added; the §44 acceptance scenario wired as a fixed CI fixture
-- [ ] P4-08 Tests: fully paid purchase; partially paid purchase; unpaid purchase; the three sale equivalents; **a trade with no base-currency leg is rejected**; weighted average across two purchases at different rates; insufficient balance; inactive currency; rate/total consistency; rollback on a mid-transaction failure
+- [x] P4-01 Migration: `purchase`, `sale`, `receivable`, `payable`, with split lifecycle/payment status enums (D-013)
+- [x] P4-02 `PurchaseService.create`: one transaction covering the purchase row, acquisition of the received currency, disposal of the immediate payment, payable for the outstanding, audit entry
+- [x] P4-03 `SaleService.create`: the mirror, plus `cost_of_currency_sold` and `gross_profit` snapshotted at confirmation
+- [x] P4-04 Base-leg rule (D-019): reject a trade with zero or two base-currency legs; server derives rate from total or total from rate, rounding per D-009
+- [x] P4-04b Payment method captured on the immediate-payment leg of both purchases and sales; note required when the method demands one (D-020)
+- [x] P4-05 Validation set per spec §11.5 / §12.4, with sufficiency checked against the cash actually moving (D-014)
+- [x] P4-06 Idempotency keys on trade creation; repeat key inside the window returns `DuplicateSubmissionError`
+- [x] P4-07 Invariant INV-7 added; the §44 acceptance scenario wired as a fixed CI fixture
+- [x] P4-08 Tests: fully paid purchase; partially paid purchase; unpaid purchase; the three sale equivalents; **a trade with no base-currency leg is rejected**; weighted average across two purchases at different rates; insufficient balance; inactive currency; rate/total consistency; rollback on a mid-transaction failure
 
 ### PR-B — interface
 - [ ] P4-09 Purchase form with unmistakable rate direction ("1 USD = 39.00 MRU"), live total preview, and a reversed-rate sanity warning
