@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuditModule } from '../audit/audit.module.js';
 import { LedgerModule } from '../ledger/ledger.module.js';
+import { ContactTradesController } from './contact-trades.controller.js';
 import { PurchaseService } from './purchase.service.js';
 import { PurchasesController } from './purchases.controller.js';
 import { SaleService } from './sale.service.js';
 import { SalesController } from './sales.controller.js';
+import { TradeReadService } from './trade-read.service.js';
 
 // Trades module (P4). Depends on LedgerModule (every trade flows
 // through LedgerService.apply — the chokepoint, architecture §3.3) and
@@ -16,7 +18,7 @@ import { SalesController } from './sales.controller.js';
 
 @Module({
   imports: [AuditModule, LedgerModule],
-  controllers: [PurchasesController, SalesController],
-  providers: [PurchaseService, SaleService],
+  controllers: [PurchasesController, SalesController, ContactTradesController],
+  providers: [PurchaseService, SaleService, TradeReadService],
 })
 export class TradesModule {}

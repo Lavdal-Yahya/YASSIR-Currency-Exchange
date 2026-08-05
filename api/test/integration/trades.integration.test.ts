@@ -1013,6 +1013,113 @@ describe('POST /sales — Case B′ (delivered=MRU, payment=non-base)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 13. D-018 — profit fields stripped for employees (POST + GET)
+// ---------------------------------------------------------------------------
+
+describe('D-018 · profit:view stripping on sale responses', () => {
+  async function seedWithUsd(seed: Seed): Promise<void> {
+    await request(app.getHttpServer())
+      .post('/api/v1/openings/currency')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        currencyId: seed.usdId,
+        quantity: '10000',
+        openingAvgCostMru: '39.00',
+        effectiveDate: '2026-08-01',
+      })
+      .expect(201);
+  }
+
+  const saleBody = (seed: Seed) => ({
+    contactId: seed.contactId,
+    deliveredCurrencyId: seed.usdId,
+    deliveredAmount: '100',
+    paymentCurrencyId: seed.mruId,
+    rate: '41.00',
+    immediatePayment: '4100',
+    paymentMethodId: seed.cashMethodId,
+  });
+
+  it('employee POST /sales → no grossProfitMru, no costOfCurrencySoldMru', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    await seedWithUsd(seed);
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/sales')
+      .set('Cookie', seed.employeeCookie)
+      .send(saleBody(seed))
+      .expect(201);
+
+    expect(res.body).not.toHaveProperty('grossProfitMru');
+    expect(res.body).not.toHaveProperty('costOfCurrencySoldMru');
+    // The rest of the sale row must still be present.
+    expect(res.body.paymentStatus).toBe('PAID');
+    expect(res.body.deliveredAmount).toBe('100');
+  });
+
+  it('employee GET /sales/:id → no profit fields', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    await seedWithUsd(seed);
+
+    const post = await request(app.getHttpServer())
+      .post('/api/v1/sales')
+      .set('Cookie', seed.ownerCookie)
+      .send(saleBody(seed))
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get(`/api/v1/sales/${post.body.id}`)
+      .set('Cookie', seed.employeeCookie)
+      .expect(200);
+
+    expect(res.body).not.toHaveProperty('grossProfitMru');
+    expect(res.body).not.toHaveProperty('costOfCurrencySoldMru');
+    expect(res.body.id).toBe(post.body.id);
+  });
+
+  it('owner POST /sales → profit fields present (sanity)', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    await seedWithUsd(seed);
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/sales')
+      .set('Cookie', seed.ownerCookie)
+      .send(saleBody(seed))
+      .expect(201);
+
+    expect(res.body).toHaveProperty('grossProfitMru');
+    expect(res.body).toHaveProperty('costOfCurrencySoldMru');
+    expect(res.body.grossProfitMru).toBe('200');
+    expect(res.body.costOfCurrencySoldMru).toBe('3900');
+  });
+
+  it('owner GET /sales/:id → profit fields present (sanity)', async () => {
+    const phones = nextPhonePair();
+    const seed = await fullSeed(phones);
+    await seedWithUsd(seed);
+
+    const post = await request(app.getHttpServer())
+      .post('/api/v1/sales')
+      .set('Cookie', seed.ownerCookie)
+      .send(saleBody(seed))
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .get(`/api/v1/sales/${post.body.id}`)
+      .set('Cookie', seed.ownerCookie)
+      .expect(200);
+
+    expect(res.body).toHaveProperty('grossProfitMru');
+    expect(res.body).toHaveProperty('costOfCurrencySoldMru');
+    expect(res.body.grossProfitMru).toBe('200');
+    expect(res.body.costOfCurrencySoldMru).toBe('3900');
+  });
+});
+
+// ---------------------------------------------------------------------------
 // 12. INV-7 fires when it should — deliberately break it in a scratch DB
 // ---------------------------------------------------------------------------
 

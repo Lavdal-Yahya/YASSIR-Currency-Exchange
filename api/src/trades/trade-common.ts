@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { Currency, TradePaymentStatus } from '@prisma/client';
+import type { Currency, Sale, TradePaymentStatus } from '@prisma/client';
 import { Decimal, roundTo } from '../common/money.js';
 import type { Movement } from '../ledger/ledger.types.js';
 import { NoBaseCurrencyLegError, RateTotalMismatchError } from './errors.js';
@@ -305,6 +305,26 @@ export function buildTradeMovements(ctx: TradeContext): Movement[] {
 export function hashRequestBody(body: unknown): string {
   const canonical = JSON.stringify(sortKeys(body));
   return createHash('sha256').update(canonical).digest('hex');
+}
+
+// ---------------------------------------------------------------------------
+// D-018 profit-view stripping (applied in every controller response)
+// ---------------------------------------------------------------------------
+
+export type SalePublicRow = Omit<Sale, 'costOfCurrencySoldMru' | 'grossProfitMru'>;
+export type SaleResponse = Sale | SalePublicRow;
+
+/**
+ * Strip the two profit fields from a sale row when the caller lacks
+ * `profit:view`. Applied to ALL sale responses — POST and GET alike —
+ * so that the permission is enforced at the serializer, not just the
+ * route guard (D-018).
+ */
+export function mapSaleResponse(sale: Sale, hasProfitView: boolean): SaleResponse {
+  if (hasProfitView) return sale;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { costOfCurrencySoldMru, grossProfitMru, ...safe } = sale;
+  return safe;
 }
 
 function sortKeys(value: unknown): unknown {
