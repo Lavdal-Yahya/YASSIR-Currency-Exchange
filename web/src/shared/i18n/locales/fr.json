@@ -9,6 +9,8 @@
   },
   "nav": {
     "dashboard": "Tableau",
+    "purchases": "Achats",
+    "sales": "Ventes",
     "contacts": "Contacts",
     "currencies": "Devises",
     "users": "Utilisateurs",
@@ -170,6 +172,7 @@
       "payables": "À payer",
       "trades": "Échanges",
       "phase4_placeholder": "Disponible à partir de la phase 4.",
+      "trades_empty": "Aucun échange pour ce contact.",
       "phase5_placeholder": "Disponible à partir de la phase 5.",
       "created_at": "Créé le",
       "not_found": "Contact introuvable."
@@ -237,6 +240,94 @@
       "title": "Matrice des permissions",
       "role": "Rôle",
       "readonly_note": "Lecture seule — les permissions sont éditées via les rôles utilisateurs."
+    }
+  },
+  "purchases": {
+    "title": "Achats",
+    "new": "Nouvel achat",
+    "empty": "Aucun achat enregistré.",
+    "from_currency": "Devise reçue",
+    "to_currency": "Devise réglée",
+    "delivered_amount": "Montant reçu",
+    "payment_total": "Total réglé",
+    "rate_label": "Taux",
+    "rate_direction": "1 {{from}} = {{rate}} {{to}}",
+    "rate_placeholder": "ex. 39.00",
+    "total_placeholder": "Total",
+    "immediate_payment": "Paiement immédiat",
+    "outstanding": "Solde dû",
+    "payment_method": "Moyen de paiement",
+    "method_note": "Note de paiement",
+    "contact_optional": "Contact (optionnel)",
+    "reference": "Référence",
+    "notes": "Notes",
+    "date": "Date",
+    "preview_receive": "Vous recevez",
+    "preview_pay": "Vous réglez",
+    "rate_warning": "Taux inhabituel : on attendait 1 {{from}} ≈ {{last}} {{to}}. Continuer ?",
+    "rate_warning_dismiss": "Ignorer",
+    "offline_submit": "Hors ligne — soumission désactivée",
+    "contact_required_for_partial": "Un contact est requis pour un achat partiellement réglé.",
+    "status": {
+      "CONFIRMED": "Confirmé",
+      "CANCELLED": "Annulé",
+      "REVERSED": "Inversé"
+    },
+    "payment_status": {
+      "UNPAID": "Non réglé",
+      "PARTIALLY_PAID": "Partiellement réglé",
+      "PAID": "Réglé"
+    },
+    "figures": {
+      "value": "Valeur totale",
+      "cash": "Encaissé",
+      "outstanding": "Solde dû"
+    }
+  },
+  "sales": {
+    "title": "Ventes",
+    "new": "Nouvelle vente",
+    "empty": "Aucune vente enregistrée.",
+    "from_currency": "Devise donnée",
+    "to_currency": "Devise reçue",
+    "delivered_amount": "Montant donné",
+    "payment_total": "Total reçu",
+    "rate_label": "Taux",
+    "rate_direction": "1 {{from}} = {{rate}} {{to}}",
+    "rate_placeholder": "ex. 39.00",
+    "total_placeholder": "Total",
+    "immediate_payment": "Paiement immédiat",
+    "outstanding": "Solde à recevoir",
+    "payment_method": "Moyen de paiement",
+    "method_note": "Note de paiement",
+    "contact_optional": "Contact (optionnel)",
+    "recipient_name": "Nom du bénéficiaire",
+    "destination": "Destination",
+    "reference": "Référence",
+    "notes": "Notes",
+    "date": "Date",
+    "preview_give": "Vous donnez",
+    "preview_receive": "Vous recevez",
+    "rate_warning": "Taux inhabituel : on attendait 1 {{from}} ≈ {{last}} {{to}}. Continuer ?",
+    "rate_warning_dismiss": "Ignorer",
+    "offline_submit": "Hors ligne — soumission désactivée",
+    "contact_required_for_partial": "Un contact est requis pour une vente partiellement réglée.",
+    "cost_of_sold": "Coût de la devise",
+    "gross_profit": "Profit brut",
+    "status": {
+      "CONFIRMED": "Confirmé",
+      "CANCELLED": "Annulé",
+      "REVERSED": "Inversé"
+    },
+    "payment_status": {
+      "UNPAID": "Non réglé",
+      "PARTIALLY_PAID": "Partiellement réglé",
+      "PAID": "Réglé"
+    },
+    "figures": {
+      "value": "Valeur totale",
+      "cash": "Encaissé",
+      "outstanding": "Solde à recevoir"
     }
   },
   "balances": {

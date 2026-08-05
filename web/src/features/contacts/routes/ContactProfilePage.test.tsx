@@ -20,9 +20,17 @@ const sampleContact = {
   updatedAt: '2026-08-02T10:00:00Z',
 };
 
-// Stub fetch — the profile page reads /contacts/:id via TanStack Query.
+const emptyTrades = { data: [], total: 0 };
+
+// Stub fetch — contact profile reads /contacts/:id and /contacts/:id/trades.
 beforeEach(() => {
-  const fetchMock = vi.fn(async () => {
+  const fetchMock = vi.fn(async (url: string) => {
+    if (String(url).includes('/trades')) {
+      return new Response(JSON.stringify(emptyTrades), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     return new Response(JSON.stringify(sampleContact), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -58,11 +66,12 @@ describe('ContactProfilePage tabs', () => {
     expect(screen.queryByRole('table')).toBeNull();
   });
 
-  it('trades tab renders the phase 4 placeholder card', async () => {
+  it('trades tab renders the empty-state message (no trades for this contact)', async () => {
     renderAt();
     await screen.findByRole('heading', { name: /Ahmed/ });
     fireEvent.click(screen.getByRole('tab', { name: /Échanges/ }));
-    expect(screen.getByText(/à partir de la phase 4/i)).toBeTruthy();
+    // Wait for the async trades fetch to complete and show empty state.
+    expect(await screen.findByText(/Aucun échange/i)).toBeTruthy();
     expect(screen.queryByRole('table')).toBeNull();
   });
 });

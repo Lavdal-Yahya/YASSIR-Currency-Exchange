@@ -9,6 +9,8 @@
   },
   "nav": {
     "dashboard": "الرئيسية",
+    "purchases": "مشتريات",
+    "sales": "مبيعات",
     "contacts": "جهات الاتصال",
     "currencies": "العملات",
     "users": "المستخدمون",
@@ -170,6 +172,7 @@
       "payables": "المدفوعات",
       "trades": "الصفقات",
       "phase4_placeholder": "متاح ابتداءً من المرحلة 4.",
+      "trades_empty": "لا توجد صفقات لهذا الاتصال.",
       "phase5_placeholder": "متاح ابتداءً من المرحلة 5.",
       "created_at": "أُنشئ في",
       "not_found": "جهة الاتصال غير موجودة."
@@ -237,6 +240,94 @@
       "title": "مصفوفة الصلاحيات",
       "role": "الدور",
       "readonly_note": "للقراءة فقط — الصلاحيات تُعدل عبر أدوار المستخدمين."
+    }
+  },
+  "purchases": {
+    "title": "المشتريات",
+    "new": "شراء جديد",
+    "empty": "لا توجد مشتريات مسجّلة.",
+    "from_currency": "العملة المستلمة",
+    "to_currency": "العملة المدفوعة",
+    "delivered_amount": "المبلغ المستلم",
+    "payment_total": "إجمالي الدفع",
+    "rate_label": "السعر",
+    "rate_direction": "1 {{from}} = {{rate}} {{to}}",
+    "rate_placeholder": "مثال: 39.00",
+    "total_placeholder": "الإجمالي",
+    "immediate_payment": "الدفع الفوري",
+    "outstanding": "المبلغ المتبقي",
+    "payment_method": "طريقة الدفع",
+    "method_note": "ملاحظة الدفع",
+    "contact_optional": "جهة الاتصال (اختياري)",
+    "reference": "المرجع",
+    "notes": "ملاحظات",
+    "date": "التاريخ",
+    "preview_receive": "نستلم",
+    "preview_pay": "ندفع",
+    "rate_warning": "سعر غير معتاد: كان متوقعًا 1 {{from}} ≈ {{last}} {{to}}. هل تريد المتابعة؟",
+    "rate_warning_dismiss": "تجاهل",
+    "offline_submit": "غير متصل — لا يمكن الإرسال",
+    "contact_required_for_partial": "جهة الاتصال مطلوبة لشراء مدفوع جزئيًا.",
+    "status": {
+      "CONFIRMED": "مؤكد",
+      "CANCELLED": "ملغي",
+      "REVERSED": "معكوس"
+    },
+    "payment_status": {
+      "UNPAID": "غير مدفوع",
+      "PARTIALLY_PAID": "مدفوع جزئيًا",
+      "PAID": "مدفوع"
+    },
+    "figures": {
+      "value": "القيمة الإجمالية",
+      "cash": "النقد المدفوع",
+      "outstanding": "المبلغ المتبقي"
+    }
+  },
+  "sales": {
+    "title": "المبيعات",
+    "new": "بيع جديد",
+    "empty": "لا توجد مبيعات مسجّلة.",
+    "from_currency": "العملة المُسلَّمة",
+    "to_currency": "العملة المقبوضة",
+    "delivered_amount": "المبلغ المُسلَّم",
+    "payment_total": "إجمالي المقبوض",
+    "rate_label": "السعر",
+    "rate_direction": "1 {{from}} = {{rate}} {{to}}",
+    "rate_placeholder": "مثال: 39.00",
+    "total_placeholder": "الإجمالي",
+    "immediate_payment": "الدفع الفوري",
+    "outstanding": "المبلغ المتبقي",
+    "payment_method": "طريقة الدفع",
+    "method_note": "ملاحظة الدفع",
+    "contact_optional": "جهة الاتصال (اختياري)",
+    "recipient_name": "اسم المستفيد",
+    "destination": "الوجهة",
+    "reference": "المرجع",
+    "notes": "ملاحظات",
+    "date": "التاريخ",
+    "preview_give": "نُسلِّم",
+    "preview_receive": "نقبض",
+    "rate_warning": "سعر غير معتاد: كان متوقعًا 1 {{from}} ≈ {{last}} {{to}}. هل تريد المتابعة؟",
+    "rate_warning_dismiss": "تجاهل",
+    "offline_submit": "غير متصل — لا يمكن الإرسال",
+    "contact_required_for_partial": "جهة الاتصال مطلوبة لبيع مدفوع جزئيًا.",
+    "cost_of_sold": "تكلفة العملة",
+    "gross_profit": "الربح الإجمالي",
+    "status": {
+      "CONFIRMED": "مؤكد",
+      "CANCELLED": "ملغي",
+      "REVERSED": "معكوس"
+    },
+    "payment_status": {
+      "UNPAID": "غير مدفوع",
+      "PARTIALLY_PAID": "مدفوع جزئيًا",
+      "PAID": "مدفوع"
+    },
+    "figures": {
+      "value": "القيمة الإجمالية",
+      "cash": "النقد المقبوض",
+      "outstanding": "المبلغ المتبقي"
     }
   },
   "balances": {
