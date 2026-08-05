@@ -119,6 +119,27 @@ a {
   color: var(--muted);
 }
 
+.coming-soon {
+  background: repeating-linear-gradient(-45deg, #ffd600, #ffd600 12px, #1a1a1a 12px, #1a1a1a 24px);
+  border-radius: var(--r-lg);
+  padding: var(--sp-12) var(--sp-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coming-soon__label {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--sp-2) var(--sp-6);
+  border-radius: var(--r-md);
+  border: 2px solid #1a1a1a;
+}
+
 .section-label {
   font-size: 11px;
   font-weight: 600;

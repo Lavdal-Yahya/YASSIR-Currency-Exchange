@@ -54,7 +54,8 @@
     "no": "Non",
     "search": "Rechercher",
     "back": "Retour",
-    "choose": "Choisir…"
+    "choose": "Choisir…",
+    "coming_soon": "Bientôt disponible"
   },
   "form": {
     "phone_invalid": "Numéro invalide. Format attendu : +222…",

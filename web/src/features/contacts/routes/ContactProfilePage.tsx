@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ComingSoon } from '../../../shared/ui/ComingSoon';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
@@ -85,12 +86,8 @@ export function ContactProfilePage() {
 
       <div role="tabpanel">
         {tab === 'overview' ? <OverviewPanel contact={c} /> : null}
-        {tab === 'receivables' ? (
-          <p className="placeholder-card">{t('contacts.profile.phase5_placeholder')}</p>
-        ) : null}
-        {tab === 'payables' ? (
-          <p className="placeholder-card">{t('contacts.profile.phase5_placeholder')}</p>
-        ) : null}
+        {tab === 'receivables' ? <ComingSoon /> : null}
+        {tab === 'payables' ? <ComingSoon /> : null}
         {tab === 'trades' ? <ContactTradesTab contactId={id} /> : null}
       </div>
 

@@ -53,16 +53,15 @@ function renderAt() {
 }
 
 describe('ContactProfilePage tabs', () => {
-  it('receivables tab renders the phase 5 placeholder card, not an empty table', async () => {
+  it('receivables tab renders the coming-soon banner, not an empty table', async () => {
     renderAt();
-    // Wait for the contact to load
     const name = await screen.findByRole('heading', { name: /Ahmed/ });
     expect(name).toBeTruthy();
 
     const receivables = screen.getByRole('tab', { name: /À recevoir/ });
     fireEvent.click(receivables);
 
-    expect(screen.getByText(/à partir de la phase 5/i)).toBeTruthy();
+    expect(screen.getByRole('status', { name: /bientôt/i })).toBeTruthy();
     expect(screen.queryByRole('table')).toBeNull();
   });
 
