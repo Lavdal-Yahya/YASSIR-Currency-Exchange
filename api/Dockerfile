@@ -25,7 +25,6 @@ ENV NODE_ENV=production
 # Copy the *production* node_modules — reinstalling with --omit=dev
 # would drop the prisma engines picked up at build time.
 COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/api/node_modules ./api/node_modules
 COPY --from=build /app/api/dist ./api/dist
 COPY --from=build /app/api/prisma ./api/prisma
 COPY --from=build /app/api/package.json ./api/package.json
