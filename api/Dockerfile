@@ -33,10 +33,17 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && r
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/api/dist ./api/dist
 COPY --from=build /app/api/prisma ./api/prisma
+# The seed script imports from ../src/common/permissions.ts, so the
+# TS sources must be present at runtime for `tsx prisma/seed.ts` to
+# resolve. Keeps the image ~a few hundred KB heavier, worth it to
+# make seed part of the normal boot.
+COPY --from=build /app/api/src ./api/src
 COPY --from=build /app/api/package.json ./api/package.json
 COPY --from=build /app/package.json ./package.json
 
 WORKDIR /app/api
 EXPOSE 3000
-# migrate deploy is idempotent; runs any pending migrations then boots.
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
+# migrate deploy + seed are both idempotent; safe to run on every boot.
+# Seed creates the bootstrap owner user, currencies, payment methods,
+# and settings row. Without it, every login returns 401.
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run seed && node dist/main.js"]
