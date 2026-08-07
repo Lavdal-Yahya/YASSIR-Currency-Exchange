@@ -5,6 +5,11 @@
 FROM node:20-slim AS deps
 WORKDIR /app
 
+# Debian slim ships without OpenSSL; Prisma's schema engine needs it
+# at build (prisma generate) and at runtime (prisma migrate deploy).
+# Without it the schema engine crashes with an empty error message.
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
+
 # Root workspace bootstrapping: copy the manifests only, so `npm ci`
 # is cached until a dep actually changes.
 COPY package.json package-lock.json ./
@@ -22,6 +27,7 @@ RUN npm --workspace api run build
 FROM node:20-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+RUN apt-get update -y && apt-get install -y --no-install-recommends openssl && rm -rf /var/lib/apt/lists/*
 # Copy the *production* node_modules — reinstalling with --omit=dev
 # would drop the prisma engines picked up at build time.
 COPY --from=build /app/node_modules ./node_modules
