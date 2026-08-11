@@ -74,3 +74,28 @@ export class NonBaseCurrencyPaymentNeedsRateError extends DomainError {
     );
   }
 }
+
+// Supplier payment directed at a contact that has isSupplier=false.
+export class ContactNotSupplierError extends DomainError {
+  readonly code = 'contact_not_supplier';
+  readonly i18nKey = 'error.contact_not_supplier';
+  readonly status = HttpStatus.UNPROCESSABLE_ENTITY;
+
+  constructor(contactId: string) {
+    super(`contact ${contactId} is not flagged as a supplier`, { id: contactId });
+  }
+}
+
+// No active payables exist for the given contact + currency.
+export class NoActivePayablesError extends DomainError {
+  readonly code = 'no_active_payables';
+  readonly i18nKey = 'error.no_active_payables';
+  readonly status = HttpStatus.UNPROCESSABLE_ENTITY;
+
+  constructor(details: { contactId: string; currencyCode: string }) {
+    super(
+      `no active payables for contact ${details.contactId} in ${details.currencyCode}`,
+      details,
+    );
+  }
+}

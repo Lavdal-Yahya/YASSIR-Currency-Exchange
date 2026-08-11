@@ -564,6 +564,178 @@ describe('POST /customer-payments — payment status transitions', () => {
 });
 
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// P5-03 · Supplier payments
+// ---------------------------------------------------------------------------
+
+// §6.6 — non-base payable settlement with EUR WAC drift produces correct
+//         realized_pnl_mru (D-017).
+//
+// Scenario hand-calculation:
+//   Step 1: Buy 200 EUR at 39.5 MRU/EUR → WAC = 39.5 MRU/EUR.
+//   Step 2: Create a purchase where bureau receives 4 000 MRU from supplier,
+//           owes 100 EUR back (rate 40 MRU/EUR in the purchase). No immediate
+//           payment → payable of 100 EUR is created.
+//   Step 3: Pay the 100 EUR payable.
+//            disposalValueMru = 100 × (4000/100) = 4000 MRU (original rate).
+//            realized_pnl    = 4000 − 100 × 39.5 = +50 MRU (FX gain).
+describe('POST /supplier-payments — non-base payable with FX gain (§6.6)', () => {
+  it('realized_pnl_mru matches hand-computed (40.0 − 39.5) × 100 = 50 MRU', async () => {
+    const phones = nextPhone();
+    const seed = await fullSeed(phones);
+
+    // Create EUR currency.
+    const eur = await prisma.currency.create({
+      data: { code: 'EUR', name: 'Euro', decimalPlaces: 2, isActive: true },
+    });
+
+    // Supplier A owes bureau MRU, bureau owes supplier EUR.
+    const supplierA = await prisma.contact.create({
+      data: { name: 'Supplier A', isCustomer: false, isSupplier: true },
+    });
+
+    // Open 200 000 MRU.
+    await openMru(seed, '200000');
+
+    // Step 1: Buy 200 EUR at 39.5 MRU/EUR (fully paid) → WAC = 39.5.
+    await request(app.getHttpServer())
+      .post('/api/v1/purchases')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        deliveredCurrencyId: eur.id,
+        deliveredAmount: '200',
+        paymentCurrencyId: seed.mruId,
+        rate: '39.5',
+        immediatePayment: '7900',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+
+    // Step 2: Bureau receives 4 000 MRU from supplier A, will pay 100 EUR back.
+    // rate = 0.025 EUR/MRU (= 1/40); immediatePayment = 0 → payable 100 EUR.
+    await request(app.getHttpServer())
+      .post('/api/v1/purchases')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: supplierA.id,
+        deliveredCurrencyId: seed.mruId,
+        deliveredAmount: '4000',
+        paymentCurrencyId: eur.id,
+        rate: '0.025',
+        immediatePayment: '0',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+
+    const payable = await prisma.payable.findFirst({
+      where: { contactId: supplierA.id, currencyId: eur.id },
+    });
+    expect(payable).not.toBeNull();
+    expect(new Decimal(payable!.originalAmount.toString()).toFixed(2)).toBe('100.00');
+
+    // Step 3: Pay the 100 EUR payable.
+    const payRes = await request(app.getHttpServer())
+      .post('/api/v1/supplier-payments')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: supplierA.id,
+        currencyId: eur.id,
+        amount: '100',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+
+    expect(payRes.body.direction).toBe('PAID_TO_SUPPLIER');
+    expect(payRes.body.status).toBe('CONFIRMED');
+
+    const paidPayable = await prisma.payable.findUniqueOrThrow({ where: { id: payable!.id } });
+    expect(new Decimal(paidPayable.outstandingAmount.toString()).toFixed(2)).toBe('0.00');
+    expect(paidPayable.paymentStatus).toBe('PAID');
+    expect(paidPayable.status).toBe('CLOSED');
+
+    // Verify realized_pnl_mru = (40.0 − 39.5) × 100 = 50 MRU.
+    const costMove = await prisma.costMovement.findFirst({
+      where: { currencyId: eur.id, kind: 'DISPOSAL' },
+    });
+    expect(costMove).not.toBeNull();
+    expect(new Decimal(costMove!.realizedPnlMru!.toString()).toFixed(4)).toBe('50.0000');
+  });
+});
+
+describe('POST /supplier-payments — error cases', () => {
+  it('returns 422 no_active_payables when contact has no payables in the currency', async () => {
+    const phones = nextPhone();
+    const seed = await fullSeed(phones);
+
+    const supplier = await prisma.contact.create({
+      data: { name: 'Supplier B', isCustomer: false, isSupplier: true },
+    });
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/supplier-payments')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: supplier.id,
+        currencyId: seed.mruId,
+        amount: '1000',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(422);
+
+    expect(res.body.code).toBe('no_active_payables');
+  });
+
+  it('returns 422 payment_exceeds_outstanding on supplier overpayment', async () => {
+    const phones = nextPhone();
+    const seed = await fullSeed(phones);
+
+    const supplier = await prisma.contact.create({
+      data: { name: 'Supplier C', isCustomer: false, isSupplier: true },
+    });
+
+    await openMru(seed, '100000');
+
+    // Create a payable of 50 000 MRU (purchase: buy USD, pay MRU).
+    await request(app.getHttpServer())
+      .post('/api/v1/purchases')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: supplier.id,
+        deliveredCurrencyId: seed.usdId,
+        deliveredAmount: '1000',
+        paymentCurrencyId: seed.mruId,
+        rate: '50',
+        immediatePayment: '0',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+
+    const res = await request(app.getHttpServer())
+      .post('/api/v1/supplier-payments')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: supplier.id,
+        currencyId: seed.mruId,
+        amount: '50000.0001',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(422);
+
+    expect(res.body.code).toBe('payment_exceeds_outstanding');
+  });
+
+  it('returns 404 for DELETE /supplier-payments/:id (no route)', async () => {
+    const phones = nextPhone();
+    const seed = await fullSeed(phones);
+
+    await request(app.getHttpServer())
+      .delete('/api/v1/supplier-payments/00000000-0000-0000-0000-000000000001')
+      .set('Cookie', seed.ownerCookie)
+      .expect(404);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Read endpoints — smoke tests
 // ---------------------------------------------------------------------------
 
