@@ -22,6 +22,8 @@ import { PurchasesListPage } from '../features/trades/routes/PurchasesListPage';
 import { SaleDetailPage } from '../features/trades/routes/SaleDetailPage';
 import { SaleFormPage } from '../features/trades/routes/SaleFormPage';
 import { SalesListPage } from '../features/trades/routes/SalesListPage';
+import { ExpenseFormPage } from '../features/expenses/routes/ExpenseFormPage';
+import { ExpensesListPage } from '../features/expenses/routes/ExpensesListPage';
 import { UserFormPage } from '../features/users/routes/UserFormPage';
 import { UsersListPage } from '../features/users/routes/UsersListPage';
 import { AppRoot } from './AppRoot';
@@ -65,6 +67,9 @@ export const routes: RouteObject[] = [
           { path: '/openings', element: <OpeningsHomePage /> },
           { path: '/openings/currency/new', element: <OpeningCurrencyFormPage /> },
           { path: '/openings/debt/new', element: <OpeningDebtFormPage /> },
+
+          { path: '/expenses', element: <ExpensesListPage /> },
+          { path: '/expenses/new', element: <ExpenseFormPage /> },
 
           { path: '/users', element: <UsersListPage /> },
           { path: '/users/new', element: <UserFormPage /> },
