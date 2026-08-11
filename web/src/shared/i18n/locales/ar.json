@@ -11,6 +11,7 @@
     "dashboard": "الرئيسية",
     "purchases": "مشتريات",
     "sales": "مبيعات",
+    "debts": "الديون",
     "contacts": "جهات الاتصال",
     "currencies": "العملات",
     "users": "المستخدمون",
@@ -183,6 +184,7 @@
       "overview": "نظرة عامة",
       "receivables": "المستحقات",
       "payables": "المدفوعات",
+      "debts": "الديون",
       "trades": "الصفقات",
       "phase4_placeholder": "متاح ابتداءً من المرحلة 4.",
       "trades_empty": "لا توجد صفقات لهذا الاتصال.",
@@ -384,5 +386,62 @@
     "contact_required": "اختر جهة.",
     "amount": "المبلغ",
     "amount_invalid": "مبلغ غير صحيح."
+  },
+  "debts": {
+    "title": "الديون",
+    "tab_receivables": "المستحقات",
+    "tab_payables": "الالتزامات",
+    "receivables_empty": "لا توجد مستحقات مفتوحة.",
+    "payables_empty": "لا توجد التزامات مفتوحة.",
+    "receivables_owed_to_us": "مستحقات لنا",
+    "payables_owed_by_us": "التزامات علينا",
+    "receive_action": "قبض",
+    "pay_action": "دفع",
+    "receive_title": "قبض تسديد",
+    "pay_title": "تسديد مورد",
+    "outstanding_label": "المبلغ المتبقي",
+    "original_amount": "المبلغ الأصلي",
+    "amount_received": "المبلغ المقبوض",
+    "amount_paid": "المبلغ المدفوع",
+    "currency_locked": "العملة مثبتة على {{code}} — يجب أن يكون التسديد بنفس عملة الدين.",
+    "payment_method": "وسيلة الدفع",
+    "method_note": "ملاحظة وسيلة الدفع",
+    "method_note_hint": "مرجع Bankily / Masrivi / Sedad، إلخ.",
+    "reference": "المرجع",
+    "notes": "ملاحظات",
+    "date": "التاريخ",
+    "offline_submit": "غير متصل — لا يمكن الإرسال",
+    "receivable_not_found": "المستحقة غير موجودة.",
+    "payable_not_found": "الالتزام غير موجود.",
+    "unnetted_title": "لا يتم مقاصة المستحقات مع الالتزامات أبداً.",
+    "unnetted_body": "قد يدين لنا الشخص بعملة ونحن نه بعملة أخرى. كل عمود يُقرأ منفصلاً — جمعهما يخفي حقيقة ما يجب على كل طرف.",
+    "total_by_currency": "المجاميع الفرعية حسب العملة",
+    "age_filter": "الأقدمية",
+    "age_all": "الكل",
+    "age_days": "{{n}} ي",
+    "age": {
+      "0-7": "0–7 ي",
+      "8-30": "8–30 ي",
+      "31-60": "31–60 ي",
+      "60+": "60 ي +"
+    },
+    "payment_status": {
+      "UNPAID": "غير مدفوع",
+      "PARTIALLY_PAID": "جزئي",
+      "PAID": "مدفوع"
+    }
+  },
+  "payments": {
+    "title": "التسديدات",
+    "empty": "لا توجد تسديدات مسجلة.",
+    "direction_all": "كل الاتجاهات",
+    "direction": {
+      "RECEIVED_FROM_CUSTOMER": "مقبوض",
+      "PAID_TO_SUPPLIER": "مدفوع"
+    },
+    "status": {
+      "CONFIRMED": "مؤكد",
+      "REVERSED": "معكوس"
+    }
   }
 }

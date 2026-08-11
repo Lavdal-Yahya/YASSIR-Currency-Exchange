@@ -11,6 +11,7 @@
     "dashboard": "Tableau",
     "purchases": "Achats",
     "sales": "Ventes",
+    "debts": "Dettes",
     "contacts": "Contacts",
     "currencies": "Devises",
     "users": "Utilisateurs",
@@ -183,6 +184,7 @@
       "overview": "Aperçu",
       "receivables": "À recevoir",
       "payables": "À payer",
+      "debts": "Dettes",
       "trades": "Échanges",
       "phase4_placeholder": "Disponible à partir de la phase 4.",
       "trades_empty": "Aucun échange pour ce contact.",
@@ -384,5 +386,62 @@
     "contact_required": "Sélectionnez un contact.",
     "amount": "Montant",
     "amount_invalid": "Montant invalide."
+  },
+  "debts": {
+    "title": "Dettes",
+    "tab_receivables": "À recevoir",
+    "tab_payables": "À payer",
+    "receivables_empty": "Aucune créance en cours.",
+    "payables_empty": "Aucune dette en cours.",
+    "receivables_owed_to_us": "Nous devant (créances)",
+    "payables_owed_by_us": "Nous devons (dettes)",
+    "receive_action": "Encaisser",
+    "pay_action": "Régler",
+    "receive_title": "Encaisser un règlement",
+    "pay_title": "Régler un fournisseur",
+    "outstanding_label": "Solde dû",
+    "original_amount": "Montant initial",
+    "amount_received": "Montant encaissé",
+    "amount_paid": "Montant payé",
+    "currency_locked": "Devise verrouillée sur {{code}} — le règlement doit être dans la même devise que la dette.",
+    "payment_method": "Moyen de paiement",
+    "method_note": "Note du moyen de paiement",
+    "method_note_hint": "Référence Bankily / Masrivi / Sedad, etc.",
+    "reference": "Référence",
+    "notes": "Notes",
+    "date": "Date",
+    "offline_submit": "Hors ligne — soumission désactivée",
+    "receivable_not_found": "Créance introuvable.",
+    "payable_not_found": "Dette introuvable.",
+    "unnetted_title": "Créances et dettes ne sont jamais compensées.",
+    "unnetted_body": "Un contact peut nous devoir dans une devise et nous devoir dans une autre. Chaque colonne se lit séparément — additionner les deux masquerait ce que chacun doit.",
+    "total_by_currency": "Sous-totaux par devise",
+    "age_filter": "Ancienneté",
+    "age_all": "Toutes",
+    "age_days": "{{n}} j",
+    "age": {
+      "0-7": "0–7 j",
+      "8-30": "8–30 j",
+      "31-60": "31–60 j",
+      "60+": "60 j +"
+    },
+    "payment_status": {
+      "UNPAID": "Non réglé",
+      "PARTIALLY_PAID": "Partiel",
+      "PAID": "Réglé"
+    }
+  },
+  "payments": {
+    "title": "Règlements",
+    "empty": "Aucun règlement enregistré.",
+    "direction_all": "Tous les sens",
+    "direction": {
+      "RECEIVED_FROM_CUSTOMER": "Encaissé",
+      "PAID_TO_SUPPLIER": "Payé"
+    },
+    "status": {
+      "CONFIRMED": "Confirmé",
+      "REVERSED": "Inversé"
+    }
   }
 }
