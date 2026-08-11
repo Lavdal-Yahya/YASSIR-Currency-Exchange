@@ -55,7 +55,19 @@
     "search": "Rechercher",
     "back": "Retour",
     "choose": "Choisir…",
-    "coming_soon": "Bientôt disponible"
+    "coming_soon": "Bientôt disponible",
+    "reset_filters": "Réinitialiser",
+    "prev_page": "Précédent",
+    "next_page": "Suivant",
+    "page_of": "Page {{n}} / {{total}}",
+    "filter": {
+      "all_statuses": "Tous les statuts",
+      "all_payment_statuses": "Tous les règlements",
+      "all_contacts": "Tous les contacts",
+      "all_currencies": "Toutes les devises",
+      "date_from": "Du",
+      "date_to": "Au"
+    }
   },
   "form": {
     "phone_invalid": "Numéro invalide. Format attendu : +222…",

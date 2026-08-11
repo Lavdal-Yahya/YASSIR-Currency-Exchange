@@ -323,7 +323,8 @@ a {
   min-inline-size: 200px;
 }
 
-.toolbar select {
+.toolbar select,
+.toolbar input[type='date'] {
   font: inherit;
   padding-inline: var(--sp-2);
   padding-block: 8px;
@@ -331,6 +332,19 @@ a {
   border-radius: var(--r-md);
   background: white;
   min-block-size: 40px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-block-start: var(--sp-4);
+}
+
+.pagination__info {
+  font-size: 0.875rem;
+  color: var(--ink-muted);
 }
 
 /* Card list — mobile-first replacement for a data table */

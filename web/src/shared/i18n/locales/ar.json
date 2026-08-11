@@ -55,7 +55,19 @@
     "search": "بحث",
     "back": "رجوع",
     "choose": "اختر…",
-    "coming_soon": "قريباً"
+    "coming_soon": "قريباً",
+    "reset_filters": "إعادة تعيين",
+    "prev_page": "السابق",
+    "next_page": "التالي",
+    "page_of": "صفحة {{n}} / {{total}}",
+    "filter": {
+      "all_statuses": "جميع الحالات",
+      "all_payment_statuses": "جميع حالات الدفع",
+      "all_contacts": "جميع جهات الاتصال",
+      "all_currencies": "جميع العملات",
+      "date_from": "من",
+      "date_to": "إلى"
+    }
   },
   "form": {
     "phone_invalid": "رقم غير صالح. التنسيق المتوقع: +222…",

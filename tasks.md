@@ -183,12 +183,12 @@ basis, and profit — including cross-pair trades with no MRU leg.
 - [x] P4-08 Tests: fully paid purchase; partially paid purchase; unpaid purchase; the three sale equivalents; **a trade with no base-currency leg is rejected**; weighted average across two purchases at different rates; insufficient balance; inactive currency; rate/total consistency; rollback on a mid-transaction failure
 
 ### PR-B — interface
-- [ ] P4-09 Purchase form with unmistakable rate direction ("1 USD = 39.00 MRU"), live total preview, and a reversed-rate sanity warning
-- [ ] P4-10 Sale form, same treatment, plus recipient and destination fields
-- [ ] P4-11 Purchase and sale lists with the spec §24 filter set, server-side pagination
-- [ ] P4-12 Trade detail screens showing value, cash moved, and outstanding as three separate figures
-- [ ] P4-13 `profit:view` stripping proven absent from the HTTP response for an employee role (D-018)
-- [ ] P4-14 Contact profile financial tabs populated
+- [x] P4-09 Purchase form with unmistakable rate direction ("1 USD = 39.00 MRU"), live total preview, and a reversed-rate sanity warning
+- [x] P4-10 Sale form, same treatment, plus recipient and destination fields
+- [x] P4-11 Purchase and sale lists with the spec §24 filter set, server-side pagination
+- [x] P4-12 Trade detail screens showing value, cash moved, and outstanding as three separate figures
+- [x] P4-13 `profit:view` stripping proven absent from the HTTP response for an employee role (D-018)
+- [x] P4-14 Contact profile financial tabs populated
 
 **Definition of Done:** the spec §44 scenario runs green in CI with every figure
 matched **by reading Postgres, not the UI** — including the 39.00 average cost and
