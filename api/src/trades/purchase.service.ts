@@ -135,7 +135,7 @@ export class PurchaseService {
           immediatePayment: new Prisma.Decimal(immediatePayment.toString()),
           outstandingAmount: new Prisma.Decimal(outstanding.toString()),
           paymentStatus,
-          paymentMethodId: immediatePayment.gt(0) ? dto.paymentMethodId! : null,
+          paymentMethodId: immediatePayment.gt(0) ? (dto.paymentMethodId ?? null) : null,
           paymentMethodNote: dto.paymentMethodNote ?? null,
           reference: dto.reference ?? null,
           notes: dto.notes ?? null,
@@ -170,9 +170,10 @@ export class PurchaseService {
       if (outstanding.gt(0)) {
         // dto.contactId is guaranteed present here by the walk-in
         // check above (step 4c).
+        if (!dto.contactId) throw new Error('unreachable: contactId required for outstanding');
         await tx.payable.create({
           data: {
-            contactId: dto.contactId!,
+            contactId: dto.contactId,
             currencyId: dto.paymentCurrencyId,
             originalAmount: new Prisma.Decimal(outstanding.toString()),
             outstandingAmount: new Prisma.Decimal(outstanding.toString()),

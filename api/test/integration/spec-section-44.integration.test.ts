@@ -79,7 +79,9 @@ describe('spec §44 · acceptance scenario', () => {
       FROM "currency_ledger"
       WHERE "currency_id" = ${seed.usdId}::uuid AND "is_active" = true
     `;
-    expect(new Decimal(ledgerSum[0]!.sum).toString()).toBe(SPEC_44_EXPECTED.usdBalance);
+    const usdSum = ledgerSum[0];
+    if (!usdSum) throw new Error('unreachable: usd ledger sum row missing');
+    expect(new Decimal(usdSum.sum).toString()).toBe(SPEC_44_EXPECTED.usdBalance);
 
     // --- MRU balance ------------------------------------------------------
     const mruBalance = await prisma.currencyBalance.findUniqueOrThrow({

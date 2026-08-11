@@ -3,6 +3,7 @@ import { Prisma, type Payment } from '@prisma/client';
 import { AuditService } from '../audit/audit.service.js';
 import { InactiveCurrencyError } from '../common/errors/ledger.errors.js';
 import { Decimal } from '../common/money.js';
+import { mustGet } from '../common/must-get.js';
 import { PrismaService } from '../common/prisma.service.js';
 import { ContactNotFoundError } from '../contacts/errors.js';
 import { CurrencyNotFoundError } from '../currencies/errors.js';
@@ -150,10 +151,10 @@ export class SupplierPaymentService {
       } else {
         // Build a map of payable id → originating purchase for rate lookup.
         const payableById = new Map(payables.map((p) => [p.id, p]));
-        const purchaseIds = allocationPlan
-          .map(({ payableId }) => payableById.get(payableId))
-          .filter((p) => p?.sourceType === 'purchase' && p.sourceId != null)
-          .map((p) => p!.sourceId as string);
+        const purchaseIds = allocationPlan.flatMap(({ payableId }) => {
+          const pb = payableById.get(payableId);
+          return pb?.sourceType === 'purchase' && pb.sourceId !== null ? [pb.sourceId] : [];
+        });
 
         const purchaseRows =
           purchaseIds.length > 0
@@ -162,7 +163,7 @@ export class SupplierPaymentService {
         const purchaseById = new Map(purchaseRows.map((r) => [r.id, r]));
 
         movements = allocationPlan.map(({ payableId, allocAmount }) => {
-          const payable = payableById.get(payableId)!;
+          const payable = mustGet(payableById, payableId, 'payable');
           let disposalValueMru: string | undefined;
 
           if (payable.sourceType === 'purchase' && payable.sourceId) {
@@ -200,7 +201,7 @@ export class SupplierPaymentService {
       // --- 9. Recompute outstanding + update payable status (D-011) ----------
       const payableById = new Map(payables.map((p) => [p.id, p]));
       for (const { payableId } of allocationPlan) {
-        const p = payableById.get(payableId)!;
+        const p = mustGet(payableById, payableId, 'payable');
         const newOutstanding = await this.recompute.recompute(tx, {
           id: p.id,
           targetType: 'payable',

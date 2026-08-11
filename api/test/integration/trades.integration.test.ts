@@ -22,7 +22,6 @@ import request from 'supertest';
 import argon2 from 'argon2';
 import { NestFactory } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { AppModule } from '../../src/app.module.js';
 import { configureApp } from '../../src/bootstrap.js';
 import { PrismaService } from '../../src/common/prisma.service.js';
@@ -462,8 +461,10 @@ describe('POST /purchases — payment-status permutations', () => {
       where: { sourceType: 'purchase', sourceId: res.body.id },
     });
     expect(ledger).toHaveLength(1);
-    expect(ledger[0]!.currencyId).toBe(seed.usdId);
-    expect(ledger[0]!.direction).toBe('CREDIT');
+    const only = ledger[0];
+    if (!only) throw new Error('unreachable: ledger row missing');
+    expect(only.currencyId).toBe(seed.usdId);
+    expect(only.direction).toBe('CREDIT');
 
     const payable = await prisma.payable.findFirstOrThrow({
       where: { sourceType: 'purchase', sourceId: res.body.id },
@@ -571,8 +572,10 @@ describe('POST /sales — payment-status permutations', () => {
       where: { sourceType: 'sale', sourceId: res.body.id },
     });
     expect(ledger).toHaveLength(1);
-    expect(ledger[0]!.currencyId).toBe(seed.usdId);
-    expect(ledger[0]!.direction).toBe('DEBIT');
+    const only = ledger[0];
+    if (!only) throw new Error('unreachable: ledger row missing');
+    expect(only.currencyId).toBe(seed.usdId);
+    expect(only.direction).toBe('DEBIT');
   });
 });
 
@@ -910,8 +913,9 @@ describe('POST /purchases — Case B (delivered=MRU, payment=non-base)', () => {
       orderBy: { sequence: 'asc' },
     });
     expect(ledger).toHaveLength(2);
-    const mruRow = ledger.find((r) => r.currencyId === seed.mruId)!;
-    const usdRow = ledger.find((r) => r.currencyId === seed.usdId)!;
+    const mruRow = ledger.find((r) => r.currencyId === seed.mruId);
+    const usdRow = ledger.find((r) => r.currencyId === seed.usdId);
+    if (!mruRow || !usdRow) throw new Error('unreachable: two-leg ledger rows missing');
     expect(mruRow.direction).toBe('CREDIT');
     expect(mruRow.amount.toString()).toBe('2000');
     expect(usdRow.direction).toBe('DEBIT');
@@ -979,8 +983,9 @@ describe('POST /sales — Case B′ (delivered=MRU, payment=non-base)', () => {
       orderBy: { sequence: 'asc' },
     });
     expect(ledger).toHaveLength(2);
-    const mruRow = ledger.find((r) => r.currencyId === seed.mruId)!;
-    const usdRow = ledger.find((r) => r.currencyId === seed.usdId)!;
+    const mruRow = ledger.find((r) => r.currencyId === seed.mruId);
+    const usdRow = ledger.find((r) => r.currencyId === seed.usdId);
+    if (!mruRow || !usdRow) throw new Error('unreachable: two-leg ledger rows missing');
     expect(mruRow.direction).toBe('DEBIT');
     expect(mruRow.amount.toString()).toBe('2000');
     expect(usdRow.direction).toBe('CREDIT');

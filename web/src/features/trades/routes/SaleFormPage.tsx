@@ -215,7 +215,7 @@ export function SaleFormPage() {
             <div className="notice notice--warn" role="alert">
               {t('sales.rate_warning', {
                 from: fromCode,
-                last: parseFloat(lastRate!).toFixed(2),
+                last: parseFloat(lastRate ?? '0').toFixed(2),
                 to: toCode,
               })}
               <button

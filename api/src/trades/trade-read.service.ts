@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { Purchase, Sale } from '@prisma/client';
+import type { Purchase } from '@prisma/client';
 import { PrismaService } from '../common/prisma.service.js';
-import { mapSaleResponse, type SalePublicRow, type SaleResponse } from './trade-common.js';
+import { mapSaleResponse, type SaleResponse } from './trade-common.js';
 import type { ListTradesQueryDto } from './dto/list-trades.dto.js';
 
 export interface Paginated<T> {

@@ -10,6 +10,7 @@ import {
   NegativeBalanceOverrideDeniedError,
   PaymentMethodNoteRequiredError,
 } from '../common/errors/ledger.errors.js';
+import { mustGet } from '../common/must-get.js';
 import { CostEngine } from './cost.engine.js';
 import type { ApplyOptions, LedgerEntry, Movement, Tx } from './ledger.types.js';
 
@@ -115,7 +116,8 @@ export class LedgerService {
           currencyId: cid,
         });
       }
-      const first = rows[0]!;
+      const first = rows[0];
+      if (!first) throw new LedgerContractError('balance row disappeared after upsert');
       balanceBefore.set(cid, new Decimal(first.cached_amount.toString()));
     }
 
@@ -132,31 +134,33 @@ export class LedgerService {
         });
       }
       const signed = m.direction === 'CREDIT' ? amount : amount.neg();
-      delta.set(m.currencyId, delta.get(m.currencyId)!.plus(signed));
+      delta.set(m.currencyId, mustGet(delta, m.currencyId, 'delta').plus(signed));
     }
 
     const overrideAppliedTo: string[] = [];
     for (const cid of distinctCurrencyIds) {
-      const before = balanceBefore.get(cid)!;
-      const after = before.plus(delta.get(cid)!);
+      const before = mustGet(balanceBefore, cid, 'balanceBefore');
+      const cidDelta = mustGet(delta, cid, 'delta');
+      const after = before.plus(cidDelta);
       if (after.gte(0)) continue;
 
       const isBase = cid === baseCurrencyId;
       const override = options.negativeBalanceOverride;
+      const currency = mustGet(currencyById, cid, 'currency');
 
       if (!isBase) {
         // Non-base → refused entirely. D-015.
         if (override) {
           throw new NegativeBalanceOverrideDeniedError('non_base_currency', {
             currencyId: cid,
-            currencyCode: currencyById.get(cid)!.code,
+            currencyCode: currency.code,
           });
         }
         throw new InsufficientBalanceError({
           currencyId: cid,
-          currencyCode: currencyById.get(cid)!.code,
-          available: before.toFixed(currencyById.get(cid)!.decimalPlaces),
-          requested: delta.get(cid)!.neg().toFixed(currencyById.get(cid)!.decimalPlaces),
+          currencyCode: currency.code,
+          available: before.toFixed(currency.decimalPlaces),
+          requested: cidDelta.neg().toFixed(currency.decimalPlaces),
         });
       }
 
@@ -164,9 +168,9 @@ export class LedgerService {
       if (!override) {
         throw new InsufficientBalanceError({
           currencyId: cid,
-          currencyCode: currencyById.get(cid)!.code,
-          available: before.toFixed(currencyById.get(cid)!.decimalPlaces),
-          requested: delta.get(cid)!.neg().toFixed(currencyById.get(cid)!.decimalPlaces),
+          currencyCode: currency.code,
+          available: before.toFixed(currency.decimalPlaces),
+          requested: cidDelta.neg().toFixed(currency.decimalPlaces),
         });
       }
       if (!override.actorHasPermission) {
@@ -224,7 +228,7 @@ export class LedgerService {
     // defence — if the pre-write validation above is wrong, the trigger
     // refuses the write with a constraint violation the tests will catch.
     for (const cid of distinctCurrencyIds) {
-      const after = balanceBefore.get(cid)!.plus(delta.get(cid)!);
+      const after = mustGet(balanceBefore, cid, 'balanceBefore').plus(mustGet(delta, cid, 'delta'));
       await tx.currencyBalance.update({
         where: { currencyId: cid },
         data: { cachedAmount: new Prisma.Decimal(after.toString()) },
@@ -252,16 +256,23 @@ export class LedgerService {
 
     // ---- 7. Audit override use ------------------------------------------
     if (overrideAppliedTo.length > 0) {
-      const override = options.negativeBalanceOverride!;
+      // Only reachable when override.reason was validated non-empty above.
+      const override = options.negativeBalanceOverride;
+      const firstMovement = movements[0];
+      if (!override || !firstMovement) {
+        throw new LedgerContractError('override audit reached without prerequisites');
+      }
       for (const cid of overrideAppliedTo) {
+        const before = mustGet(balanceBefore, cid, 'balanceBefore');
+        const cidDelta = mustGet(delta, cid, 'delta');
         await this.audit.log(tx, {
           action: 'balance_override_applied',
-          actorUserId: options.actorUserId ?? movements[0]!.createdByUserId,
+          actorUserId: options.actorUserId ?? firstMovement.createdByUserId,
           entityType: 'currency_balance',
           entityId: cid,
           reason: override.reason,
-          before: { cached_amount: balanceBefore.get(cid)!.toString() },
-          after: { cached_amount: balanceBefore.get(cid)!.plus(delta.get(cid)!).toString() },
+          before: { cached_amount: before.toString() },
+          after: { cached_amount: before.plus(cidDelta).toString() },
           ip: options.ip ?? null,
         });
       }

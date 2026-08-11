@@ -111,8 +111,12 @@ export function deriveRateAndTotal(
     // Derive total, rounded to payment currency dp (D-009).
     paymentTotal = roundTo(input.deliveredAmount.times(rate), paymentCurrencyDp);
   } else {
-    // Only paymentTotal is present.
-    paymentTotal = roundTo(input.paymentTotal!, paymentCurrencyDp);
+    // Only paymentTotal is present — the DTO validator upstream rejects
+    // "neither rate nor total", so this branch always sees a total.
+    if (input.paymentTotal === undefined) {
+      throw new Error('unreachable: neither rate nor paymentTotal supplied');
+    }
+    paymentTotal = roundTo(input.paymentTotal, paymentCurrencyDp);
     // Derive rate at full 8dp precision (rate schema is NUMERIC(24,8)).
     rate = paymentTotal.div(input.deliveredAmount).toDecimalPlaces(8, Decimal.ROUND_HALF_UP);
   }
