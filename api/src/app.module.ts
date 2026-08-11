@@ -13,6 +13,7 @@ import { ExpenseCategoriesModule } from './expense-categories/expense-categories
 import { LedgerModule } from './ledger/ledger.module.js';
 import { OpeningsModule } from './openings/openings.module.js';
 import { TradesModule } from './trades/trades.module.js';
+import { PaymentsModule } from './payments/payments.module.js';
 import { HealthModule } from './health/health.module.js';
 
 // Root module. Every feature module lives inside a folder and is
@@ -40,6 +41,7 @@ import { HealthModule } from './health/health.module.js';
     LedgerModule,
     OpeningsModule,
     TradesModule,
+    PaymentsModule,
     HealthModule,
   ],
 })

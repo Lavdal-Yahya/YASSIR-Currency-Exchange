@@ -253,10 +253,145 @@ export async function checkInv7(prisma: ReadClient): Promise<InvariantResult> {
   };
 }
 
+// INV-2 · For each non-REVERSED receivable: original − Σ(live allocations) = outstanding,
+// and outstanding ≥ 0. D-011 liveness: allocation counts when its payment is CONFIRMED.
+export async function checkInv2(prisma: ReadClient): Promise<InvariantResult> {
+  const failures: string[] = [];
+  const receivables = await prisma.receivable.findMany({
+    where: { status: { not: 'REVERSED' } },
+    select: { id: true, originalAmount: true, outstandingAmount: true },
+  });
+  for (const r of receivables) {
+    const rows = await prisma.$queryRaw<{ sum: string }[]>`
+      SELECT COALESCE(SUM(a."amount"), 0)::text AS sum
+      FROM "allocation" a
+      JOIN "payment" p ON p."id" = a."payment_id"
+      WHERE a."target_type" = 'receivable'
+        AND a."target_id" = ${r.id}::uuid
+        AND p."status" = 'CONFIRMED'
+    `;
+    const paidSum = new Decimal(rows[0]?.sum ?? '0');
+    const original = new Decimal(r.originalAmount.toString());
+    const stored = new Decimal(r.outstandingAmount.toString());
+    const computed = original.minus(paidSum);
+    if (computed.lt(0)) {
+      failures.push(
+        `receivable ${r.id}: computed outstanding ${computed.toFixed(4)} < 0 (INV-5 violated)`,
+      );
+    } else if (!computed.eq(stored)) {
+      failures.push(
+        `receivable ${r.id}: computed ${computed.toFixed(4)} ≠ stored ${stored.toFixed(4)}`,
+      );
+    }
+  }
+  return {
+    id: 'INV-2',
+    description: 'receivable outstanding = original − live allocations',
+    failures,
+  };
+}
+
+// INV-3 · Same as INV-2, for payables.
+export async function checkInv3(prisma: ReadClient): Promise<InvariantResult> {
+  const failures: string[] = [];
+  const payables = await prisma.payable.findMany({
+    where: { status: { not: 'REVERSED' } },
+    select: { id: true, originalAmount: true, outstandingAmount: true },
+  });
+  for (const p of payables) {
+    const rows = await prisma.$queryRaw<{ sum: string }[]>`
+      SELECT COALESCE(SUM(a."amount"), 0)::text AS sum
+      FROM "allocation" a
+      JOIN "payment" pay ON pay."id" = a."payment_id"
+      WHERE a."target_type" = 'payable'
+        AND a."target_id" = ${p.id}::uuid
+        AND pay."status" = 'CONFIRMED'
+    `;
+    const paidSum = new Decimal(rows[0]?.sum ?? '0');
+    const original = new Decimal(p.originalAmount.toString());
+    const stored = new Decimal(p.outstandingAmount.toString());
+    const computed = original.minus(paidSum);
+    if (computed.lt(0)) {
+      failures.push(
+        `payable ${p.id}: computed outstanding ${computed.toFixed(4)} < 0 (INV-5 violated)`,
+      );
+    } else if (!computed.eq(stored)) {
+      failures.push(
+        `payable ${p.id}: computed ${computed.toFixed(4)} ≠ stored ${stored.toFixed(4)}`,
+      );
+    }
+  }
+  return {
+    id: 'INV-3',
+    description: 'payable outstanding = original − live allocations',
+    failures,
+  };
+}
+
+// INV-5 · For each non-REVERSED receivable and payable: live allocation
+// sum ≤ original_amount. Independent of INV-2/3 — catches cases where
+// the stored outstanding was manually patched to hide overpayment.
+export async function checkInv5(prisma: ReadClient): Promise<InvariantResult> {
+  const failures: string[] = [];
+
+  const receivables = await prisma.receivable.findMany({
+    where: { status: { not: 'REVERSED' } },
+    select: { id: true, originalAmount: true },
+  });
+  for (const r of receivables) {
+    const rows = await prisma.$queryRaw<{ sum: string }[]>`
+      SELECT COALESCE(SUM(a."amount"), 0)::text AS sum
+      FROM "allocation" a
+      JOIN "payment" p ON p."id" = a."payment_id"
+      WHERE a."target_type" = 'receivable'
+        AND a."target_id" = ${r.id}::uuid
+        AND p."status" = 'CONFIRMED'
+    `;
+    const paid = new Decimal(rows[0]?.sum ?? '0');
+    const original = new Decimal(r.originalAmount.toString());
+    if (paid.gt(original)) {
+      failures.push(
+        `receivable ${r.id}: live allocations ${paid.toFixed(4)} > original ${original.toFixed(4)}`,
+      );
+    }
+  }
+
+  const payables = await prisma.payable.findMany({
+    where: { status: { not: 'REVERSED' } },
+    select: { id: true, originalAmount: true },
+  });
+  for (const p of payables) {
+    const rows = await prisma.$queryRaw<{ sum: string }[]>`
+      SELECT COALESCE(SUM(a."amount"), 0)::text AS sum
+      FROM "allocation" a
+      JOIN "payment" pay ON pay."id" = a."payment_id"
+      WHERE a."target_type" = 'payable'
+        AND a."target_id" = ${p.id}::uuid
+        AND pay."status" = 'CONFIRMED'
+    `;
+    const paid = new Decimal(rows[0]?.sum ?? '0');
+    const original = new Decimal(p.originalAmount.toString());
+    if (paid.gt(original)) {
+      failures.push(
+        `payable ${p.id}: live allocations ${paid.toFixed(4)} > original ${original.toFixed(4)}`,
+      );
+    }
+  }
+
+  return {
+    id: 'INV-5',
+    description: 'live allocation sum ≤ original for each debt',
+    failures,
+  };
+}
+
 export async function checkAll(prisma: ReadClient): Promise<InvariantResult[]> {
   return Promise.all([
     checkInv1(prisma),
+    checkInv2(prisma),
+    checkInv3(prisma),
     checkInv4(prisma),
+    checkInv5(prisma),
     checkInv6(prisma),
     checkInv7(prisma),
     checkInv8(prisma),
