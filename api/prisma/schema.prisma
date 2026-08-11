@@ -32,6 +32,8 @@ model User {
   ledgerEntries CurrencyLedger[] @relation("ledger_created_by")
   purchases     Purchase[]       @relation("purchase_created_by")
   sales         Sale[]           @relation("sale_created_by")
+  payments      Payment[]        @relation("payment_created_by")
+  expenses      Expense[]        @relation("expense_created_by")
 
   @@map("user")
 }
@@ -122,6 +124,8 @@ model Currency {
   purchasesPayment   Purchase[]       @relation("purchase_payment_currency")
   salesDelivered     Sale[]           @relation("sale_delivered_currency")
   salesPayment       Sale[]           @relation("sale_payment_currency")
+  payments           Payment[]
+  expenses           Expense[]
 
   @@map("currency")
 }
@@ -192,6 +196,7 @@ model Contact {
   payables    Payable[]
   purchases   Purchase[]
   sales       Sale[]
+  payments    Payment[]
 
   @@index([phone], map: "contact_phone_idx")
   @@map("contact")
@@ -212,6 +217,8 @@ model ExpenseCategory {
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  expenses Expense[]
 
   @@map("expense_category")
 }
@@ -244,6 +251,8 @@ model PaymentMethod {
   ledgerEntries CurrencyLedger[]
   purchases     Purchase[]
   sales         Sale[]
+  payments      Payment[]
+  expenses      Expense[]
 
   @@map("payment_method")
 }
@@ -577,4 +586,99 @@ model AuditLog {
   @@index([entityType, entityId, createdAt(sort: Desc)], map: "audit_log_entity_created_idx")
   @@index([actorUserId, createdAt(sort: Desc)], map: "audit_log_actor_created_idx")
   @@map("audit_log")
+}
+
+// ---------------------------------------------------------------------------
+// P5-01 · payments, allocations, expenses (D-011, D-017, D-020)
+// ---------------------------------------------------------------------------
+//
+// payment carries a single direction enum rather than separate received/paid
+// tables — the liveness rule (D-011) applies identically to both directions.
+// allocation.target_id is polymorphic (no FK); liveness is derived by joining
+// to the correct debt table based on target_type at query time.
+// expense has no contact — expenses reduce net profit, not a receivable/payable.
+
+enum PaymentDirection {
+  RECEIVED_FROM_CUSTOMER
+  PAID_TO_SUPPLIER
+
+  @@map("payment_direction")
+}
+
+enum PaymentStatus {
+  CONFIRMED
+  REVERSED
+
+  @@map("payment_status")
+}
+
+enum ExpenseStatus {
+  CONFIRMED
+  REVERSED
+
+  @@map("expense_status")
+}
+
+model Payment {
+  id                String           @id @default(uuid()) @db.Uuid
+  contactId         String           @map("contact_id") @db.Uuid
+  currencyId        String           @map("currency_id") @db.Uuid
+  amount            Decimal          @db.Decimal(24, 4)
+  direction         PaymentDirection
+  paymentMethodId   String           @map("payment_method_id") @db.Uuid
+  paymentMethodNote String?          @map("payment_method_note")
+  status            PaymentStatus    @default(CONFIRMED)
+  reference         String?
+  notes             String?
+  transactionDate   DateTime         @map("transaction_date") @db.Timestamptz(6)
+  createdByUserId   String           @map("created_by_user_id") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  contact       Contact       @relation(fields: [contactId], references: [id], onDelete: Restrict)
+  currency      Currency      @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy     User          @relation("payment_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  allocations   Allocation[]
+
+  @@index([contactId, transactionDate(sort: Desc)], map: "payment_contact_transaction_date_idx")
+  @@map("payment")
+}
+
+model Allocation {
+  id         String   @id @default(uuid()) @db.Uuid
+  paymentId  String   @map("payment_id") @db.Uuid
+  targetType String   @map("target_type")
+  targetId   String   @map("target_id") @db.Uuid
+  amount     Decimal  @db.Decimal(24, 4)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([targetType, targetId], map: "allocation_target_idx")
+  @@index([paymentId], map: "allocation_payment_idx")
+  @@map("allocation")
+}
+
+model Expense {
+  id                String        @id @default(uuid()) @db.Uuid
+  expenseCategoryId String        @map("expense_category_id") @db.Uuid
+  currencyId        String        @map("currency_id") @db.Uuid
+  amount            Decimal       @db.Decimal(24, 4)
+  paymentMethodId   String        @map("payment_method_id") @db.Uuid
+  paymentMethodNote String?       @map("payment_method_note")
+  description       String
+  status            ExpenseStatus @default(CONFIRMED)
+  transactionDate   DateTime      @map("transaction_date") @db.Timestamptz(6)
+  createdByUserId   String        @map("created_by_user_id") @db.Uuid
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  expenseCategory ExpenseCategory @relation(fields: [expenseCategoryId], references: [id], onDelete: Restrict)
+  currency        Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+  paymentMethod   PaymentMethod   @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
+  createdBy       User            @relation("expense_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([transactionDate(sort: Desc), expenseCategoryId], map: "expense_transaction_category_idx")
+  @@map("expense")
 }
