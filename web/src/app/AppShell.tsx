@@ -16,6 +16,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', labelKey: 'nav.dashboard', icon: '⌂', end: true },
   { to: '/purchases', labelKey: 'nav.purchases', icon: '↓' },
   { to: '/sales', labelKey: 'nav.sales', icon: '↑' },
+  { to: '/debts', labelKey: 'nav.debts', icon: '⇌' },
   { to: '/contacts', labelKey: 'nav.contacts', icon: '☏' },
   { to: '/settings', labelKey: 'nav.settings', icon: '⚙' },
 ];

@@ -210,8 +210,10 @@ describe('LedgerService.apply — single writes', () => {
 
     const movements = await prisma.costMovement.findMany({ where: { currencyId: f.usdId } });
     expect(movements).toHaveLength(1);
-    expect(movements[0]!.kind).toBe('ACQUISITION');
-    expect(movements[0]!.unitCostMru.toString()).toBe('39');
+    const first = movements[0];
+    if (!first) throw new Error('unreachable');
+    expect(first.kind).toBe('ACQUISITION');
+    expect(first.unitCostMru.toString()).toBe('39');
   });
 
   it('multi-currency batch writes both and locks in sorted order', async () => {

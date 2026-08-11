@@ -22,6 +22,12 @@ import { PurchasesListPage } from '../features/trades/routes/PurchasesListPage';
 import { SaleDetailPage } from '../features/trades/routes/SaleDetailPage';
 import { SaleFormPage } from '../features/trades/routes/SaleFormPage';
 import { SalesListPage } from '../features/trades/routes/SalesListPage';
+import { DebtsLayout } from '../features/debts/routes/DebtsLayout';
+import { PaySupplierPage } from '../features/debts/routes/PaySupplierPage';
+import { PayablesListPage } from '../features/debts/routes/PayablesListPage';
+import { PaymentsListPage } from '../features/debts/routes/PaymentsListPage';
+import { ReceivablesListPage } from '../features/debts/routes/ReceivablesListPage';
+import { ReceivePaymentPage } from '../features/debts/routes/ReceivePaymentPage';
 import { ExpenseFormPage } from '../features/expenses/routes/ExpenseFormPage';
 import { ExpensesListPage } from '../features/expenses/routes/ExpensesListPage';
 import { UserFormPage } from '../features/users/routes/UserFormPage';
@@ -70,6 +76,19 @@ export const routes: RouteObject[] = [
 
           { path: '/expenses', element: <ExpensesListPage /> },
           { path: '/expenses/new', element: <ExpenseFormPage /> },
+
+          {
+            path: '/debts',
+            element: <DebtsLayout />,
+            children: [
+              { index: true, element: <ReceivablesListPage /> },
+              { path: 'receivables', element: <ReceivablesListPage /> },
+              { path: 'payables', element: <PayablesListPage /> },
+            ],
+          },
+          { path: '/debts/receivables/:id/receive', element: <ReceivePaymentPage /> },
+          { path: '/debts/payables/:id/pay', element: <PaySupplierPage /> },
+          { path: '/payments', element: <PaymentsListPage /> },
 
           { path: '/users', element: <UsersListPage /> },
           { path: '/users/new', element: <UserFormPage /> },

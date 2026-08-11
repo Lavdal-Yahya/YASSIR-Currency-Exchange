@@ -212,11 +212,11 @@ reduce balances correctly.
 - [ ] P5-05 Receivable and payable status transitions driven by recomputation, never by delta patching
 - [ ] P5-06 `ExpenseService` with category, currency, balance check, ledger write, payment method
 - [ ] P5-07 Invariants INV-2, INV-3, INV-5 wired in; INV-9 now has real data to bite on
-- [ ] P5-08 Debt list screens: by contact, by currency, by age bucket (0–7 / 8–30 / 31–60 / 60+)
-- [ ] P5-09 Receive-payment and pay-supplier forms, single-target in v1 per D-011, with the payment method picker and conditional note field
-- [ ] P5-10 Expense list and form; expense categories screen
-- [ ] P5-11 Contact profile: receivables and payables shown **side by side and never netted**, with a visible note explaining why
-- [ ] P5-12 Tests: partial then final settlement; over-payment rejection; payment in the wrong currency rejection; a contact who is simultaneously customer and supplier keeps both balances separate; expense exceeding balance rejected; non-base payable settlement produces the expected FX gain
+- [x] P5-08 Debt list screens: by contact, by currency, by age bucket (0–7 / 8–30 / 31–60 / 60+)
+- [x] P5-09 Receive-payment and pay-supplier forms, single-target in v1 per D-011, with the payment method picker and conditional note field
+- [x] P5-10 Expense list and form; expense categories screen
+- [x] P5-11 Contact profile: receivables and payables shown **side by side and never netted**, with a visible note explaining why
+- [x] P5-12 Tests: partial then final settlement; over-payment rejection; payment in the wrong currency rejection; a contact who is simultaneously customer and supplier keeps both balances separate; expense exceeding balance rejected; non-base payable settlement produces the expected FX gain
 
 **Definition of Done:** a customer debt paid in three installments closes at
 exactly zero with no rounding residue; a payment of one minor unit more than the

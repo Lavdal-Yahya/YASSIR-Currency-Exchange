@@ -4,29 +4,36 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ContactProfilePage } from './ContactProfilePage';
 
-// P2-11 DoD (phase-2.md §6, item 8):
-// "opening the ContactProfile Phase-4/5 tabs shows the placeholder
-// card, not an empty table (component test)."
+// Phase 5 (P5-11) supersedes the phase-2 placeholder test: the
+// receivables/payables tabs have been merged into a single "debts" tab
+// backed by SideBySideDebtsPanel, which renders both columns unnetted
+// with a visible explanatory note (spec §17).
 
 const sampleContact = {
   id: 'c-1',
   name: 'Ahmed',
   phone: '+22212345678',
   isCustomer: true,
-  isSupplier: false,
+  isSupplier: true,
   isArchived: false,
   notes: null,
   createdAt: '2026-08-02T10:00:00Z',
   updatedAt: '2026-08-02T10:00:00Z',
 };
 
-const emptyTrades = { data: [], total: 0 };
+const emptyList = { data: [], total: 0 };
 
-// Stub fetch — contact profile reads /contacts/:id and /contacts/:id/trades.
 beforeEach(() => {
   const fetchMock = vi.fn(async (url: string) => {
-    if (String(url).includes('/trades')) {
-      return new Response(JSON.stringify(emptyTrades), {
+    const s = String(url);
+    if (s.includes('/receivables') || s.includes('/payables') || s.includes('/trades')) {
+      return new Response(JSON.stringify(emptyList), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    if (s.includes('/currencies')) {
+      return new Response(JSON.stringify([]), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -53,23 +60,24 @@ function renderAt() {
 }
 
 describe('ContactProfilePage tabs', () => {
-  it('receivables tab renders the coming-soon banner, not an empty table', async () => {
+  it('debts tab shows the unnetted explanatory note and both columns', async () => {
     renderAt();
-    const name = await screen.findByRole('heading', { name: /Ahmed/ });
-    expect(name).toBeTruthy();
+    await screen.findByRole('heading', { name: /Ahmed/ });
 
-    const receivables = screen.getByRole('tab', { name: /À recevoir/ });
-    fireEvent.click(receivables);
+    const debtsTab = screen.getByRole('tab', { name: /Dettes/ });
+    fireEvent.click(debtsTab);
 
-    expect(screen.getByRole('status', { name: /bientôt/i })).toBeTruthy();
-    expect(screen.queryByRole('table')).toBeNull();
+    // The unnetted note is on-screen, not in a tooltip (spec §17).
+    expect(await screen.findByRole('note')).toBeTruthy();
+    // Two column headings, one per side.
+    expect(screen.getByRole('region', { name: /À recevoir/i })).toBeTruthy();
+    expect(screen.getByRole('region', { name: /À payer/i })).toBeTruthy();
   });
 
   it('trades tab renders the empty-state message (no trades for this contact)', async () => {
     renderAt();
     await screen.findByRole('heading', { name: /Ahmed/ });
     fireEvent.click(screen.getByRole('tab', { name: /Échanges/ }));
-    // Wait for the async trades fetch to complete and show empty state.
     expect(await screen.findByText(/Aucun échange/i)).toBeTruthy();
     expect(screen.queryByRole('table')).toBeNull();
   });

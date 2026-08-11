@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ComingSoon } from '../../../shared/ui/ComingSoon';
+import { SideBySideDebtsPanel } from '../../debts/components/SideBySideDebtsPanel';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
@@ -15,9 +15,12 @@ import {
 } from '../api/useContacts';
 import { ContactForm } from '../components/ContactForm';
 
-type Tab = 'overview' | 'receivables' | 'payables' | 'trades';
+type Tab = 'overview' | 'debts' | 'trades';
 
-const TAB_ORDER: Tab[] = ['overview', 'receivables', 'payables', 'trades'];
+// The debts tab replaces the pair of "receivables" / "payables" tabs
+// so both are always visible together and never netted (spec §17 +
+// phase-5.md §5 SideBySideDebtsPanel).
+const TAB_ORDER: Tab[] = ['overview', 'debts', 'trades'];
 
 // Explicit placeholder cards, not empty tables. An empty table reads as
 // "no data yet", which is a bug signal; a card reading "arrives in
@@ -86,8 +89,7 @@ export function ContactProfilePage() {
 
       <div role="tabpanel">
         {tab === 'overview' ? <OverviewPanel contact={c} /> : null}
-        {tab === 'receivables' ? <ComingSoon /> : null}
-        {tab === 'payables' ? <ComingSoon /> : null}
+        {tab === 'debts' ? <SideBySideDebtsPanel contactId={id} /> : null}
         {tab === 'trades' ? <ContactTradesTab contactId={id} /> : null}
       </div>
 

@@ -3,6 +3,7 @@ import { Prisma, type Payment } from '@prisma/client';
 import { AuditService } from '../audit/audit.service.js';
 import { InactiveCurrencyError } from '../common/errors/ledger.errors.js';
 import { Decimal } from '../common/money.js';
+import { mustGet } from '../common/must-get.js';
 import { PrismaService } from '../common/prisma.service.js';
 import { ContactNotFoundError } from '../contacts/errors.js';
 import { CurrencyNotFoundError } from '../currencies/errors.js';
@@ -172,7 +173,7 @@ export class CustomerPaymentService {
       // --- 10. Recompute outstanding + update receivable status (D-011) -----
       const receivableById = new Map(receivables.map((r) => [r.id, r]));
       for (const { receivableId } of allocationPlan) {
-        const r = receivableById.get(receivableId)!;
+        const r = mustGet(receivableById, receivableId, 'receivable');
         const newOutstanding = await this.recompute.recompute(tx, {
           id: r.id,
           targetType: 'receivable',

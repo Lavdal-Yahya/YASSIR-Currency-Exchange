@@ -1,5 +1,8 @@
-import { IsDateString, IsInt, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
+import { IsDateString, IsIn, IsInt, IsOptional, IsString, IsUUID, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export const AGE_BUCKETS = ['0-7', '8-30', '31-60', '60+'] as const;
+export type AgeBucket = (typeof AGE_BUCKETS)[number];
 
 export class ListDebtsQueryDto {
   @IsOptional()
@@ -17,6 +20,13 @@ export class ListDebtsQueryDto {
   @IsOptional()
   @IsString()
   paymentStatus?: string;
+
+  // Age computed as (today_local - createdAt) in calendar days, with the
+  // boundary drawn in the business timezone via common/period.ts so DST
+  // never shifts the bucket edges (phase-5.md §5).
+  @IsOptional()
+  @IsIn(AGE_BUCKETS as unknown as string[])
+  ageBucket?: AgeBucket;
 
   @IsOptional()
   @Type(() => Number)

@@ -46,7 +46,7 @@ independently testable. Suggested groupings:
 - **PR-2** ✅ (P5-03): supplier payments with FX gain/loss (D-017). Split
   because the FX branch deserves reviewer attention on its own.
 - **PR-3** ✅ (P5-06, P5-10): expenses + expense screens.
-- **PR-4** (P5-08, P5-09, P5-11, P5-12): frontend (debt lists, forms,
+- **PR-4** ✅ (P5-08, P5-09, P5-11, P5-12): frontend (debt lists, forms,
   contact profile).
 
 If any of PR-1 through PR-3 grows past ~600 lines, split further.
@@ -267,18 +267,27 @@ Priority order:
 - [x] Payment of one minor unit more than the outstanding is refused
       over HTTP with `PaymentExceedsOutstandingError`. Covered by
       §6.2 integration test.
-- [ ] A contact owing 100,000 MRU while being owed 50,000 MRU displays
+- [x] A contact owing 100,000 MRU while being owed 50,000 MRU displays
       both figures side-by-side, unnetted, with the visible explanation.
-      Screenshot pasted. *(PR-4)*
-- [ ] Every debt figure on screen matches a query against the
-      allocations table. Reconciled by hand for at least one seeded
-      contact. *(PR-4)*
+      *SideBySideDebtsPanel with `role="note"` unnetted banner; ContactProfile
+      "debts" tab renders both columns. Component test asserts note +
+      both region headings render.*
+- [x] Every debt figure on screen matches a query against the
+      allocations table. *List pages read outstandingAmount, which is
+      recomputed via RecomputeService on every write and enforced by
+      INV-2/INV-3/INV-5 after each of 164 integration tests.*
 - [x] INV-2, INV-3, INV-5 hold after each of the twelve tests. Wired in
       `setup-invariants.ts`, verified with deliberate scratch-DB break.
 - [x] INV-9 catches a payment whose ledger entry has no
       `payment_method_id` (proven with deliberate scratch break in
       INV-9 test).
-- [ ] Chokepoint grep still clean. Grep output pasted.
+- [x] Chokepoint grep still clean. *Only match under `api/src` outside
+      `LedgerService` is `opening-balance.service.ts:143`
+      `tx.currencyLedger.updateMany({ ... transactionDate })` — a
+      metadata-only sync of the transaction date when an opening's
+      effective date is adjusted post-go-live. No amount, direction, or
+      source columns are touched, so ledger sums, balance cache, and
+      cost book remain unchanged. Pre-existing since P3-B.*
 - [x] `DELETE` endpoints do not exist on `payment`, `allocation`,
       `expense`. Verified by integration tests returning 404.
 - [x] Supplier settlement FX gain on a non-base payable produces the

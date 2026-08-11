@@ -3,9 +3,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { AppShell } from './AppShell';
 
-// Smoke test: the shell renders its bottom nav (5 items, updated in Phase 4
-// to replace currencies+users with purchases+sales) and marks the current
-// route as active.
+// Smoke test: the shell renders its bottom nav (6 items after P5-PR4
+// added Debts) and marks the current route as active.
 
 function renderAt(path: string) {
   return render(
@@ -15,6 +14,7 @@ function renderAt(path: string) {
           <Route path="/" element={<div>dashboard-content</div>} />
           <Route path="/purchases" element={<div>purchases-content</div>} />
           <Route path="/sales" element={<div>sales-content</div>} />
+          <Route path="/debts/*" element={<div>debts-content</div>} />
           <Route path="/contacts" element={<div>contacts-content</div>} />
           <Route path="/settings/*" element={<div>settings-content</div>} />
         </Route>
@@ -24,11 +24,12 @@ function renderAt(path: string) {
 }
 
 describe('AppShell', () => {
-  it('renders every Phase-4 nav item', () => {
+  it('renders every Phase-5 nav item', () => {
     renderAt('/');
     expect(screen.getByRole('link', { name: /Tableau/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Achats/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Ventes/ })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Dettes/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Contacts/ })).toBeTruthy();
     expect(screen.getByRole('link', { name: /Réglages/ })).toBeTruthy();
   });

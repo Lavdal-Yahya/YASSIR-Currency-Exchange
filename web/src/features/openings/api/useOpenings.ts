@@ -27,7 +27,7 @@ export interface Receivable {
   status: 'OPEN' | 'CLOSED' | 'REVERSED';
 }
 
-export interface Payable extends Receivable {}
+export type Payable = Receivable;
 
 export interface OpeningsResponse {
   balances: OpeningBalance[];

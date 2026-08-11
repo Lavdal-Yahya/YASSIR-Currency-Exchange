@@ -177,7 +177,8 @@ describe('POST /expenses — successful creation', () => {
       where: { action: 'expense_created', entityId: res.body.id },
     });
     expect(audit).toBeTruthy();
-    expect((audit!.after as Record<string, unknown>).amount).toBe('1000');
+    if (!audit) throw new Error('unreachable');
+    expect((audit.after as Record<string, unknown>).amount).toBe('1000');
   });
 });
 

@@ -40,8 +40,8 @@ function expenseQs(f: ExpenseFilters): string {
   if (f.currencyId) parts.push(`currencyId=${encodeURIComponent(f.currencyId)}`);
   if (f.dateFrom) parts.push(`dateFrom=${encodeURIComponent(f.dateFrom)}`);
   if (f.dateTo) parts.push(`dateTo=${encodeURIComponent(f.dateTo)}`);
-  if (f.limit != null) parts.push(`limit=${f.limit}`);
-  if (f.offset != null) parts.push(`offset=${f.offset}`);
+  if (f.limit !== undefined) parts.push(`limit=${f.limit}`);
+  if (f.offset !== undefined) parts.push(`offset=${f.offset}`);
   return parts.length ? `?${parts.join('&')}` : '';
 }
 

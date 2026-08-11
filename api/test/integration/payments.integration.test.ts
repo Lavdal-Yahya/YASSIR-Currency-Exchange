@@ -16,7 +16,6 @@ import request from 'supertest';
 import argon2 from 'argon2';
 import { NestFactory } from '@nestjs/core';
 import type { INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
 import { AppModule } from '../../src/app.module.js';
 import { configureApp } from '../../src/bootstrap.js';
 import { PrismaService } from '../../src/common/prisma.service.js';
@@ -630,8 +629,8 @@ describe('POST /supplier-payments — non-base payable with FX gain (§6.6)', ()
     const payable = await prisma.payable.findFirst({
       where: { contactId: supplierA.id, currencyId: eur.id },
     });
-    expect(payable).not.toBeNull();
-    expect(new Decimal(payable!.originalAmount.toString()).toFixed(2)).toBe('100.00');
+    if (!payable) throw new Error('unreachable: payable row missing after purchase');
+    expect(new Decimal(payable.originalAmount.toString()).toFixed(2)).toBe('100.00');
 
     // Step 3: Pay the 100 EUR payable.
     const payRes = await request(app.getHttpServer())
@@ -648,7 +647,7 @@ describe('POST /supplier-payments — non-base payable with FX gain (§6.6)', ()
     expect(payRes.body.direction).toBe('PAID_TO_SUPPLIER');
     expect(payRes.body.status).toBe('CONFIRMED');
 
-    const paidPayable = await prisma.payable.findUniqueOrThrow({ where: { id: payable!.id } });
+    const paidPayable = await prisma.payable.findUniqueOrThrow({ where: { id: payable.id } });
     expect(new Decimal(paidPayable.outstandingAmount.toString()).toFixed(2)).toBe('0.00');
     expect(paidPayable.paymentStatus).toBe('PAID');
     expect(paidPayable.status).toBe('CLOSED');
@@ -657,8 +656,10 @@ describe('POST /supplier-payments — non-base payable with FX gain (§6.6)', ()
     const costMove = await prisma.costMovement.findFirst({
       where: { currencyId: eur.id, kind: 'DISPOSAL' },
     });
-    expect(costMove).not.toBeNull();
-    expect(new Decimal(costMove!.realizedPnlMru!.toString()).toFixed(4)).toBe('50.0000');
+    if (!costMove) throw new Error('unreachable: cost movement missing');
+    const pnl = costMove.realizedPnlMru;
+    if (!pnl) throw new Error('unreachable: realizedPnlMru missing');
+    expect(new Decimal(pnl.toString()).toFixed(4)).toBe('50.0000');
   });
 });
 
@@ -790,5 +791,64 @@ describe('GET /payments, /receivables, /payables', () => {
       .set('Cookie', seed.ownerCookie)
       .expect(200);
     expect(payRes.body.total).toBe(0);
+  });
+
+  it('filters receivables by ageBucket (P5-08 · phase-5.md §5)', async () => {
+    const phones = nextPhone();
+    const seed = await fullSeed(phones);
+    await openMru(seed, '500000');
+
+    // Fund USD before selling it (SaleService requires the delivered
+    // currency balance).
+    await request(app.getHttpServer())
+      .post('/api/v1/purchases')
+      .set('Cookie', seed.ownerCookie)
+      .send({
+        contactId: seed.contactId,
+        deliveredCurrencyId: seed.usdId,
+        deliveredAmount: '5000',
+        paymentCurrencyId: seed.mruId,
+        rate: '40',
+        immediatePayment: '200000',
+        paymentMethodId: seed.cashMethodId,
+      })
+      .expect(201);
+
+    // Create two sales that each leave a receivable.
+    await createSaleWithReceivable(seed, '1000', '40', '0');
+    await createSaleWithReceivable(seed, '1000', '40', '0');
+
+    // Backdate one receivable 20 days so it lands in the 8-30 bucket;
+    // leave the other in 0-7.
+    const receivables = await prisma.receivable.findMany({
+      where: { contactId: seed.contactId },
+      orderBy: { createdAt: 'asc' },
+    });
+    const [older, newer] = receivables;
+    if (!older || !newer) throw new Error('setup: expected two receivables');
+    const twentyDaysAgo = new Date(Date.now() - 20 * 86_400_000);
+    await prisma.$executeRaw`
+      UPDATE "receivable" SET "created_at" = ${twentyDaysAgo} WHERE "id" = ${older.id}::uuid
+    `;
+
+    const recent = await request(app.getHttpServer())
+      .get('/api/v1/receivables?ageBucket=0-7')
+      .set('Cookie', seed.ownerCookie)
+      .expect(200);
+    expect(recent.body.total).toBe(1);
+    expect(recent.body.data[0].id).toBe(newer.id);
+
+    const aged = await request(app.getHttpServer())
+      .get('/api/v1/receivables?ageBucket=8-30')
+      .set('Cookie', seed.ownerCookie)
+      .expect(200);
+    expect(aged.body.total).toBe(1);
+    expect(aged.body.data[0].id).toBe(older.id);
+
+    // Unknown bucket value rejected by DTO validation.
+    await request(app.getHttpServer())
+      .get('/api/v1/receivables?ageBucket=bogus')
+      .set('Cookie', seed.ownerCookie)
+      .expect(400);
   });
 });

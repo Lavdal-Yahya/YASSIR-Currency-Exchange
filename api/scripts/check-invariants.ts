@@ -45,6 +45,8 @@ async function main(): Promise<number> {
     const results = await checkAll(prisma);
     const failed = results.filter((r) => r.failures.length > 0);
     if (failed.length === 0) {
+      // CLI entry point — stdout signals success to shell wrappers.
+      // eslint-disable-next-line no-console
       console.log('OK');
       return 0;
     }

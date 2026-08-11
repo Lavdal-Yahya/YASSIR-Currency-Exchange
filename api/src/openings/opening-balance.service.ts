@@ -130,18 +130,19 @@ export class OpeningBalanceService {
     const before = await this.prisma.openingBalance.findUnique({ where: { id } });
     if (!before) throw new OpeningNotFoundError(id);
 
-    if (dto.effectiveDate === undefined || dto.effectiveDate === undefined) return before;
+    if (dto.effectiveDate === undefined) return before;
+    const effectiveDate = dto.effectiveDate;
 
     return this.prisma.$transaction(async (tx) => {
       const updated = await tx.openingBalance.update({
         where: { id },
-        data: { effectiveDate: new Date(dto.effectiveDate!) },
+        data: { effectiveDate: new Date(effectiveDate) },
       });
       // Keep the ledger row's transaction_date in sync so period reports
       // don't disagree with the opening row.
       await tx.currencyLedger.updateMany({
         where: { sourceType: 'opening_balance', sourceId: id },
-        data: { transactionDate: new Date(`${dto.effectiveDate!.slice(0, 10)}T12:00:00Z`) },
+        data: { transactionDate: new Date(`${effectiveDate.slice(0, 10)}T12:00:00Z`) },
       });
       await this.audit.log(tx, {
         action: 'opening_balance_updated',

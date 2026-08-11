@@ -203,7 +203,9 @@ describe('POST /openings/currency', () => {
       FROM "currency_ledger"
       WHERE "currency_id" = ${seed.usdId}::uuid AND "is_active" = true
     `;
-    expect(new Decimal(ledger[0]!.sum ?? '0').toString()).toBe('10000');
+    const ledgerRow = ledger[0];
+    if (!ledgerRow) throw new Error('unreachable: ledger sum row missing');
+    expect(new Decimal(ledgerRow.sum ?? '0').toString()).toBe('10000');
 
     // Cost cache matches.
     const cost = await prisma.currencyCost.findUniqueOrThrow({

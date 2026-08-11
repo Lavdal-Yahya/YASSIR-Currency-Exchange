@@ -209,11 +209,11 @@ export function PurchaseFormPage() {
             </p>
           ) : null}
           {/* Reversed-rate sanity warning */}
-          {showRateWarning ? (
+          {showRateWarning && lastRate ? (
             <div className="notice notice--warn" role="alert">
               {t('purchases.rate_warning', {
                 from: fromCode,
-                last: parseFloat(lastRate!).toFixed(2),
+                last: parseFloat(lastRate).toFixed(2),
                 to: toCode,
               })}
               <button
