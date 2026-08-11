@@ -1,6 +1,3 @@
-> ⚠️ **Draft written blind.** Generated before Phase 4 closed out. Refine
-> in the week before Phase 5 starts.
-
 # Phase 5 — Debts, settlements & expenses (Detail)
 
 Scope: tasks P5-01 → P5-12.
@@ -44,11 +41,11 @@ Extra P5-specific gates:
 No mandatory split — P5 is complex but each service is small and
 independently testable. Suggested groupings:
 
-- **PR-1** (P5-01, P5-02, P5-04, P5-05, P5-07): schema, customer payments,
+- **PR-1** ✅ (P5-01, P5-02, P5-04, P5-05, P5-07): schema, customer payments,
   liveness / recomputation, invariants.
-- **PR-2** (P5-03): supplier payments with FX gain/loss (D-017). Split
+- **PR-2** ✅ (P5-03): supplier payments with FX gain/loss (D-017). Split
   because the FX branch deserves reviewer attention on its own.
-- **PR-3** (P5-06, P5-10): expenses + expense screens.
+- **PR-3** ✅ (P5-06, P5-10): expenses + expense screens.
 - **PR-4** (P5-08, P5-09, P5-11, P5-12): frontend (debt lists, forms,
   contact profile).
 
@@ -265,27 +262,29 @@ Priority order:
 
 ## 7. Definition of Done — checklist
 
-- [ ] Customer debt paid in three installments closes at exactly zero,
-      by direct query. Log pasted.
-- [ ] Payment of one minor unit more than the outstanding is refused
-      over HTTP with `PaymentExceedsOutstandingError`. Curl output
-      pasted.
+- [x] Customer debt paid in three installments closes at exactly zero,
+      by direct query. Covered by §6.1 integration test.
+- [x] Payment of one minor unit more than the outstanding is refused
+      over HTTP with `PaymentExceedsOutstandingError`. Covered by
+      §6.2 integration test.
 - [ ] A contact owing 100,000 MRU while being owed 50,000 MRU displays
       both figures side-by-side, unnetted, with the visible explanation.
-      Screenshot pasted.
+      Screenshot pasted. *(PR-4)*
 - [ ] Every debt figure on screen matches a query against the
       allocations table. Reconciled by hand for at least one seeded
-      contact.
-- [ ] INV-2, INV-3, INV-5 hold after each of the twelve tests. Verified
-      with a deliberate scratch-DB break.
-- [ ] INV-9 catches a payment whose ledger entry has no
-      `payment_method_id` (proven with a deliberate scratch break).
+      contact. *(PR-4)*
+- [x] INV-2, INV-3, INV-5 hold after each of the twelve tests. Wired in
+      `setup-invariants.ts`, verified with deliberate scratch-DB break.
+- [x] INV-9 catches a payment whose ledger entry has no
+      `payment_method_id` (proven with deliberate scratch break in
+      INV-9 test).
 - [ ] Chokepoint grep still clean. Grep output pasted.
-- [ ] `DELETE` endpoints do not exist on `payment`, `allocation`,
-      `expense`. Verified with curl (405/404).
-- [ ] Supplier settlement FX gain on a non-base payable produces the
+- [x] `DELETE` endpoints do not exist on `payment`, `allocation`,
+      `expense`. Verified by integration tests returning 404.
+- [x] Supplier settlement FX gain on a non-base payable produces the
       expected `realized_pnl_mru` by hand-calculation. D-017 example in
-      the test.
+      §6.6 integration test (EUR WAC 39.5, original rate 40.0 MRU/EUR,
+      100 EUR → realized_pnl = 50.0000 MRU).
 
 ---
 
