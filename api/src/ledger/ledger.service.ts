@@ -280,4 +280,88 @@ export class LedgerService {
 
     return inserted;
   }
+
+  /**
+   * Reversal helper (P6). Deactivates every ledger entry + cost movement
+   * that came from a single business source, rolls the balance cache
+   * back by the net delta of those entries, then asks CostEngine.replay
+   * to rebuild the WAC book for every currency the source touched.
+   *
+   * Kept inside LedgerService so the chokepoint grep (§3.3) stays
+   * clean — reversal must not write to ledger / balance / cost tables
+   * from outside this file. The reversal services (PaymentReversalService,
+   * ExpenseReversalService, TradeReversalService) call this once per
+   * source they undo.
+   *
+   * Idempotent: a second call is a no-op because is_active=true is the
+   * WHERE-clause guard for both statements. Returns the currency IDs
+   * touched so callers can decide whether downstream restatement is
+   * needed (trade reversal cares; payment / expense reversal doesn't).
+   */
+  async deactivateBySource(
+    tx: Tx,
+    sourceType: string,
+    sourceId: string,
+  ): Promise<{ affectedCurrencyIds: string[] }> {
+    const entries = await tx.currencyLedger.findMany({
+      where: { sourceType, sourceId, isActive: true },
+    });
+    if (entries.length === 0) {
+      return { affectedCurrencyIds: [] };
+    }
+
+    const entryIds = entries.map((e) => e.id);
+    const costMovements = await tx.costMovement.findMany({
+      where: { ledgerEntryId: { in: entryIds }, isActive: true },
+      select: { id: true, currencyId: true },
+    });
+
+    // Flip is_active=false — metadata-only on both tables, no amounts change.
+    await tx.currencyLedger.updateMany({
+      where: { id: { in: entryIds } },
+      data: { isActive: false },
+    });
+    if (costMovements.length > 0) {
+      await tx.costMovement.updateMany({
+        where: { id: { in: costMovements.map((m) => m.id) } },
+        data: { isActive: false },
+      });
+    }
+
+    // Roll balance cache back by the net delta (sum in the *opposite*
+    // direction). INV-1 is the safety net if this drifts.
+    const deltaByCurrency = new Map<string, Decimal>();
+    for (const e of entries) {
+      const amount = new Decimal(e.amount.toString());
+      const signed = e.direction === 'CREDIT' ? amount : amount.neg();
+      deltaByCurrency.set(
+        e.currencyId,
+        (deltaByCurrency.get(e.currencyId) ?? new Decimal(0)).plus(signed),
+      );
+    }
+    // Sort by currencyId ascending so this write ordering matches apply()'s
+    // lock ordering — reduces cross-op contention with concurrent trades.
+    const currencyIds = Array.from(deltaByCurrency.keys()).sort();
+    for (const cid of currencyIds) {
+      const delta = mustGet(deltaByCurrency, cid, 'delta');
+      // Direct update on currency_balance is permitted here because we
+      // are inside LedgerService — the chokepoint. The compensating
+      // change is by construction the exact inverse of what apply()
+      // originally wrote for these entries.
+      await tx.currencyBalance.update({
+        where: { currencyId: cid },
+        data: { cachedAmount: { decrement: new Prisma.Decimal(delta.toString()) } },
+      });
+    }
+
+    // Replay the cost engine forward for every non-base currency that
+    // had a cost movement — WAC recomputes from active rows only, which
+    // is exactly the post-deactivation state. Idempotent (D-021).
+    const affectedCurrencyIds = Array.from(new Set(costMovements.map((m) => m.currencyId)));
+    for (const cid of affectedCurrencyIds) {
+      await this.costs.replay(tx, cid);
+    }
+
+    return { affectedCurrencyIds };
+  }
 }

@@ -28,8 +28,13 @@ import { PayablesListPage } from '../features/debts/routes/PayablesListPage';
 import { PaymentsListPage } from '../features/debts/routes/PaymentsListPage';
 import { ReceivablesListPage } from '../features/debts/routes/ReceivablesListPage';
 import { ReceivePaymentPage } from '../features/debts/routes/ReceivePaymentPage';
+import { ExpenseDetailPage } from '../features/expenses/routes/ExpenseDetailPage';
 import { ExpenseFormPage } from '../features/expenses/routes/ExpenseFormPage';
 import { ExpensesListPage } from '../features/expenses/routes/ExpensesListPage';
+import { PaymentDetailPage } from '../features/debts/routes/PaymentDetailPage';
+import { ProfitReportPage } from '../features/reports/routes/ProfitReportPage';
+import { UserActivityReportPage } from '../features/reports/routes/UserActivityReportPage';
+import { AuditLogPage } from '../features/audit/routes/AuditLogPage';
 import { UserFormPage } from '../features/users/routes/UserFormPage';
 import { UsersListPage } from '../features/users/routes/UsersListPage';
 import { AppRoot } from './AppRoot';
@@ -76,6 +81,7 @@ export const routes: RouteObject[] = [
 
           { path: '/expenses', element: <ExpensesListPage /> },
           { path: '/expenses/new', element: <ExpenseFormPage /> },
+          { path: '/expenses/:id', element: <ExpenseDetailPage /> },
 
           {
             path: '/debts',
@@ -89,6 +95,11 @@ export const routes: RouteObject[] = [
           { path: '/debts/receivables/:id/receive', element: <ReceivePaymentPage /> },
           { path: '/debts/payables/:id/pay', element: <PaySupplierPage /> },
           { path: '/payments', element: <PaymentsListPage /> },
+          { path: '/payments/:id', element: <PaymentDetailPage /> },
+
+          { path: '/reports/profit', element: <ProfitReportPage /> },
+          { path: '/reports/user-activity', element: <UserActivityReportPage /> },
+          { path: '/audit', element: <AuditLogPage /> },
 
           { path: '/users', element: <UsersListPage /> },
           { path: '/users/new', element: <UserFormPage /> },

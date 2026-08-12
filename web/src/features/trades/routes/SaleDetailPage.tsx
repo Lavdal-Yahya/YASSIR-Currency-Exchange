@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+import { PERMISSIONS } from '../../../shared/permissions';
 import { useCurrencies } from '../../currencies/api/useCurrencies';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
+import { ReverseButton } from '../../reversal/components/ReverseButton';
+import { useReverseSale } from '../../reversal/api/useReversal';
 import { useSale } from '../api/useTrades';
 import { TradeDetailFigures } from '../components/TradeDetailFigures';
 
@@ -12,6 +16,8 @@ export function SaleDetailPage() {
   const { id = '' } = useParams();
   const q = useSale(id);
   const currencies = useCurrencies();
+  const reverse = useReverseSale();
+  const [restated, setRestated] = useState<number | null>(null);
 
   if (q.isLoading || currencies.isLoading) return <Loading />;
   if (q.error) return <ErrorMessage error={q.error} />;
@@ -22,17 +28,49 @@ export function SaleDetailPage() {
   const payment = currencies.data?.find((c) => c.id === s.paymentCurrencyId);
   const deliveredCode = delivered?.code ?? '—';
   const paymentCode = payment?.code ?? '—';
+  const isReversed = s.status === 'REVERSED';
 
   return (
     <>
       <PageHeader
         title={`${s.deliveredAmount} ${deliveredCode}`}
         action={
-          <span className={`badge badge--${paymentStatusClass(s.paymentStatus)}`}>
-            {t(`sales.payment_status.${s.paymentStatus}`)}
-          </span>
+          <div className="page-header__actions">
+            <span className={`badge badge--${paymentStatusClass(s.paymentStatus)}`}>
+              {t(`sales.payment_status.${s.paymentStatus}`)}
+            </span>
+            {isReversed ? (
+              <span className="badge badge--danger">{t('reversal.status_reversed')}</span>
+            ) : (
+              <ReverseButton
+                permission={PERMISSIONS.REVERSAL_TRADE}
+                dialogTitle={t('reversal.sale_dialog_title')}
+                warnMessage={t('reversal.sale_warning')}
+                isPending={reverse.isPending}
+                errorMessage={reverse.error ? String(reverse.error) : undefined}
+                onConfirm={(reason) =>
+                  reverse
+                    .mutateAsync({ id, reason })
+                    .then((res) => setRestated(res.restatedSaleIds.length))
+                    .catch(() => undefined)
+                }
+              />
+            )}
+          </div>
         }
       />
+
+      {restated !== null ? (
+        <p className="banner banner--info" role="status">
+          {t('reversal.restated_count', { count: restated })}
+        </p>
+      ) : null}
+
+      {isReversed ? (
+        <p className="banner banner--danger" role="note">
+          {t('reversal.reversed_note', { reason: s.reversalReason ?? '' })}
+        </p>
+      ) : null}
 
       {/* Three-numbers invariant — value, cash, outstanding must never collapse */}
       <TradeDetailFigures

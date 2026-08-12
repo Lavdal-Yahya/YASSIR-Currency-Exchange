@@ -247,14 +247,14 @@ undone today without corrupting anything.
 > D-016 resolved by D-021 (2026-08-01): trade reversal uses recompute-and-restate.
 > P6-04 is unblocked.
 
-- [ ] P6-01 Profit engine: gross profit by period and by currency, cost of currency sold, realized FX gain, net profit after expenses (spec §19.4)
-- [ ] P6-02 Base-currency consolidation using stored snapshot rates only — never a live rate (spec §20)
-- [ ] P6-03 Reversal of expenses and payments: compensating ledger entries, status flip, mandatory reason, allocation liveness cascade
-- [ ] P6-04 Reversal of trades, per the D-016 resolution, with forward recomputation of the cost engine
-- [ ] P6-05 Reversal permission is owner-only and separately audited
-- [ ] P6-06 Audit log viewer with entity, actor, before/after, reason; owner-only
-- [ ] P6-07 User activity report (spec §23.10)
-- [ ] P6-08 Tests: reverse a fully paid sale; reverse a partially paid purchase with settlements against it; **the invariants still hold after every reversal**; reversal is idempotent when replayed; a reversed transaction contributes nothing to any report
+- [x] P6-01 Profit engine: gross profit by period and by currency, cost of currency sold, realized FX gain, net profit after expenses (spec §19.4)
+- [x] P6-02 Base-currency consolidation using stored snapshot rates only — never a live rate (spec §20)
+- [x] P6-03 Reversal of expenses and payments: compensating ledger entries, status flip, mandatory reason, allocation liveness cascade
+- [x] P6-04 Reversal of trades, per the D-016 resolution, with forward recomputation of the cost engine
+- [x] P6-05 Reversal permission is owner-only and separately audited
+- [x] P6-06 Audit log viewer with entity, actor, before/after, reason; owner-only
+- [x] P6-07 User activity report (spec §23.10)
+- [x] P6-08 Tests: reverse a fully paid sale; reverse a partially paid purchase with settlements against it; **the invariants still hold after every reversal**; reversal is idempotent when replayed; a reversed transaction contributes nothing to any report
 
 **Definition of Done:** reversing a partially settled purchase restores the
 payable, the balance, and the cost basis to values verified by direct query;

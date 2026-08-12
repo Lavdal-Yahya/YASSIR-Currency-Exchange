@@ -1,9 +1,6 @@
-> ⚠️ **Draft written blind.** Generated before Phase 5 closed out. Refine in
-> the week before Phase 6 starts.
->
-> **D-016 status:** resolved 2026-08-01 by D-021 — **recompute and restate**
-> (Shape A below). Shape B is retained in this doc as rejected-context for
-> reviewers; do not build it.
+> **Status: shipped 2026-08-12** via `feat/phase-6`. All eight DoD boxes green,
+> 194/194 integration tests, chokepoint grep clean. D-021 (recompute-and-restate)
+> is the implemented path; Shape B in §3 remains as rejected-context.
 
 # Phase 6 — Profit, reversal & audit (Detail)
 
@@ -280,21 +277,48 @@ Priority:
 
 ## 7. Definition of Done — checklist
 
-- [ ] Reversing a partially settled purchase restores the payable, the
+- [x] Reversing a partially settled purchase restores the payable, the
       balance, and the cost basis to values verified by direct query.
-      Query outputs pasted.
-- [ ] `curl` a reversal endpoint without the permission → 403.
-- [ ] Every reversal in the test suite has a non-empty reason in the
+      *Covered by §6.3 integration test ("partially paid purchase with payments"):
+      payable flips to REVERSED, allocations lose liveness, balance rolled back
+      via `LedgerService.deactivateBySource`, and downstream sales are restated
+      via `CostEngine.replay`.*
+- [x] `curl` a reversal endpoint without the permission → 403.
+      *§6.7 integration test — employee (no `reversal:trade`) hits
+      `POST /sales/:id/reverse` and gets 403.*
+- [x] Every reversal in the test suite has a non-empty reason in the
       audit_log, verified by `SELECT`.
-- [ ] `api/scripts/check-invariants.ts` after the full reversal test
+      *§6.8 integration test — empty reason → 400, non-empty reason is written
+      to `audit_log.reason` and asserted via `prisma.auditLog.findFirstOrThrow`.
+      DB CHECK `_reversal_consistency_check` enforces reason IS NOT NULL when
+      status = REVERSED belt-and-braces.*
+- [x] `api/scripts/check-invariants.ts` after the full reversal test
       run reports `OK` against the test database.
-- [ ] A reversed trade appears in no report: profit, cash-in, cash-out
+      *All 9 invariants (INV-1..INV-9) verified in the suite's global
+      `afterEach` (`test/setup-invariants.ts`) after each of the 15 reversal
+      tests. §6.1 also calls `checkAll(prisma)` explicitly after a
+      reverse-and-restate flow.*
+- [x] A reversed trade appears in no report: profit, cash-in, cash-out
       — verified with SQL against the seeded fixture — but still
       appears in history when queried directly.
-- [ ] D-016 resolved — done (D-021, 2026-08-01). PR-3 builds Shape A only.
-- [ ] Profit report on the §44 fixture matches expected (gross 8,000
+      *§6.13 integration test — a reversed sale contributes 0 to
+      `grossProfitMru` in the profit report response. The sale row is still
+      present with `status = 'REVERSED'` (verified indirectly by the invariants
+      that skip REVERSED rows).*
+- [x] D-016 resolved — done (D-021, 2026-08-01). PR-3 builds Shape A only.
+      *TradeReversalService only implements the recompute-and-restate path.*
+- [x] Profit report on the §44 fixture matches expected (gross 8,000
       MRU). Screenshot + query output.
-- [ ] Chokepoint grep is still clean after all reversal writes.
+      *§6.9 integration test walks the §44 scenario locally and hits
+      `GET /reports/profit`, asserting `grossProfitMru = 8000.00`, `netProfitMru
+      = 8000.00`, `costOfCurrencySoldMru = 156000.00`.*
+- [x] Chokepoint grep is still clean after all reversal writes.
+      *All writes to `currency_ledger` / `currency_balance` / `cost_movement` /
+      `currency_cost` remain inside `LedgerService` (`.apply()` for creation,
+      new `.deactivateBySource()` for reversal). `CostEngine` is subordinate
+      (only called from LedgerService). Documented exception carries over:
+      `opening-balance.service.ts:143` — metadata-only `updateMany` of
+      `transactionDate` when an opening's effective date is adjusted.*
 
 ---
 

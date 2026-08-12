@@ -25,6 +25,9 @@ export interface Purchase {
   createdByUserId: string;
   createdAt: string;
   updatedAt: string;
+  reversalReason?: string | null;
+  reversedByUserId?: string | null;
+  reversedAt?: string | null;
 }
 
 export interface Sale extends Purchase {
