@@ -76,6 +76,21 @@ export const ERROR_I18N_KEYS = [
   'error.opening_after_go_live',
   'error.opening_already_exists',
   'error.opening_not_found',
+
+  // Debts, settlements, expenses (P5)
+  'error.payment_exceeds_outstanding',
+  'error.cross_currency_payment',
+  'error.contact_not_customer',
+  'error.contact_not_supplier',
+  'error.no_active_receivables',
+  'error.no_active_payables',
+  'error.non_base_payment_needs_rate',
+  'error.inactive_expense_category',
+
+  // Reversal (P6)
+  'error.already_reversed',
+  'error.reversal_reason_required',
+  'error.reversal_target_not_found',
 ] as const;
 
 export type ErrorI18nKey = (typeof ERROR_I18N_KEYS)[number];

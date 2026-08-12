@@ -4,6 +4,8 @@ import { useBalances } from '../../openings/api/useOpenings';
 import { BalancesCard } from '../../openings/components/BalancesCard';
 import { Loading } from '../../../shared/ui/Loading';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
+import { PERMISSIONS } from '../../../shared/permissions';
+import { useSession } from '../../auth/api/useSession';
 
 // Home dashboard. Renders the balances card grid from P3-11 plus two
 // deep links (openings + full balances). The rest of the dashboard —
@@ -12,6 +14,8 @@ import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 export function DashboardShell() {
   const { t } = useTranslation();
   const q = useBalances();
+  const session = useSession();
+  const perms = new Set(session.data?.permissions ?? []);
   return (
     <>
       <h1 className="page-title">{t('dashboard.title')}</h1>
@@ -23,6 +27,21 @@ export function DashboardShell() {
         <Link to="/openings" className="btn btn--ghost">
           {t('openings.title')}
         </Link>
+        {perms.has(PERMISSIONS.PROFIT_VIEW) ? (
+          <Link to="/reports/profit" className="btn btn--ghost">
+            {t('reports.profit_title')}
+          </Link>
+        ) : null}
+        {perms.has(PERMISSIONS.AUDIT_READ) ? (
+          <>
+            <Link to="/reports/user-activity" className="btn btn--ghost">
+              {t('reports.user_activity_title')}
+            </Link>
+            <Link to="/audit" className="btn btn--ghost">
+              {t('audit.page_title')}
+            </Link>
+          </>
+        ) : null}
       </div>
 
       {q.isLoading ? <Loading /> : null}

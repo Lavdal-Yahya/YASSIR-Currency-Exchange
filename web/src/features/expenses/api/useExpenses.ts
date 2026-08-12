@@ -15,6 +15,17 @@ export interface Expense {
   createdByUserId: string;
   createdAt: string;
   updatedAt: string;
+  reversalReason?: string | null;
+  reversedByUserId?: string | null;
+  reversedAt?: string | null;
+}
+
+export function useExpense(id: string | undefined) {
+  return useQuery<Expense>({
+    queryKey: [...EXPENSES_KEY, id],
+    queryFn: () => request<Expense>(`/expenses/${id}`),
+    enabled: !!id,
+  });
 }
 
 export interface ExpenseFilters {

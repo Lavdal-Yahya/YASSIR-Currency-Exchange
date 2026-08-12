@@ -41,6 +41,17 @@ export interface Payment {
   createdByUserId: string;
   createdAt: string;
   updatedAt: string;
+  reversalReason?: string | null;
+  reversedByUserId?: string | null;
+  reversedAt?: string | null;
+}
+
+export function usePayment(id: string | undefined) {
+  return useQuery<Payment>({
+    queryKey: [...PAYMENTS_KEY, id],
+    queryFn: () => request<Payment>(`/payments/${id}`),
+    enabled: !!id,
+  });
 }
 
 export interface Paginated<T> {

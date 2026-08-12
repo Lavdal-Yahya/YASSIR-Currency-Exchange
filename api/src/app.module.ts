@@ -15,6 +15,8 @@ import { OpeningsModule } from './openings/openings.module.js';
 import { TradesModule } from './trades/trades.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { ExpensesModule } from './expenses/expenses.module.js';
+import { ReversalModule } from './reversal/reversal.module.js';
+import { ReportsModule } from './reports/reports.module.js';
 import { HealthModule } from './health/health.module.js';
 
 // Root module. Every feature module lives inside a folder and is
@@ -44,6 +46,8 @@ import { HealthModule } from './health/health.module.js';
     TradesModule,
     PaymentsModule,
     ExpensesModule,
+    ReversalModule,
+    ReportsModule,
     HealthModule,
   ],
 })

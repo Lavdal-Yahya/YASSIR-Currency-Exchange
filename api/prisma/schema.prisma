@@ -27,13 +27,17 @@ model User {
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  roles         UserRole[]
-  auditRows     AuditLog[]       @relation("audit_actor")
-  ledgerEntries CurrencyLedger[] @relation("ledger_created_by")
-  purchases     Purchase[]       @relation("purchase_created_by")
-  sales         Sale[]           @relation("sale_created_by")
-  payments      Payment[]        @relation("payment_created_by")
-  expenses      Expense[]        @relation("expense_created_by")
+  roles              UserRole[]
+  auditRows          AuditLog[]       @relation("audit_actor")
+  ledgerEntries      CurrencyLedger[] @relation("ledger_created_by")
+  purchases          Purchase[]       @relation("purchase_created_by")
+  purchasesReversed  Purchase[]       @relation("purchase_reversed_by")
+  sales              Sale[]           @relation("sale_created_by")
+  salesReversed      Sale[]           @relation("sale_reversed_by")
+  payments           Payment[]        @relation("payment_created_by")
+  paymentsReversed   Payment[]        @relation("payment_reversed_by")
+  expenses           Expense[]        @relation("expense_created_by")
+  expensesReversed   Expense[]        @relation("expense_reversed_by")
 
   @@map("user")
 }
@@ -517,12 +521,16 @@ model Purchase {
   createdByUserId     String             @map("created_by_user_id") @db.Uuid
   createdAt           DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  reversalReason      String?            @map("reversal_reason")
+  reversedByUserId    String?            @map("reversed_by_user_id") @db.Uuid
+  reversedAt          DateTime?          @map("reversed_at") @db.Timestamptz(6)
 
   contact           Contact?       @relation(fields: [contactId], references: [id], onDelete: Restrict)
   deliveredCurrency Currency       @relation("purchase_delivered_currency", fields: [deliveredCurrencyId], references: [id], onDelete: Restrict)
   paymentCurrency   Currency       @relation("purchase_payment_currency", fields: [paymentCurrencyId], references: [id], onDelete: Restrict)
   paymentMethod     PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   createdBy         User           @relation("purchase_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  reversedBy        User?          @relation("purchase_reversed_by", fields: [reversedByUserId], references: [id], onDelete: SetNull)
 
   @@index([transactionDate(sort: Desc), status], map: "purchase_transaction_status_idx")
   @@index([contactId, transactionDate(sort: Desc)], map: "purchase_contact_transaction_idx")
@@ -557,12 +565,16 @@ model Sale {
   grossProfitMru        Decimal            @map("gross_profit_mru") @db.Decimal(24, 4)
   recipientName         String?            @map("recipient_name")
   destination           String?
+  reversalReason        String?            @map("reversal_reason")
+  reversedByUserId      String?            @map("reversed_by_user_id") @db.Uuid
+  reversedAt            DateTime?          @map("reversed_at") @db.Timestamptz(6)
 
   contact           Contact?       @relation(fields: [contactId], references: [id], onDelete: Restrict)
   deliveredCurrency Currency       @relation("sale_delivered_currency", fields: [deliveredCurrencyId], references: [id], onDelete: Restrict)
   paymentCurrency   Currency       @relation("sale_payment_currency", fields: [paymentCurrencyId], references: [id], onDelete: Restrict)
   paymentMethod     PaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   createdBy         User           @relation("sale_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  reversedBy        User?          @relation("sale_reversed_by", fields: [reversedByUserId], references: [id], onDelete: SetNull)
 
   @@index([transactionDate(sort: Desc), status], map: "sale_transaction_status_idx")
   @@index([contactId, transactionDate(sort: Desc)], map: "sale_contact_transaction_idx")
@@ -634,11 +646,15 @@ model Payment {
   createdByUserId   String           @map("created_by_user_id") @db.Uuid
   createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  reversalReason    String?          @map("reversal_reason")
+  reversedByUserId  String?          @map("reversed_by_user_id") @db.Uuid
+  reversedAt        DateTime?        @map("reversed_at") @db.Timestamptz(6)
 
   contact       Contact       @relation(fields: [contactId], references: [id], onDelete: Restrict)
   currency      Currency      @relation(fields: [currencyId], references: [id], onDelete: Restrict)
   paymentMethod PaymentMethod @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   createdBy     User          @relation("payment_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  reversedBy    User?         @relation("payment_reversed_by", fields: [reversedByUserId], references: [id], onDelete: SetNull)
   allocations   Allocation[]
 
   @@index([contactId, transactionDate(sort: Desc)], map: "payment_contact_transaction_date_idx")
@@ -673,11 +689,15 @@ model Expense {
   createdByUserId   String        @map("created_by_user_id") @db.Uuid
   createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  reversalReason    String?       @map("reversal_reason")
+  reversedByUserId  String?       @map("reversed_by_user_id") @db.Uuid
+  reversedAt        DateTime?     @map("reversed_at") @db.Timestamptz(6)
 
   expenseCategory ExpenseCategory @relation(fields: [expenseCategoryId], references: [id], onDelete: Restrict)
   currency        Currency        @relation(fields: [currencyId], references: [id], onDelete: Restrict)
   paymentMethod   PaymentMethod   @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
   createdBy       User            @relation("expense_created_by", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  reversedBy      User?           @relation("expense_reversed_by", fields: [reversedByUserId], references: [id], onDelete: SetNull)
 
   @@index([transactionDate(sort: Desc), expenseCategoryId], map: "expense_transaction_category_idx")
   @@map("expense")
