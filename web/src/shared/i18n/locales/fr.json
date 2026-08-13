@@ -61,6 +61,7 @@
     "prev_page": "Précédent",
     "next_page": "Suivant",
     "page_of": "Page {{n}} / {{total}}",
+    "download_csv": "Télécharger CSV",
     "filter": {
       "all_statuses": "Tous les statuts",
       "all_payment_statuses": "Tous les règlements",
@@ -127,7 +128,17 @@
   },
   "dashboard": {
     "title": "Tableau de bord",
-    "placeholder_balances": "Solde par devise · à venir en P3"
+    "placeholder_balances": "Solde par devise · à venir en P3",
+    "summary_label": "Résumé du jour",
+    "debts_label": "Créances et dettes ouvertes",
+    "today_purchases": "Achats du jour",
+    "today_sales": "Ventes du jour",
+    "net_today": "Net du jour",
+    "open_receivables": "Créances ouvertes",
+    "open_payables": "Dettes ouvertes",
+    "non_mru_debts_excluded": "Créances en devises étrangères non comptées.",
+    "low_balance_warning_one": "1 devise sous le seuil",
+    "low_balance_warning_other": "{{count}} devises sous le seuil"
   },
   "notfound": {
     "title": "Page introuvable",
@@ -493,7 +504,22 @@
     "sales": "Ventes",
     "payments": "Règlements",
     "reversals": "Contre-passations",
-    "failed_logins": "Connexions échouées"
+    "failed_logins": "Connexions échouées",
+    "cash_flow_title": "Trésorerie par moyen",
+    "method": "Moyen",
+    "credits": "Entrées",
+    "debits": "Sorties",
+    "net": "Net",
+    "ageing_title": "Ancienneté des créances/dettes",
+    "receivables_ageing": "Créances par tranche",
+    "payables_ageing": "Dettes par tranche",
+    "bucket": "Tranche",
+    "count": "Nombre",
+    "total": "Total",
+    "bucket_current": "0-30 j",
+    "bucket_31_60": "31-60 j",
+    "bucket_61_90": "61-90 j",
+    "bucket_91_plus": "91+ j"
   },
   "audit": {
     "page_title": "Journal d'audit",
