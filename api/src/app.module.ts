@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppConfigModule } from './config/config.module.js';
 import { PrismaModule } from './common/prisma.module.js';
 import { AuditModule } from './audit/audit.module.js';
@@ -17,6 +18,7 @@ import { PaymentsModule } from './payments/payments.module.js';
 import { ExpensesModule } from './expenses/expenses.module.js';
 import { ReversalModule } from './reversal/reversal.module.js';
 import { ReportsModule } from './reports/reports.module.js';
+import { RatesModule } from './rates/rates.module.js';
 import { HealthModule } from './health/health.module.js';
 
 // Root module. Every feature module lives inside a folder and is
@@ -31,6 +33,7 @@ import { HealthModule } from './health/health.module.js';
     // @Public / @Authenticated / @RequirePermission. Zero runtime cost
     // in production; keeping it imported keeps the guarantee available.
     DiscoveryModule,
+    ScheduleModule.forRoot(),
     AppConfigModule,
     PrismaModule,
     AuditModule,
@@ -48,6 +51,7 @@ import { HealthModule } from './health/health.module.js';
     ExpensesModule,
     ReversalModule,
     ReportsModule,
+    RatesModule,
     HealthModule,
   ],
 })

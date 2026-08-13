@@ -62,6 +62,7 @@
     "next_page": "التالي",
     "page_of": "صفحة {{n}} / {{total}}",
     "download_csv": "تنزيل CSV",
+    "action": "إجراء",
     "filter": {
       "all_statuses": "جميع الحالات",
       "all_payment_statuses": "جميع حالات الدفع",
@@ -534,5 +535,21 @@
     "before": "قبل",
     "after": "بعد",
     "no_data": "لا توجد أحداث."
+  },
+  "rates": {
+    "title": "أسعار السوق",
+    "current": "الأسعار الحالية",
+    "history": "السجل",
+    "mid_rate": "السعر الوسطي",
+    "source": "المصدر",
+    "fetched_at": "آخر تحديث",
+    "currency": "العملة",
+    "refresh": "تحديث",
+    "refresh_result": "{{refreshed}} سعر محدث، {{failed}} فشل.",
+    "refresh_failed": "تعذّر تحديث الأسعار.",
+    "suggested_rate": "المقترح: {{rate}}",
+    "no_snapshot": "لا توجد أسعار مسجلة.",
+    "view_history": "السجل",
+    "current_badge": "الحالي"
   }
 }

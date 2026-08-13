@@ -62,6 +62,7 @@
     "next_page": "Suivant",
     "page_of": "Page {{n}} / {{total}}",
     "download_csv": "Télécharger CSV",
+    "action": "Action",
     "filter": {
       "all_statuses": "Tous les statuts",
       "all_payment_statuses": "Tous les règlements",
@@ -534,5 +535,21 @@
     "before": "Avant",
     "after": "Après",
     "no_data": "Aucun événement."
+  },
+  "rates": {
+    "title": "Taux du marché",
+    "current": "Taux actuels",
+    "history": "Historique",
+    "mid_rate": "Taux moyen",
+    "source": "Source",
+    "fetched_at": "Mis à jour",
+    "currency": "Devise",
+    "refresh": "Actualiser",
+    "refresh_result": "{{refreshed}} taux mis à jour, {{failed}} en échec.",
+    "refresh_failed": "Impossible d'actualiser les taux.",
+    "suggested_rate": "Suggéré : {{rate}}",
+    "no_snapshot": "Aucun taux enregistré.",
+    "view_history": "Historique",
+    "current_badge": "Actuel"
   }
 }

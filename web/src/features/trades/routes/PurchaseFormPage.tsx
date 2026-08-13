@@ -10,6 +10,8 @@ import { usePaymentMethods } from '../../payment-methods/api/usePaymentMethods';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useOnline } from '../../../shared/pwa/useOnline';
+import { suggestedRate } from '../../rates/api/suggestion';
+import { useCurrentRates } from '../../rates/api/useRates';
 import { useCreatePurchase, useLastTradeRate } from '../api/useTrades';
 
 const AMOUNT_RE = /^\d+(\.\d{1,4})?$/;
@@ -57,6 +59,7 @@ export function PurchaseFormPage() {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -87,10 +90,18 @@ export function PurchaseFormPage() {
     deliveredCurrencyId || undefined,
     paymentCurrencyId || undefined,
   );
+  const currentRates = useCurrentRates();
 
   const deliveredCurrency = currencies.data?.find((c) => c.id === deliveredCurrencyId);
   const paymentCurrency = currencies.data?.find((c) => c.id === paymentCurrencyId);
   const selectedMethod = methods.data?.find((m) => m.id === paymentMethodId);
+
+  const suggestion = suggestedRate({
+    rates: currentRates.data,
+    deliveredCode: deliveredCurrency?.code,
+    paymentCode: paymentCurrency?.code,
+    baseCode: 'MRU',
+  });
 
   // Derived total preview from rate × deliveredAmount.
   const derivedTotal =
@@ -202,6 +213,17 @@ export function PurchaseFormPage() {
             placeholder={t('purchases.rate_placeholder')}
             aria-invalid={!!errors.rate}
           />
+          {/* Market-rate suggestion chip (P8-05). Never validated — spec §21.2. */}
+          {suggestion ? (
+            <button
+              type="button"
+              className="chip chip--suggest"
+              onClick={() => setValue('rate', suggestion.value, { shouldValidate: true })}
+              title={`${t('rates.source')}: ${suggestion.source}`}
+            >
+              {t('rates.suggested_rate', { rate: suggestion.value })}
+            </button>
+          ) : null}
           {/* Live rate direction display */}
           {rate && RATE_RE.test(rate) && deliveredCurrencyId && paymentCurrencyId ? (
             <p className="field__hint field__hint--rate">

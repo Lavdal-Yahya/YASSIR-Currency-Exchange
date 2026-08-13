@@ -96,6 +96,9 @@ export function DashboardShell() {
         <Link to="/reports/ageing" className="btn btn--ghost">
           {t('reports.ageing_title')}
         </Link>
+        <Link to="/rates" className="btn btn--ghost">
+          {t('rates.title')}
+        </Link>
         {perms.has(PERMISSIONS.PROFIT_VIEW) ? (
           <Link to="/reports/profit" className="btn btn--ghost">
             {t('reports.profit_title')}
