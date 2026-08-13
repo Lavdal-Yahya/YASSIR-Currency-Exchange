@@ -61,6 +61,7 @@
     "prev_page": "السابق",
     "next_page": "التالي",
     "page_of": "صفحة {{n}} / {{total}}",
+    "download_csv": "تنزيل CSV",
     "filter": {
       "all_statuses": "جميع الحالات",
       "all_payment_statuses": "جميع حالات الدفع",
@@ -127,7 +128,17 @@
   },
   "dashboard": {
     "title": "الرئيسية",
-    "placeholder_balances": "الرصيد حسب العملة · قادم في P3"
+    "placeholder_balances": "الرصيد حسب العملة · قادم في P3",
+    "summary_label": "ملخص اليوم",
+    "debts_label": "الديون المفتوحة",
+    "today_purchases": "مشتريات اليوم",
+    "today_sales": "مبيعات اليوم",
+    "net_today": "صافي اليوم",
+    "open_receivables": "المستحقات المفتوحة",
+    "open_payables": "الالتزامات المفتوحة",
+    "non_mru_debts_excluded": "لا تشمل الديون بعملات أخرى.",
+    "low_balance_warning_one": "عملة واحدة تحت الحد الأدنى",
+    "low_balance_warning_other": "{{count}} عملات تحت الحد الأدنى"
   },
   "notfound": {
     "title": "الصفحة غير موجودة",
@@ -493,7 +504,22 @@
     "sales": "المبيعات",
     "payments": "التسديدات",
     "reversals": "العكوس",
-    "failed_logins": "محاولات تسجيل دخول فاشلة"
+    "failed_logins": "محاولات تسجيل دخول فاشلة",
+    "cash_flow_title": "التدفق النقدي حسب الوسيلة",
+    "method": "الوسيلة",
+    "credits": "الداخل",
+    "debits": "الخارج",
+    "net": "الصافي",
+    "ageing_title": "أعمار المستحقات/الالتزامات",
+    "receivables_ageing": "المستحقات حسب العمر",
+    "payables_ageing": "الالتزامات حسب العمر",
+    "bucket": "الشريحة",
+    "count": "العدد",
+    "total": "المجموع",
+    "bucket_current": "0-30 يوم",
+    "bucket_31_60": "31-60 يوم",
+    "bucket_61_90": "61-90 يوم",
+    "bucket_91_plus": "91+ يوم"
   },
   "audit": {
     "page_title": "سجل التدقيق",
