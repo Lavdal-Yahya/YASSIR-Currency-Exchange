@@ -130,8 +130,36 @@ model Currency {
   salesPayment       Sale[]           @relation("sale_payment_currency")
   payments           Payment[]
   expenses           Expense[]
+  rateSnapshots      RateSnapshot[]
 
   @@map("currency")
+}
+
+// ---------------------------------------------------------------------------
+// P8-01 · rate_snapshot (informational only, D-007 superseded)
+// ---------------------------------------------------------------------------
+//
+// Non-authoritative cache of the last-known market rate per non-base
+// currency. Trade math never reads this — the operator's typed `rate`
+// on a trade is authoritative (spec §21.2). Powers a "suggested rate"
+// chip on the trade forms and a small history view.
+//
+// Exactly one row per currency has `is_current = true` at any moment
+// (partial unique index). History is append-only; rows are never
+// deleted (schema-review §6.1).
+
+model RateSnapshot {
+  id          BigInt   @id @default(autoincrement())
+  currencyId  String   @map("currency_id") @db.Uuid
+  midRateMru  Decimal  @map("mid_rate_mru") @db.Decimal(24, 8)
+  source      String
+  fetchedAt   DateTime @map("fetched_at") @db.Timestamptz(6)
+  isCurrent   Boolean  @default(true) @map("is_current")
+
+  currency Currency @relation(fields: [currencyId], references: [id], onDelete: Restrict)
+
+  @@index([currencyId, fetchedAt(sort: Desc)], map: "rate_snapshot_currency_fetched_idx")
+  @@map("rate_snapshot")
 }
 
 // ---------------------------------------------------------------------------

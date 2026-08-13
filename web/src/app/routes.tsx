@@ -32,6 +32,7 @@ import { ExpenseDetailPage } from '../features/expenses/routes/ExpenseDetailPage
 import { ExpenseFormPage } from '../features/expenses/routes/ExpenseFormPage';
 import { ExpensesListPage } from '../features/expenses/routes/ExpensesListPage';
 import { PaymentDetailPage } from '../features/debts/routes/PaymentDetailPage';
+import { RatesPage } from '../features/rates/routes/RatesPage';
 import { AgeingReportPage } from '../features/reports/routes/AgeingReportPage';
 import { CashFlowReportPage } from '../features/reports/routes/CashFlowReportPage';
 import { ProfitReportPage } from '../features/reports/routes/ProfitReportPage';
@@ -103,6 +104,7 @@ export const routes: RouteObject[] = [
           { path: '/reports/user-activity', element: <UserActivityReportPage /> },
           { path: '/reports/cash-flow', element: <CashFlowReportPage /> },
           { path: '/reports/ageing', element: <AgeingReportPage /> },
+          { path: '/rates', element: <RatesPage /> },
           { path: '/audit', element: <AuditLogPage /> },
 
           { path: '/users', element: <UsersListPage /> },
