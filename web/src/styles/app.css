@@ -64,7 +64,11 @@ a {
 .bottom-nav {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  /* minmax(0, 1fr), not a bare 1fr: `1fr` means `minmax(auto, 1fr)`, and the
+     `auto` floor sizes every track to its label's min-content width. Six
+     French labels pushed the nav — and with it .app-shell and every screen —
+     to 453px on a 390px viewport, ignoring the viewport entirely. */
+  grid-auto-columns: minmax(0, 1fr);
   align-items: stretch;
   background: var(--ink);
   color: var(--on-ink);
@@ -80,14 +84,28 @@ a {
   gap: var(--sp-1);
   min-block-size: 56px;
   padding-block: var(--sp-2);
-  padding-inline: var(--sp-2);
+  padding-inline: 2px;
+  /* min-inline-size: 0 so the item can actually shrink to its track —
+     a flex/grid child defaults to min-content and would re-inflate the nav. */
+  min-inline-size: 0;
   color: var(--on-ink-muted);
-  font-size: 11px;
+  /* Uppercase + letter-spacing cost ~20% width on the French labels, which is
+     what made six of them unfittable. Fluid size keeps them legible down to
+     320px without truncating. */
+  font-size: clamp(9px, 2.7vw, 11px);
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   text-align: center;
   /* 44×44 target minimum — the row min-block-size handles the vertical. */
+}
+
+.bottom-nav__label {
+  /* Safety net only: with the sizing above every label fits in both
+     languages, but a longer future label ellipsises instead of reflowing
+     the whole shell. */
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bottom-nav__item[aria-current='page'] {

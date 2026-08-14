@@ -34,7 +34,7 @@ export function AppShell() {
             <span aria-hidden="true" className="bottom-nav__icon">
               {item.icon}
             </span>
-            <span>{t(item.labelKey)}</span>
+            <span className="bottom-nav__label">{t(item.labelKey)}</span>
           </NavLink>
         ))}
       </nav>
