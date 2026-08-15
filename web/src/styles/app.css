@@ -228,10 +228,18 @@ a {
   gap: var(--sp-1);
 }
 
-.field label {
+/* Two label shapes exist: <label> as a sibling of the control, and
+   <label class="field"> wrapping a <span> caption plus the control. Style
+   both so the caption never falls back to 14px body text. */
+.field label,
+.field > span {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
+}
+
+.required {
+  color: var(--danger-text);
 }
 
 /* Inputs and selects share one box. The select was previously unstyled, so
@@ -765,4 +773,421 @@ a {
   padding-block: var(--sp-2);
   text-align: center;
   padding-block-start: max(var(--sp-2), env(safe-area-inset-top));
+}
+
+/* ===========================================================================
+   Components that were referenced from the JSX but never had a rule.
+   55 class names across 30 families rendered as unstyled HTML in production.
+   Nothing here invents a new visual language: every value comes from
+   tokens.css and mirrors a pattern already established above (the .card-row
+   card, the .badge pill, the .empty-state panel, the 44px control floor).
+   =========================================================================== */
+
+/* --- Forms ---------------------------------------------------------------- */
+
+/* Same rhythm as .stack; kept as its own name because <form className="form">
+   reads better at the call sites than a layout utility. */
+.form {
+  display: grid;
+  gap: var(--sp-4);
+}
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-block-size: 44px;
+}
+
+.field__hint--rate {
+  font-family: var(--font-mono);
+  color: var(--ink-2);
+}
+
+/* --- Notices and banners --------------------------------------------------
+   .notice sits inline in a form or dialog; .banner spans a page section.
+   Both carry their meaning in the text — color is never the only signal
+   (tokens.css preamble), so the tints stay deliberately quiet. */
+
+.notice,
+.banner {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 13px;
+  margin: 0;
+}
+
+.banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+}
+
+.notice--info,
+.banner--info {
+  background: var(--in-tint-soft);
+  border-color: var(--in-tint-border);
+  color: var(--in-text);
+}
+
+/* Both spellings appear in the JSX; neither is worth a rename churn. */
+.notice--warn,
+.notice--warning,
+.banner--warn {
+  background: var(--out-tint);
+  border-color: var(--out-tint-border);
+  color: var(--out-text-deep);
+}
+
+.banner--danger {
+  background: var(--danger-tint);
+  border-color: var(--danger-tint-border);
+  color: var(--danger-text);
+}
+
+.badge--warn {
+  color: var(--out-text);
+  background: var(--out-tint);
+  border-color: var(--out-tint-border);
+}
+
+/* --- Chips ----------------------------------------------------------------
+   Filter strip (debts age buckets) and the rate-suggestion chip. These were
+   the worst of the unstyled set: bare <button>s with the global reset, so
+   five filters ran together as one line of 21px text. */
+
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+}
+
+.chip {
+  min-block-size: 40px;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-pill);
+  background: white;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chip.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-ink-bright);
+}
+
+.chip--suggest {
+  border-style: dashed;
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+/* Inline chip strip inside a banner — no wrapping margin of its own. */
+.chip-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+}
+
+/* --- Dashboard ------------------------------------------------------------ */
+
+.dashboard-summary,
+.dashboard-debts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+}
+
+.summary-card {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  display: grid;
+  gap: var(--sp-1);
+  align-content: start;
+}
+
+.summary-card__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.summary-card__count {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.summary-card__figure {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.summary-card__note {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-6);
+}
+
+/* --- Trade figures --------------------------------------------------------
+   D-003: value, cash and outstanding are ALWAYS three labelled figures,
+   never collapsed into one. Unstyled they ran together as plain text, which
+   defeats the invariant visually even though the markup was correct. Each
+   gets its own cell; the grid stacks rather than truncating, so all three
+   stay visible at any width. */
+
+.trade-figures {
+  margin-block-end: var(--sp-4);
+}
+
+.trade-figures__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.trade-figures__item {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-3);
+}
+
+.trade-figures__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-block-end: var(--sp-1);
+}
+
+.trade-figures__amount {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.trade-figures__currency {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* --- Side-by-side debts panel ---------------------------------------------
+   Spec §17 forbids netting receivables against payables. The two columns
+   must stay visibly separate — that separation is the point, so each column
+   gets its own framed surface rather than sharing one. */
+
+/* The outer wrapper carries no visual of its own — the note and the grid
+   below own the spacing — but it exists as the panel's addressable root. */
+.debts-panel {
+  margin-block-end: var(--sp-4);
+}
+
+.debts-panel__note {
+  background: var(--in-tint-soft);
+  border: 1px solid var(--in-tint-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 13px;
+  color: var(--in-text);
+  margin: 0 0 var(--sp-4);
+}
+
+.debts-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--sp-4);
+}
+
+.debts-panel__col {
+  display: grid;
+  gap: var(--sp-2);
+  align-content: start;
+  background: var(--hairline-soft);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-3);
+  min-inline-size: 0;
+}
+
+.debts-panel__col-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.debts-panel__totals {
+  border-block-start: 1px solid var(--hairline);
+  padding-block-start: var(--sp-2);
+}
+
+.debts-panel__totals ul {
+  list-style: none;
+  margin: var(--sp-1) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-1);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.debts-panel__totals-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --- Detail pages --------------------------------------------------------- */
+
+.detail-list {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-2) var(--sp-4);
+  margin: 0 0 var(--sp-4);
+}
+
+.detail-list__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding-block: var(--sp-3);
+  border-block-end: 1px solid var(--hairline);
+}
+
+.detail-list__row:last-child {
+  border-block-end: 0;
+}
+
+.detail-list__row dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.detail-list__row dd {
+  margin: 0;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+/* --- Profit report -------------------------------------------------------- */
+
+.report-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+}
+
+.report-card {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--sp-3);
+  display: grid;
+  gap: var(--sp-1);
+}
+
+.report-card dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.report-card dd {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.report-card--total {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.report-card--total dt {
+  color: var(--on-ink-muted);
+}
+
+.report-card--total dd {
+  color: var(--on-ink-bright);
+}
+
+.report-formula {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--hairline-soft);
+  border-radius: var(--r-md);
+  padding: var(--sp-2) var(--sp-3);
+  margin: 0 0 var(--sp-4);
+  overflow-wrap: anywhere;
+}
+
+/* --- Odds and ends -------------------------------------------------------- */
+
+.card-row__currency {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.card-row__desc {
+  overflow-wrap: anywhere;
+}
+
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.section-heading {
+  font-size: 16px;
+  font-weight: 600;
+  margin: var(--sp-6) 0 var(--sp-2);
 }
