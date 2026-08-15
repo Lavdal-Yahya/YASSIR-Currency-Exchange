@@ -350,7 +350,10 @@ a {
   flex-wrap: wrap;
 }
 
-.toolbar input[type='search'] {
+/* type='text' too: the expense-categories "add" field is a bare text input
+   in a toolbar and matched none of these selectors, so it rendered at 21px. */
+.toolbar input[type='search'],
+.toolbar input[type='text'] {
   font: inherit;
   padding-inline: var(--sp-3);
   padding-block: 8px;
@@ -712,7 +715,18 @@ a {
   display: flex;
   align-items: center;
   gap: var(--sp-2);
-  min-block-size: 36px;
+  min-block-size: 44px;
+}
+
+/* Native checkboxes and radios render ~13px, well under any usable target.
+   The wrapping .checkbox-row / .radio-row label is what you actually tap, but
+   the box itself still has to be big enough to read and hit deliberately. */
+input[type='checkbox'],
+input[type='radio'] {
+  inline-size: 20px;
+  block-size: 20px;
+  flex: none;
+  accent-color: var(--ink);
 }
 
 /* Permission matrix — role columns × permission rows */
