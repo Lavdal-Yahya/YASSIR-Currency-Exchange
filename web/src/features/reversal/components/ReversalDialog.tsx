@@ -34,22 +34,26 @@ export function ReversalDialog({
   if (!open) return null;
   const trimmed = reason.trim();
   return (
+    // Uses the shared dialog vocabulary (.dialog-backdrop / .dialog / …)
+    // rather than a parallel modal-* set. The modal-* names had no CSS at
+    // all, so this dialog rendered inline in the page flow with no overlay
+    // — on the one action in the app that most needs a deliberate stop.
     <div
-      className="modal-backdrop"
+      className="dialog-backdrop"
       role="dialog"
       aria-modal="true"
       aria-labelledby="reversal-title"
     >
-      <div className="modal-card">
-        <h2 id="reversal-title" className="modal-title">
+      <div className="dialog">
+        <h2 id="reversal-title" className="dialog__title">
           {title}
         </h2>
         {warnMessage ? (
-          <p className="modal-warn" role="note">
+          <p className="notice notice--warn" role="note">
             {warnMessage}
           </p>
         ) : null}
-        <label className="form-field">
+        <label className="field">
           <span>{t('reversal.reason_label')}</span>
           <textarea
             value={reason}
@@ -61,12 +65,17 @@ export function ReversalDialog({
           />
         </label>
         {errorMessage ? (
-          <p className="modal-error" role="alert">
+          <p className="field__error" role="alert">
             {errorMessage}
           </p>
         ) : null}
-        <div className="modal-actions">
-          <button type="button" onClick={onCancel} disabled={isSubmitting}>
+        <div className="dialog__actions">
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
             {t('common.cancel')}
           </button>
           <button
