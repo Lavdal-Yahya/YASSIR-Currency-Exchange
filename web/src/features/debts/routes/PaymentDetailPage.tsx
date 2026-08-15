@@ -52,7 +52,7 @@ export function PaymentDetailPage() {
 
       <dl className="detail-list">
         <div className="detail-list__row">
-          <dt>{t('payments.direction')}</dt>
+          <dt>{t('payments.direction_label')}</dt>
           <dd>{t(`payments.direction_${p.direction}`)}</dd>
         </div>
         <div className="detail-list__row">

@@ -12,7 +12,7 @@
     "purchases": "مشتريات",
     "sales": "مبيعات",
     "debts": "الديون",
-    "contacts": "جهات الاتصال",
+    "contacts": "جهات",
     "currencies": "العملات",
     "users": "المستخدمون",
     "settings": "الإعدادات",
@@ -69,7 +69,8 @@
       "all_contacts": "جميع جهات الاتصال",
       "all_currencies": "جميع العملات",
       "date_from": "من",
-      "date_to": "إلى"
+      "date_to": "إلى",
+      "all_categories": "جميع الفئات"
     }
   },
   "form": {
@@ -139,7 +140,11 @@
     "open_payables": "الالتزامات المفتوحة",
     "non_mru_debts_excluded": "لا تشمل الديون بعملات أخرى.",
     "low_balance_warning_one": "عملة واحدة تحت الحد الأدنى",
-    "low_balance_warning_other": "{{count}} عملات تحت الحد الأدنى"
+    "low_balance_warning_other": "{{count}} عملة تحت الحد الأدنى",
+    "low_balance_warning_zero": "لا توجد عملات تحت الحد الأدنى",
+    "low_balance_warning_two": "عملتان تحت الحد الأدنى",
+    "low_balance_warning_few": "{{count}} عملات تحت الحد الأدنى",
+    "low_balance_warning_many": "{{count}} عملة تحت الحد الأدنى"
   },
   "notfound": {
     "title": "الصفحة غير موجودة",
@@ -460,7 +465,8 @@
     "status": {
       "CONFIRMED": "مؤكد",
       "REVERSED": "معكوس"
-    }
+    },
+    "direction_label": "الاتجاه"
   },
   "reversal": {
     "button": "عكس",
@@ -469,8 +475,8 @@
     "status_reversed": "معكوس",
     "reversed_note": "تم عكس هذا القيد. السبب: {{reason}}",
     "restated_count_zero": "لم يُعَد حساب أي بيع.",
-    "restated_count_one": "تمت إعادة حساب {{count}} بيع.",
-    "restated_count_other": "تمت إعادة حساب {{count}} مبيعات.",
+    "restated_count_one": "تمت إعادة حساب عملية بيع واحدة.",
+    "restated_count_other": "تمت إعادة حساب {{count}} عملية بيع.",
     "restated_count": "أعيد حساب {{count}} من المبيعات بعد هذا العكس.",
     "sale_dialog_title": "عكس هذا البيع",
     "sale_warning": "يُلغي العكس هذا البيع ويعيد المخزون. قد تتغير تقارير الفترة.",
@@ -479,7 +485,10 @@
     "payment_dialog_title": "عكس هذا التسديد",
     "payment_warning": "يلغي العكس التسديد — تعاد الديون المعنية إلى حالة مفتوحة.",
     "expense_dialog_title": "عكس هذه المصروفات",
-    "expense_warning": "يلغي العكس المصروفات ويعيد الرصيد."
+    "expense_warning": "يلغي العكس المصروفات ويعيد الرصيد.",
+    "restated_count_two": "تمت إعادة حساب عمليتي بيع.",
+    "restated_count_few": "تمت إعادة حساب {{count}} عمليات بيع.",
+    "restated_count_many": "تمت إعادة حساب {{count}} عملية بيع."
   },
   "reports": {
     "profit_title": "تقرير الربح",
@@ -534,7 +543,42 @@
     "hide_diff": "إخفاء",
     "before": "قبل",
     "after": "بعد",
-    "no_data": "لا توجد أحداث."
+    "no_data": "لا توجد أحداث.",
+    "actions": {
+      "balance_override_applied": "تصحيح الرصيد",
+      "contact_created": "إنشاء جهة اتصال",
+      "contact_updated": "تعديل جهة اتصال",
+      "contact_archived": "أرشفة جهة اتصال",
+      "contact_unarchived": "إلغاء أرشفة جهة اتصال",
+      "currency_created": "إنشاء عملة",
+      "currency_updated": "تعديل عملة",
+      "currency_deactivated": "تعطيل عملة",
+      "currency_reactivated": "تفعيل عملة",
+      "expense_category_created": "إنشاء فئة مصروفات",
+      "expense_category_updated": "تعديل فئة مصروفات",
+      "expense_category_deactivated": "تعطيل فئة مصروفات",
+      "expense_category_reactivated": "تفعيل فئة مصروفات",
+      "expense_created": "تسجيل مصروف",
+      "expense_reversed": "عكس مصروف",
+      "login_succeeded": "تسجيل دخول ناجح",
+      "login_failed": "فشل تسجيل الدخول",
+      "logout": "تسجيل الخروج",
+      "opening_balance_created": "إنشاء رصيد افتتاحي",
+      "opening_balance_updated": "تعديل رصيد افتتاحي",
+      "payment_created": "تسجيل تسديد",
+      "payment_reversed": "عكس تسديد",
+      "payment_method_created": "إنشاء طريقة دفع",
+      "payment_method_updated": "تعديل طريقة دفع",
+      "payment_method_deactivated": "تعطيل طريقة دفع",
+      "payment_method_reactivated": "تفعيل طريقة دفع",
+      "pin_reset": "إعادة تعيين رمز الدخول",
+      "purchase_created": "تسجيل شراء",
+      "purchase_reversed": "عكس شراء",
+      "sale_created": "تسجيل بيع",
+      "sale_reversed": "عكس بيع",
+      "settings_updated": "تعديل الإعدادات",
+      "settings_went_live": "بدء التشغيل الفعلي"
+    }
   },
   "rates": {
     "title": "أسعار السوق",
@@ -551,5 +595,24 @@
     "no_snapshot": "لا توجد أسعار مسجلة.",
     "view_history": "السجل",
     "current_badge": "الحالي"
+  },
+  "expenses": {
+    "title": "المصروفات",
+    "new": "مصروف جديد",
+    "new_title": "مصروف جديد",
+    "empty": "لا توجد مصروفات مسجلة.",
+    "category": "الفئة",
+    "currency": "العملة",
+    "amount": "المبلغ",
+    "payment_method": "طريقة الدفع",
+    "method_note": "مرجع الدفع",
+    "method_note_hint": "رقم العملية، المرجع…",
+    "description": "الوصف",
+    "date": "التاريخ",
+    "category_required": "اختر فئة.",
+    "currency_required": "اختر عملة.",
+    "amount_invalid": "مبلغ غير صالح (4 خانات عشرية كحد أقصى).",
+    "method_required": "اختر طريقة دفع.",
+    "description_required": "الوصف إلزامي."
   }
 }

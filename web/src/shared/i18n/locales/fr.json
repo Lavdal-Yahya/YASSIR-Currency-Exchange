@@ -69,7 +69,8 @@
       "all_contacts": "Tous les contacts",
       "all_currencies": "Toutes les devises",
       "date_from": "Du",
-      "date_to": "Au"
+      "date_to": "Au",
+      "all_categories": "Toutes les catégories"
     }
   },
   "form": {
@@ -138,7 +139,7 @@
     "open_receivables": "Créances ouvertes",
     "open_payables": "Dettes ouvertes",
     "non_mru_debts_excluded": "Créances en devises étrangères non comptées.",
-    "low_balance_warning_one": "1 devise sous le seuil",
+    "low_balance_warning_one": "{{count}} devise sous le seuil",
     "low_balance_warning_other": "{{count}} devises sous le seuil"
   },
   "notfound": {
@@ -460,7 +461,8 @@
     "status": {
       "CONFIRMED": "Confirmé",
       "REVERSED": "Inversé"
-    }
+    },
+    "direction_label": "Sens"
   },
   "reversal": {
     "button": "Contre-passer",
@@ -534,7 +536,42 @@
     "hide_diff": "Masquer",
     "before": "Avant",
     "after": "Après",
-    "no_data": "Aucun événement."
+    "no_data": "Aucun événement.",
+    "actions": {
+      "balance_override_applied": "Solde corrigé",
+      "contact_created": "Contact créé",
+      "contact_updated": "Contact modifié",
+      "contact_archived": "Contact archivé",
+      "contact_unarchived": "Contact désarchivé",
+      "currency_created": "Devise créée",
+      "currency_updated": "Devise modifiée",
+      "currency_deactivated": "Devise désactivée",
+      "currency_reactivated": "Devise réactivée",
+      "expense_category_created": "Catégorie de dépense créée",
+      "expense_category_updated": "Catégorie de dépense modifiée",
+      "expense_category_deactivated": "Catégorie de dépense désactivée",
+      "expense_category_reactivated": "Catégorie de dépense réactivée",
+      "expense_created": "Dépense enregistrée",
+      "expense_reversed": "Dépense contre-passée",
+      "login_succeeded": "Connexion réussie",
+      "login_failed": "Échec de connexion",
+      "logout": "Déconnexion",
+      "opening_balance_created": "Solde d'ouverture créé",
+      "opening_balance_updated": "Solde d'ouverture modifié",
+      "payment_created": "Règlement enregistré",
+      "payment_reversed": "Règlement contre-passé",
+      "payment_method_created": "Moyen de paiement créé",
+      "payment_method_updated": "Moyen de paiement modifié",
+      "payment_method_deactivated": "Moyen de paiement désactivé",
+      "payment_method_reactivated": "Moyen de paiement réactivé",
+      "pin_reset": "Code PIN réinitialisé",
+      "purchase_created": "Achat enregistré",
+      "purchase_reversed": "Achat contre-passé",
+      "sale_created": "Vente enregistrée",
+      "sale_reversed": "Vente contre-passée",
+      "settings_updated": "Paramètres modifiés",
+      "settings_went_live": "Mise en production"
+    }
   },
   "rates": {
     "title": "Taux du marché",
@@ -551,5 +588,24 @@
     "no_snapshot": "Aucun taux enregistré.",
     "view_history": "Historique",
     "current_badge": "Actuel"
+  },
+  "expenses": {
+    "title": "Dépenses",
+    "new": "Nouvelle dépense",
+    "new_title": "Nouvelle dépense",
+    "empty": "Aucune dépense enregistrée.",
+    "category": "Catégorie",
+    "currency": "Devise",
+    "amount": "Montant",
+    "payment_method": "Moyen de paiement",
+    "method_note": "Référence du paiement",
+    "method_note_hint": "N° de transaction, référence…",
+    "description": "Description",
+    "date": "Date",
+    "category_required": "Choisissez une catégorie.",
+    "currency_required": "Choisissez une devise.",
+    "amount_invalid": "Montant invalide (4 décimales maximum).",
+    "method_required": "Choisissez un moyen de paiement.",
+    "description_required": "La description est obligatoire."
   }
 }

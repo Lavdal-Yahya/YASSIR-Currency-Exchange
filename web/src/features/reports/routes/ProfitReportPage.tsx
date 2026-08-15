@@ -98,73 +98,79 @@ export function ProfitReportPage() {
           </p>
 
           <h3>{t('reports.by_currency')}</h3>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{t('reports.currency')}</th>
-                <th>{t('reports.revenue')}</th>
-                <th>{t('reports.cost_of_currency_sold')}</th>
-                <th>{t('reports.gross_profit')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {q.data.byCurrency.map((r) => (
-                <tr key={r.currencyId}>
-                  <td>{r.currencyCode}</td>
-                  <td>{r.revenueMru} MRU</td>
-                  <td>{r.costOfCurrencySoldMru} MRU</td>
-                  <td>{r.grossProfitMru} MRU</td>
-                </tr>
-              ))}
-              {q.data.byCurrency.length === 0 ? (
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <td colSpan={4}>{t('reports.no_data')}</td>
+                  <th>{t('reports.currency')}</th>
+                  <th>{t('reports.revenue')}</th>
+                  <th>{t('reports.cost_of_currency_sold')}</th>
+                  <th>{t('reports.gross_profit')}</th>
                 </tr>
-              ) : null}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {q.data.byCurrency.map((r) => (
+                  <tr key={r.currencyId}>
+                    <td>{r.currencyCode}</td>
+                    <td>{r.revenueMru} MRU</td>
+                    <td>{r.costOfCurrencySoldMru} MRU</td>
+                    <td>{r.grossProfitMru} MRU</td>
+                  </tr>
+                ))}
+                {q.data.byCurrency.length === 0 ? (
+                  <tr>
+                    <td colSpan={4}>{t('reports.no_data')}</td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
 
           {q.data.fxByCurrency.length > 0 ? (
             <>
               <h3>{t('reports.fx_by_currency')}</h3>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>{t('reports.currency')}</th>
-                    <th>{t('reports.realized_fx_gain')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {q.data.fxByCurrency.map((r) => (
-                    <tr key={r.currencyId}>
-                      <td>{r.currencyCode}</td>
-                      <td>{r.realizedPnlMru} MRU</td>
+              <div className="table-scroll">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>{t('reports.currency')}</th>
+                      <th>{t('reports.realized_fx_gain')}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {q.data.fxByCurrency.map((r) => (
+                      <tr key={r.currencyId}>
+                        <td>{r.currencyCode}</td>
+                        <td>{r.realizedPnlMru} MRU</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </>
           ) : null}
 
           {q.data.expensesByCategory.length > 0 ? (
             <>
               <h3>{t('reports.expenses_by_category')}</h3>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>{t('reports.category')}</th>
-                    <th>{t('reports.amount')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {q.data.expensesByCategory.map((r) => (
-                    <tr key={r.expenseCategoryId}>
-                      <td>{r.expenseCategoryName}</td>
-                      <td>{r.amountMru} MRU</td>
+              <div className="table-scroll">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>{t('reports.category')}</th>
+                      <th>{t('reports.amount')}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {q.data.expensesByCategory.map((r) => (
+                      <tr key={r.expenseCategoryId}>
+                        <td>{r.expenseCategoryName}</td>
+                        <td>{r.amountMru} MRU</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </>
           ) : null}
         </>

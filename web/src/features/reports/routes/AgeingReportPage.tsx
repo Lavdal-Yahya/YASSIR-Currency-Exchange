@@ -49,38 +49,40 @@ export function AgeingReportPage() {
 function AgeingTable({ section }: { section: AgeingSection }) {
   const { t } = useTranslation();
   return (
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th>{t('reports.bucket')}</th>
-          <th>{t('reports.count')}</th>
-          <th>{t('reports.currency')}</th>
-          <th>{t('reports.total')}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {BUCKETS.flatMap(({ key, i18n }) => {
-          const bucket: AgeingBucket = section[key];
-          if (bucket.count === 0) {
-            return [
-              <tr key={key}>
-                <td>{t(i18n)}</td>
-                <td>0</td>
-                <td>—</td>
-                <td>—</td>
-              </tr>,
-            ];
-          }
-          return bucket.byCurrency.map((cur, idx) => (
-            <tr key={`${key}-${cur.currencyCode}`}>
-              {idx === 0 ? <td rowSpan={bucket.byCurrency.length}>{t(i18n)}</td> : null}
-              {idx === 0 ? <td rowSpan={bucket.byCurrency.length}>{bucket.count}</td> : null}
-              <td>{cur.currencyCode}</td>
-              <td>{cur.total}</td>
-            </tr>
-          ));
-        })}
-      </tbody>
-    </table>
+    <div className="table-scroll">
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>{t('reports.bucket')}</th>
+            <th>{t('reports.count')}</th>
+            <th>{t('reports.currency')}</th>
+            <th>{t('reports.total')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {BUCKETS.flatMap(({ key, i18n }) => {
+            const bucket: AgeingBucket = section[key];
+            if (bucket.count === 0) {
+              return [
+                <tr key={key}>
+                  <td>{t(i18n)}</td>
+                  <td>0</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>,
+              ];
+            }
+            return bucket.byCurrency.map((cur, idx) => (
+              <tr key={`${key}-${cur.currencyCode}`}>
+                {idx === 0 ? <td rowSpan={bucket.byCurrency.length}>{t(i18n)}</td> : null}
+                {idx === 0 ? <td rowSpan={bucket.byCurrency.length}>{bucket.count}</td> : null}
+                <td>{cur.currencyCode}</td>
+                <td>{cur.total}</td>
+              </tr>
+            ));
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }

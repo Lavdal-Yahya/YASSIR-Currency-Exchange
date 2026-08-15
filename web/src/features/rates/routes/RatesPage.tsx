@@ -67,36 +67,38 @@ export function RatesPage() {
         <p className="empty-state">{t('rates.no_snapshot')}</p>
       ) : null}
       {current.data && current.data.length > 0 ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>{t('rates.currency')}</th>
-              <th>{t('rates.mid_rate')}</th>
-              <th>{t('rates.source')}</th>
-              <th>{t('rates.fetched_at')}</th>
-              <th>{t('common.action')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {current.data.map((r) => (
-              <tr key={r.currencyId}>
-                <td>{r.currencyCode}</td>
-                <td>{r.midRateMru} MRU</td>
-                <td>{r.source}</td>
-                <td>{dateFmt.format(new Date(r.fetchedAt))}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn--ghost btn--small"
-                    onClick={() => setSelectedCurrencyId(r.currencyId)}
-                  >
-                    {t('rates.view_history')}
-                  </button>
-                </td>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>{t('rates.currency')}</th>
+                <th>{t('rates.mid_rate')}</th>
+                <th>{t('rates.source')}</th>
+                <th>{t('rates.fetched_at')}</th>
+                <th>{t('common.action')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {current.data.map((r) => (
+                <tr key={r.currencyId}>
+                  <td>{r.currencyCode}</td>
+                  <td>{r.midRateMru} MRU</td>
+                  <td>{r.source}</td>
+                  <td>{dateFmt.format(new Date(r.fetchedAt))}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      onClick={() => setSelectedCurrencyId(r.currencyId)}
+                    >
+                      {t('rates.view_history')}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
 
       {selectedCurrencyId ? (
@@ -105,30 +107,32 @@ export function RatesPage() {
           {history.isLoading ? <Loading /> : null}
           {history.error ? <ErrorMessage error={history.error} /> : null}
           {history.data ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>{t('rates.fetched_at')}</th>
-                  <th>{t('rates.mid_rate')}</th>
-                  <th>{t('rates.source')}</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {history.data.map((r) => (
-                  <tr key={r.id}>
-                    <td>{dateFmt.format(new Date(r.fetchedAt))}</td>
-                    <td>{r.midRateMru} MRU</td>
-                    <td>{r.source}</td>
-                    <td>
-                      {r.isCurrent ? (
-                        <span className="badge badge--in">{t('rates.current_badge')}</span>
-                      ) : null}
-                    </td>
+            <div className="table-scroll">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>{t('rates.fetched_at')}</th>
+                    <th>{t('rates.mid_rate')}</th>
+                    <th>{t('rates.source')}</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {history.data.map((r) => (
+                    <tr key={r.id}>
+                      <td>{dateFmt.format(new Date(r.fetchedAt))}</td>
+                      <td>{r.midRateMru} MRU</td>
+                      <td>{r.source}</td>
+                      <td>
+                        {r.isCurrent ? (
+                          <span className="badge badge--in">{t('rates.current_badge')}</span>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : null}
         </>
       ) : null}

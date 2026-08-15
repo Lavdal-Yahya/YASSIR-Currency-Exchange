@@ -65,33 +65,35 @@ export function AuditLogPage() {
       {q.error ? <ErrorMessage error={q.error} /> : null}
       {q.data ? (
         <>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>{t('audit.when')}</th>
-                <th>{t('audit.actor')}</th>
-                <th>{t('audit.action')}</th>
-                <th>{t('audit.entity')}</th>
-                <th>{t('audit.reason')}</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {q.data.data.map((r) => (
-                <RowWithDiff
-                  key={r.id}
-                  r={r}
-                  expanded={expanded === r.id}
-                  toggle={() => setExpanded((cur) => (cur === r.id ? null : r.id))}
-                />
-              ))}
-              {q.data.data.length === 0 ? (
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
                 <tr>
-                  <td colSpan={6}>{t('audit.no_data')}</td>
+                  <th>{t('audit.when')}</th>
+                  <th>{t('audit.actor')}</th>
+                  <th>{t('audit.action')}</th>
+                  <th>{t('audit.entity')}</th>
+                  <th>{t('audit.reason')}</th>
+                  <th />
                 </tr>
-              ) : null}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {q.data.data.map((r) => (
+                  <RowWithDiff
+                    key={r.id}
+                    r={r}
+                    expanded={expanded === r.id}
+                    toggle={() => setExpanded((cur) => (cur === r.id ? null : r.id))}
+                  />
+                ))}
+                {q.data.data.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>{t('audit.no_data')}</td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
           <div className="pagination">
             <button
               type="button"
@@ -132,7 +134,10 @@ function RowWithDiff({
       <tr>
         <td>{new Date(r.createdAt).toLocaleString()}</td>
         <td>{r.actorName ?? r.actorPhone ?? '—'}</td>
-        <td>{r.action}</td>
+        {/* Action codes come from the API verbatim (audit.service.ts). Unknown
+            codes — a newer API against an older web build — fall back to the
+            raw code rather than rendering a translation key. */}
+        <td>{t(`audit.actions.${r.action}`, { defaultValue: r.action })}</td>
         <td>
           {r.entityType}
           {r.entityId ? `#${r.entityId.slice(0, 8)}` : ''}
@@ -140,7 +145,7 @@ function RowWithDiff({
         <td>{r.reason ?? '—'}</td>
         <td>
           {r.before !== null || r.after !== null ? (
-            <button type="button" onClick={toggle}>
+            <button type="button" className="btn btn--ghost btn--sm" onClick={toggle}>
               {expanded ? t('audit.hide_diff') : t('audit.show_diff')}
             </button>
           ) : null}

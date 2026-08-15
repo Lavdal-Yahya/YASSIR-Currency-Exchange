@@ -59,12 +59,22 @@ a {
   padding-block: var(--sp-6);
   padding-block-end: calc(var(--sp-6) + env(safe-area-inset-bottom));
   overflow-y: auto;
+  /* A grid item defaults to a min-content floor, so wide content used to push
+     main — and the whole shell — past the viewport. With the floor removed,
+     anything too wide scrolls inside main instead of widening the page.
+     (overflow-x computes to `auto` here anyway: `visible` is not allowed
+     alongside `overflow-y: auto`.) */
+  min-inline-size: 0;
 }
 
 .bottom-nav {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  /* minmax(0, 1fr), not a bare 1fr: `1fr` means `minmax(auto, 1fr)`, and the
+     `auto` floor sizes every track to its label's min-content width. Six
+     French labels pushed the nav — and with it .app-shell and every screen —
+     to 453px on a 390px viewport, ignoring the viewport entirely. */
+  grid-auto-columns: minmax(0, 1fr);
   align-items: stretch;
   background: var(--ink);
   color: var(--on-ink);
@@ -80,14 +90,28 @@ a {
   gap: var(--sp-1);
   min-block-size: 56px;
   padding-block: var(--sp-2);
-  padding-inline: var(--sp-2);
+  padding-inline: 2px;
+  /* min-inline-size: 0 so the item can actually shrink to its track —
+     a flex/grid child defaults to min-content and would re-inflate the nav. */
+  min-inline-size: 0;
   color: var(--on-ink-muted);
-  font-size: 11px;
+  /* Uppercase + letter-spacing cost ~20% width on the French labels, which is
+     what made six of them unfittable. Fluid size keeps them legible down to
+     320px without truncating. */
+  font-size: clamp(9px, 2.7vw, 11px);
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   text-align: center;
   /* 44×44 target minimum — the row min-block-size handles the vertical. */
+}
+
+.bottom-nav__label {
+  /* Safety net only: with the sizing above every label fits in both
+     languages, but a longer future label ellipsises instead of reflowing
+     the whole shell. */
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bottom-nav__item[aria-current='page'] {
@@ -210,7 +234,11 @@ a {
   color: var(--muted);
 }
 
-.field input {
+/* Inputs and selects share one box. The select was previously unstyled, so
+   it fell back to the UA default and rendered ~19px tall — well under the
+   44px touch target — on every form that has one. */
+.field input,
+.field select {
   font: inherit;
   padding-inline: var(--sp-3);
   padding-block: 12px;
@@ -218,9 +246,12 @@ a {
   border-radius: var(--r-md);
   background: white;
   min-block-size: 44px;
+  inline-size: 100%;
+  min-inline-size: 0;
 }
 
-.field input[aria-invalid='true'] {
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
   border-color: var(--danger);
 }
 
@@ -342,9 +373,141 @@ a {
   margin-block-start: var(--sp-4);
 }
 
+/* Most pagers use .btn; the audit pager passes bare <button>s, and the
+   global button reset zeroes their padding down to a ~21px tap target. */
+.pagination button {
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  font-weight: 600;
+}
+
+.pagination button:disabled {
+  color: var(--disabled-text);
+  background: var(--disabled-bg);
+}
+
 .pagination__info {
   font-size: 0.875rem;
   color: var(--ink-muted);
+}
+
+/* Data tables — the dense read-only grids in reports, audit and rates.
+   These had no rules at all, so they rendered as bare UA tables and, worse,
+   their width escaped to .app-shell__main and scrolled the entire page
+   sideways (the audit table measures ~633px inside a 390px viewport).
+   Always wrap one in .table-scroll so the overflow is owned here. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  margin-block-end: var(--sp-4);
+}
+
+.data-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--sp-2) var(--sp-3);
+  border-block-end: 1px solid var(--hairline);
+  text-align: start;
+  vertical-align: middle;
+  /* Cells scroll rather than wrap — a wrapped date or amount is harder to
+     scan than a swipe. Full-width cells (empty states, the audit diff) opt
+     back into wrapping below. */
+  white-space: nowrap;
+}
+
+.data-table thead th {
+  background: var(--hairline-soft);
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.data-table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.data-table td[colspan] {
+  white-space: normal;
+}
+
+.data-table tfoot td {
+  font-weight: 600;
+  border-block-start: 1px solid var(--hairline-strong);
+}
+
+/* Audit before/after diff — stacked on phones, side by side when there's
+   room. The <pre> wraps so a long value never widens the scroll container. */
+.audit-diff {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+.audit-diff h4 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 var(--sp-1);
+}
+
+.audit-diff pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--hairline-soft);
+  border-radius: var(--r-md);
+  padding: var(--sp-2);
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Filter form above a report or the audit log — one column on a phone,
+   as many as fit beyond that. */
+.filter-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: var(--sp-2);
+  margin-block-end: var(--sp-4);
+}
+
+.filter-bar label {
+  display: grid;
+  gap: var(--sp-1);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filter-bar input,
+.filter-bar select {
+  font: inherit;
+  font-weight: 400;
+  color: var(--ink);
+  padding-inline: var(--sp-3);
+  padding-block: 8px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-md);
+  background: white;
+  min-block-size: 44px;
+  inline-size: 100%;
+  min-inline-size: 0;
 }
 
 /* Card list — mobile-first replacement for a data table */
@@ -509,6 +672,15 @@ a {
   background: white;
   color: var(--ink);
   border-color: var(--hairline-strong);
+}
+
+/* Compact variant for inline actions ("reset filters", "view history").
+   Shorter than the 44px default but still a comfortable target — matches
+   the 40px used by .toolbar controls. Must follow .btn to win the cascade. */
+.btn--sm {
+  min-block-size: 40px;
+  padding-inline: var(--sp-3);
+  font-size: 13px;
 }
 
 .field textarea {
