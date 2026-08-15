@@ -61,38 +61,42 @@ export function CashFlowReportPage() {
       {q.isLoading ? <Loading /> : null}
       {q.error ? <ErrorMessage error={q.error} /> : null}
       {q.data ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>{t('reports.method')}</th>
-              <th>{t('reports.currency')}</th>
-              <th>{t('reports.credits')}</th>
-              <th>{t('reports.debits')}</th>
-              <th>{t('reports.net')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {q.data.methods.length === 0 ? (
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
               <tr>
-                <td colSpan={5}>{t('reports.no_data')}</td>
+                <th>{t('reports.method')}</th>
+                <th>{t('reports.currency')}</th>
+                <th>{t('reports.credits')}</th>
+                <th>{t('reports.debits')}</th>
+                <th>{t('reports.net')}</th>
               </tr>
-            ) : null}
-            {q.data.methods.flatMap((method) =>
-              method.byLeg.map((leg) => {
-                const net = (parseFloat(leg.creditsTotal) - parseFloat(leg.debitsTotal)).toFixed(4);
-                return (
-                  <tr key={`${method.paymentMethodId}-${leg.currencyCode}`}>
-                    <td>{method.paymentMethodName}</td>
-                    <td>{leg.currencyCode}</td>
-                    <td>{leg.creditsTotal}</td>
-                    <td>{leg.debitsTotal}</td>
-                    <td>{net}</td>
-                  </tr>
-                );
-              }),
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {q.data.methods.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>{t('reports.no_data')}</td>
+                </tr>
+              ) : null}
+              {q.data.methods.flatMap((method) =>
+                method.byLeg.map((leg) => {
+                  const net = (parseFloat(leg.creditsTotal) - parseFloat(leg.debitsTotal)).toFixed(
+                    4,
+                  );
+                  return (
+                    <tr key={`${method.paymentMethodId}-${leg.currencyCode}`}>
+                      <td>{method.paymentMethodName}</td>
+                      <td>{leg.currencyCode}</td>
+                      <td>{leg.creditsTotal}</td>
+                      <td>{leg.debitsTotal}</td>
+                      <td>{net}</td>
+                    </tr>
+                  );
+                }),
+              )}
+            </tbody>
+          </table>
+        </div>
       ) : null}
     </>
   );

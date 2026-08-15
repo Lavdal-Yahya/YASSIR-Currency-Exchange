@@ -47,32 +47,34 @@ export function UserActivityReportPage() {
       {q.isLoading ? <Loading /> : null}
       {q.error ? <ErrorMessage error={q.error} /> : null}
       {q.data ? (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>{t('reports.user')}</th>
-              <th>{t('reports.purchases')}</th>
-              <th>{t('reports.sales')}</th>
-              <th>{t('reports.payments')}</th>
-              <th>{t('reports.expenses')}</th>
-              <th>{t('reports.reversals')}</th>
-              <th>{t('reports.failed_logins')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {q.data.map((r) => (
-              <tr key={r.userId}>
-                <td>{r.fullName}</td>
-                <td>{r.purchasesCreated}</td>
-                <td>{r.salesCreated}</td>
-                <td>{r.paymentsCreated}</td>
-                <td>{r.expensesCreated}</td>
-                <td>{r.reversalsPerformed}</td>
-                <td>{r.failedLogins}</td>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>{t('reports.user')}</th>
+                <th>{t('reports.purchases')}</th>
+                <th>{t('reports.sales')}</th>
+                <th>{t('reports.payments')}</th>
+                <th>{t('reports.expenses')}</th>
+                <th>{t('reports.reversals')}</th>
+                <th>{t('reports.failed_logins')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {q.data.map((r) => (
+                <tr key={r.userId}>
+                  <td>{r.fullName}</td>
+                  <td>{r.purchasesCreated}</td>
+                  <td>{r.salesCreated}</td>
+                  <td>{r.paymentsCreated}</td>
+                  <td>{r.expensesCreated}</td>
+                  <td>{r.reversalsPerformed}</td>
+                  <td>{r.failedLogins}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
     </>
   );
