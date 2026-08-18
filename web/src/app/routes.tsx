@@ -5,6 +5,7 @@ import { ContactProfilePage } from '../features/contacts/routes/ContactProfilePa
 import { ContactsListPage } from '../features/contacts/routes/ContactsListPage';
 import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesListPage';
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
+import { CurrencyHistoryPage } from '../features/currencies/routes/CurrencyHistoryPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
 import { BalancesDashboardPage } from '../features/openings/routes/BalancesDashboardPage';
 import { OpeningCurrencyFormPage } from '../features/openings/routes/OpeningCurrencyFormPage';
@@ -76,6 +77,7 @@ export const routes: RouteObject[] = [
           { path: '/currencies', element: <CurrenciesListPage /> },
           { path: '/currencies/new', element: <CurrencyFormPage /> },
           { path: '/currencies/:id/edit', element: <CurrencyFormPage /> },
+          { path: '/currencies/:id/history', element: <CurrencyHistoryPage /> },
 
           { path: '/balances', element: <BalancesDashboardPage /> },
           { path: '/openings', element: <OpeningsHomePage /> },

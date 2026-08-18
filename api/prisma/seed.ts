@@ -3,7 +3,7 @@
 //   P1-04  · this file. Permissions, OWNER + EMPLOYEE roles, a bootstrap
 //            owner user whose PIN is read from BOOTSTRAP_OWNER_PIN
 //            (default `1234` in dev, hard-required in production).
-//   P2-01  · MRU/USD/EUR currency rows (MRU first, base).
+//   P2-01  · MRU/MAD/AED currency rows (MRU first, base).
 //   P2-05  · payment_method: CASH / BANKILY / MASRIVI / SEDAD / OTHER (D-020).
 //   P2-02  · settings row (id=1) with MRU as base.
 //
@@ -40,8 +40,8 @@ async function main(): Promise<void> {
     // currencies alone. `decimalPlaces` follows spec §36 conventions.
     for (const c of [
       { code: 'MRU', name: 'Ouguiya', symbol: 'UM', decimalPlaces: 2 },
-      { code: 'USD', name: 'US Dollar', symbol: '$', decimalPlaces: 2 },
-      { code: 'EUR', name: 'Euro', symbol: '€', decimalPlaces: 2 },
+      { code: 'MAD', name: 'Dirham Marocain', symbol: 'MAD', decimalPlaces: 2 },
+      { code: 'AED', name: 'Dirham Émirati', symbol: 'AED', decimalPlaces: 2 },
     ] as const) {
       await tx.currency.upsert({
         where: { code: c.code },

@@ -5,6 +5,7 @@ import { SideBySideDebtsPanel } from '../../debts/components/SideBySideDebtsPane
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
+import { useBalances } from '../../openings/api/useOpenings';
 import { useContactTrades } from '../../trades/api/useTrades';
 import {
   useArchiveContact,
@@ -17,15 +18,10 @@ import { ContactForm } from '../components/ContactForm';
 
 type Tab = 'overview' | 'debts' | 'trades';
 
-// The debts tab replaces the pair of "receivables" / "payables" tabs
-// so both are always visible together and never netted (spec §17 +
-// phase-5.md §5 SideBySideDebtsPanel).
 const TAB_ORDER: Tab[] = ['overview', 'debts', 'trades'];
 
-// Explicit placeholder cards, not empty tables. An empty table reads as
-// "no data yet", which is a bug signal; a card reading "arrives in
-// Phase 4/5" tells the operator this is scope, not breakage
-// (phase-2.md §5).
+const PAGE_STEP = 20;
+
 export function ContactProfilePage() {
   const { t } = useTranslation();
   const { id = '' } = useParams();
@@ -35,7 +31,8 @@ export function ContactProfilePage() {
   const archive = useArchiveContact(id);
   const unarchive = useUnarchiveContact(id);
   const [editing, setEditing] = useState(false);
-  const [tab, setTab] = useState<Tab>('overview');
+  // Default to trades tab so clicking a contact shows their history immediately.
+  const [tab, setTab] = useState<Tab>('trades');
 
   if (q.isLoading) return <Loading />;
   if (q.error) return <ErrorMessage error={q.error} />;
@@ -122,8 +119,13 @@ export function ContactProfilePage() {
 }
 
 function ContactTradesTab({ contactId }: { contactId: string }) {
-  const { t } = useTranslation();
-  const q = useContactTrades(contactId);
+  const { t, i18n } = useTranslation();
+  const [limit, setLimit] = useState(PAGE_STEP);
+  const q = useContactTrades(contactId, limit);
+  // Build a UUID → currency code lookup from balances
+  const balances = useBalances();
+  const currencyCode = (id: string) =>
+    balances.data?.find((b) => b.currencyId === id)?.code ?? id.slice(0, 3);
 
   if (q.isLoading) return <Loading />;
   if (q.error) return <ErrorMessage error={q.error} />;
@@ -131,36 +133,59 @@ function ContactTradesTab({ contactId }: { contactId: string }) {
     return <p className="empty-state">{t('contacts.profile.trades_empty')}</p>;
   }
 
+  const dateFmt = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' });
+
   return (
-    <ul className="card-list" aria-label={t('contacts.profile.trades')}>
-      {q.data.data.map((item) => {
-        const path = item.kind === 'purchase' ? `/purchases/${item.id}` : `/sales/${item.id}`;
-        const badge = item.kind === 'purchase' ? t('purchases.title') : t('sales.title');
-        return (
-          <li key={`${item.kind}-${item.id}`}>
-            <Link to={path} className="card-row">
-              <div className="card-row__header">
-                <h3 className="card-row__title">
-                  {item.deliveredAmount}{' '}
-                  <span className="card-row__currency">{item.deliveredCurrencyId.slice(0, 3)}</span>
-                </h3>
-                <span className="badge badge--out">{badge}</span>
-              </div>
-              <div className="card-row__meta">
-                <span className="card-row__mono">
-                  {new Date(item.transactionDate).toLocaleDateString()}
-                </span>
-                <span className={`badge badge--${payStatusClass(item.paymentStatus)}`}>
-                  {item.kind === 'purchase'
-                    ? t(`purchases.payment_status.${item.paymentStatus}`)
-                    : t(`sales.payment_status.${item.paymentStatus}`)}
-                </span>
-              </div>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <ul className="card-list" aria-label={t('contacts.profile.trades')}>
+        {q.data.data.map((item) => {
+          const path = item.kind === 'purchase' ? `/purchases/${item.id}` : `/sales/${item.id}`;
+          const isIn = item.kind === 'purchase';
+          const badge = isIn ? t('purchases.title') : t('sales.title');
+          return (
+            <li key={`${item.kind}-${item.id}`}>
+              <Link to={path} className="card-row">
+                <div className="card-row__header">
+                  <h3 className="card-row__title">
+                    <span style={{ color: isIn ? 'var(--in-text)' : 'var(--out-text)' }}>
+                      {isIn ? '↓' : '↑'}
+                    </span>{' '}
+                    {item.deliveredAmount}{' '}
+                    <span className="card-row__currency">
+                      {currencyCode(item.deliveredCurrencyId)}
+                    </span>
+                  </h3>
+                  <span className={`badge ${isIn ? 'badge--in' : 'badge--out'}`}>{badge}</span>
+                </div>
+                <div className="card-row__meta">
+                  <span className="card-row__mono">
+                    {dateFmt.format(new Date(item.transactionDate))}
+                  </span>
+                  <span className={`badge badge--${payStatusClass(item.paymentStatus)}`}>
+                    {item.kind === 'purchase'
+                      ? t(`purchases.payment_status.${item.paymentStatus}`)
+                      : t(`sales.payment_status.${item.paymentStatus}`)}
+                  </span>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      {q.data.total > limit ? (
+        <div style={{ textAlign: 'center', marginBlockStart: 'var(--sp-4)' }}>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() => setLimit((l) => l + PAGE_STEP)}
+            disabled={q.isFetching}
+          >
+            {q.isFetching ? t('common.loading') : t('contacts.profile.see_more')}
+          </button>
+        </div>
+      ) : null}
+    </>
   );
 }
 

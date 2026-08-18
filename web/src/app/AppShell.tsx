@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router-dom';
 
-// Bottom nav, sized for one-handed phone use per phase-1.md §5. Nav grows
-// task by task through Phase 2 — P2-08 adds Currencies; contacts, users
-// and settings arrive as their features land.
+// Top nav, sized for one-handed phone use. Moved from bottom to top so
+// the nav is always visible without scrolling.
 
 interface NavItem {
   to: string;
@@ -25,19 +24,19 @@ export function AppShell() {
   const { t } = useTranslation();
   return (
     <div className="app-shell">
-      <main className="app-shell__main">
-        <Outlet />
-      </main>
-      <nav className="bottom-nav" aria-label={t('nav.dashboard')}>
+      <nav className="top-nav" aria-label={t('nav.dashboard')}>
         {NAV_ITEMS.map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.end} className="bottom-nav__item">
-            <span aria-hidden="true" className="bottom-nav__icon">
+          <NavLink key={item.to} to={item.to} end={item.end} className="top-nav__item">
+            <span aria-hidden="true" className="top-nav__icon">
               {item.icon}
             </span>
-            <span className="bottom-nav__label">{t(item.labelKey)}</span>
+            <span className="top-nav__label">{t(item.labelKey)}</span>
           </NavLink>
         ))}
       </nav>
+      <main className="app-shell__main">
+        <Outlet />
+      </main>
     </div>
   );
 }

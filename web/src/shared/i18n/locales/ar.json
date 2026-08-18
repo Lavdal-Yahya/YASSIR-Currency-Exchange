@@ -58,6 +58,8 @@
     "choose": "اختر…",
     "coming_soon": "قريباً",
     "reset_filters": "إعادة تعيين",
+    "today": "اليوم",
+    "yesterday": "أمس",
     "prev_page": "السابق",
     "next_page": "التالي",
     "page_of": "صفحة {{n}} / {{total}}",
@@ -171,7 +173,9 @@
     "low_threshold_label": "الحد",
     "threshold_invalid": "رقم موجب مثل 100 أو 100.50.",
     "deactivate": "تعطيل العملة",
-    "reactivate": "إعادة تفعيل العملة"
+    "reactivate": "إعادة تفعيل العملة",
+    "history": "السجل",
+    "ledger_empty": "لا توجد عمليات لهذه العملة."
   },
   "contacts": {
     "title": "جهات الاتصال",
@@ -207,7 +211,8 @@
       "trades_empty": "لا توجد صفقات لهذا الاتصال.",
       "phase5_placeholder": "متاح ابتداءً من المرحلة 5.",
       "created_at": "أُنشئ في",
-      "not_found": "جهة الاتصال غير موجودة."
+      "not_found": "جهة الاتصال غير موجودة.",
+      "see_more": "عرض المزيد"
     }
   },
   "users": {
@@ -532,7 +537,8 @@
     "bucket_91_plus": "91+ يوم"
   },
   "audit": {
-    "page_title": "سجل التدقيق",
+    "page_title": "السجل",
+    "unknown_actor": "النظام",
     "entity_type": "نوع الكيان",
     "action": "الإجراء",
     "when": "الوقت",

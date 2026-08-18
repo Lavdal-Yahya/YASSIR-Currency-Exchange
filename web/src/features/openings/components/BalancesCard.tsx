@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import type { BalanceRow } from '../api/useOpenings';
-
-// One card per currency. Renders code + name + `formatMoney`-style
-// figure (currency code beside the amount per architecture §5), the
-// weighted-average cost, the last movement date, and a low-balance
-// chip when the cached amount is at or below the currency's threshold.
 
 interface Props {
   row: BalanceRow;
+}
+
+function fmt1(s: string) {
+  return parseFloat(s).toFixed(1);
 }
 
 export function BalancesCard({ row }: Props) {
@@ -18,26 +18,26 @@ export function BalancesCard({ row }: Props) {
     Number.parseFloat(row.cachedAmount) <= Number.parseFloat(row.lowBalanceThreshold);
 
   return (
-    <article className="card-row" aria-label={row.code}>
+    <Link to={`/currencies/${row.currencyId}/history`} className="card-row" aria-label={row.code}>
       <div className="card-row__header">
         <h2 className="card-row__title">{row.code}</h2>
         {isLow ? <span className="badge badge--warn">{t('balances.low')}</span> : null}
       </div>
       <div className="card-row__meta">
         <span className="card-row__mono">
-          {row.cachedAmount} {row.code}
+          {fmt1(row.cachedAmount)} {row.code}
         </span>
         <span>{row.name}</span>
       </div>
       <div className="card-row__meta">
         <span>
-          {t('balances.avg_cost')}: <strong>{row.cachedAvgMru}</strong> MRU
+          {t('balances.avg_cost')}: <strong>{fmt1(row.cachedAvgMru)}</strong> MRU
         </span>
         <span>
           {t('balances.last_movement')}:{' '}
           {row.lastMovementAt ? dateFmt.format(new Date(row.lastMovementAt)) : '—'}
         </span>
       </div>
-    </article>
+    </Link>
   );
 }

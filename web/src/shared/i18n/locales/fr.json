@@ -58,6 +58,8 @@
     "choose": "Choisir…",
     "coming_soon": "Bientôt disponible",
     "reset_filters": "Réinitialiser",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
     "prev_page": "Précédent",
     "next_page": "Suivant",
     "page_of": "Page {{n}} / {{total}}",
@@ -167,7 +169,9 @@
     "low_threshold_label": "Seuil",
     "threshold_invalid": "Nombre positif, ex. 100 ou 100.50.",
     "deactivate": "Désactiver la devise",
-    "reactivate": "Réactiver la devise"
+    "reactivate": "Réactiver la devise",
+    "history": "Historique",
+    "ledger_empty": "Aucune opération pour cette devise."
   },
   "contacts": {
     "title": "Contacts",
@@ -203,7 +207,8 @@
       "trades_empty": "Aucun échange pour ce contact.",
       "phase5_placeholder": "Disponible à partir de la phase 5.",
       "created_at": "Créé le",
-      "not_found": "Contact introuvable."
+      "not_found": "Contact introuvable.",
+      "see_more": "Voir plus"
     }
   },
   "users": {
@@ -525,7 +530,8 @@
     "bucket_91_plus": "91+ j"
   },
   "audit": {
-    "page_title": "Journal d'audit",
+    "page_title": "Historique",
+    "unknown_actor": "Système",
     "entity_type": "Type d'entité",
     "action": "Action",
     "when": "Date",

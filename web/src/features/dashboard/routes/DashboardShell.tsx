@@ -15,6 +15,10 @@ import { useDashboardSummary } from '../../reports/api/useReports';
 //   · quick-nav links (balances, openings, reports, audit)
 //   · balances-card grid (unchanged from P3-11)
 
+function fmt1(s: string) {
+  return parseFloat(s).toFixed(1);
+}
+
 export function DashboardShell() {
   const { t } = useTranslation();
   const balances = useBalances();
@@ -34,16 +38,18 @@ export function DashboardShell() {
             <article className="summary-card">
               <h2 className="summary-card__title">{t('dashboard.today_purchases')}</h2>
               <p className="summary-card__count">{summary.data.todayPurchases.count}</p>
-              <p className="summary-card__figure">{summary.data.todayPurchases.totalMru} MRU</p>
+              <p className="summary-card__figure">
+                {fmt1(summary.data.todayPurchases.totalMru)} MRU
+              </p>
             </article>
             <article className="summary-card">
               <h2 className="summary-card__title">{t('dashboard.today_sales')}</h2>
               <p className="summary-card__count">{summary.data.todaySales.count}</p>
-              <p className="summary-card__figure">{summary.data.todaySales.totalMru} MRU</p>
+              <p className="summary-card__figure">{fmt1(summary.data.todaySales.totalMru)} MRU</p>
             </article>
             <article className="summary-card">
               <h2 className="summary-card__title">{t('dashboard.net_today')}</h2>
-              <p className="summary-card__figure">{summary.data.todayNetMru} MRU</p>
+              <p className="summary-card__figure">{fmt1(summary.data.todayNetMru)} MRU</p>
             </article>
           </section>
 
@@ -51,7 +57,9 @@ export function DashboardShell() {
             <div className="summary-card">
               <h2 className="summary-card__title">{t('dashboard.open_receivables')}</h2>
               <p className="summary-card__count">{summary.data.openReceivables.count}</p>
-              <p className="summary-card__figure">{summary.data.openReceivables.totalMru} MRU</p>
+              <p className="summary-card__figure">
+                {fmt1(summary.data.openReceivables.totalMru)} MRU
+              </p>
               {summary.data.openReceivables.hasNonMruDebts ? (
                 <p className="summary-card__note">{t('dashboard.non_mru_debts_excluded')}</p>
               ) : null}
@@ -59,7 +67,7 @@ export function DashboardShell() {
             <div className="summary-card">
               <h2 className="summary-card__title">{t('dashboard.open_payables')}</h2>
               <p className="summary-card__count">{summary.data.openPayables.count}</p>
-              <p className="summary-card__figure">{summary.data.openPayables.totalMru} MRU</p>
+              <p className="summary-card__figure">{fmt1(summary.data.openPayables.totalMru)} MRU</p>
               {summary.data.openPayables.hasNonMruDebts ? (
                 <p className="summary-card__note">{t('dashboard.non_mru_debts_excluded')}</p>
               ) : null}

@@ -5,167 +5,138 @@ import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useAuditLog, type AuditFilters, type AuditLogRow } from '../api/useAudit';
 
-// Audit log viewer — owner only. Server enforces AUDIT_READ; the UI is a
-// courtesy. Filters: entity type, actor, action, date range. Diff view
-// shows before/after as pretty JSON — the audit rows only carry deltas
-// (audit.service.ts docstring), so the diff stays small.
+// Operational history feed — owner only.
+// Login/logout events are hidden; what remains is a timeline of
+// financial and administrative operations, styled like a banking app.
 
-const PAGE_SIZE = 25;
+const PAGE_SIZE = 30;
+
+// Connection events are noise in a transaction history view.
+const HIDDEN_ACTIONS = new Set(['login_succeeded', 'login_failed', 'logout']);
+
+function actionStyle(action: string): { icon: string; colorClass: string } {
+  if (action === 'purchase_created') return { icon: '↓', colorClass: 'history-icon--in' };
+  if (action === 'sale_created') return { icon: '↑', colorClass: 'history-icon--out' };
+  if (action === 'payment_created') return { icon: '⇌', colorClass: 'history-icon--in' };
+  if (action === 'expense_created') return { icon: '−', colorClass: 'history-icon--out' };
+  if (action === 'opening_balance_created')
+    return { icon: '○', colorClass: 'history-icon--neutral' };
+  if (action.endsWith('_reversed')) return { icon: '↩', colorClass: 'history-icon--danger' };
+  return { icon: '·', colorClass: 'history-icon--neutral' };
+}
+
+function groupLabel(dateStr: string, lang: string, t: (k: string) => string): string {
+  const d = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return t('common.today');
+  if (d.toDateString() === yesterday.toDateString()) return t('common.yesterday');
+  return new Intl.DateTimeFormat(lang, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(d);
+}
+
+function formatTime(dateStr: string, lang: string) {
+  return new Intl.DateTimeFormat(lang, { hour: '2-digit', minute: '2-digit' }).format(
+    new Date(dateStr),
+  );
+}
 
 export function AuditLogPage() {
-  const { t } = useTranslation();
-  const [entityType, setEntityType] = useState('');
-  const [action, setAction] = useState('');
+  const { t, i18n } = useTranslation();
   const [offset, setOffset] = useState(0);
 
-  const filters = useMemo<AuditFilters>(
-    () => ({
-      ...(entityType ? { entityType } : {}),
-      ...(action ? { action } : {}),
-      limit: PAGE_SIZE,
-      offset,
-    }),
-    [entityType, action, offset],
-  );
+  const filters = useMemo<AuditFilters>(() => ({ limit: PAGE_SIZE, offset }), [offset]);
   const q = useAuditLog(filters);
-  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const visible = useMemo(
+    () => (q.data?.data ?? []).filter((r) => !HIDDEN_ACTIONS.has(r.action)),
+    [q.data],
+  );
+
+  // Group by calendar day
+  type Group = { label: string; rows: AuditLogRow[] };
+  const groups = useMemo<Group[]>(() => {
+    const result: Group[] = [];
+    let currentLabel = '';
+    for (const row of visible) {
+      const label = groupLabel(row.createdAt, i18n.language, t);
+      if (label !== currentLabel) {
+        result.push({ label, rows: [] });
+        currentLabel = label;
+      }
+      result.at(-1)!.rows.push(row);
+    }
+    return result;
+  }, [visible, i18n.language, t]);
 
   return (
     <>
       <PageHeader title={t('audit.page_title')} />
 
-      <form className="filter-bar" onSubmit={(e) => e.preventDefault()}>
-        <label>
-          <span>{t('audit.entity_type')}</span>
-          <input
-            type="text"
-            value={entityType}
-            onChange={(e) => {
-              setEntityType(e.target.value);
-              setOffset(0);
-            }}
-            placeholder="sale, purchase, payment, expense…"
-          />
-        </label>
-        <label>
-          <span>{t('audit.action')}</span>
-          <input
-            type="text"
-            value={action}
-            onChange={(e) => {
-              setAction(e.target.value);
-              setOffset(0);
-            }}
-            placeholder="sale_reversed, purchase_created…"
-          />
-        </label>
-      </form>
-
       {q.isLoading ? <Loading /> : null}
       {q.error ? <ErrorMessage error={q.error} /> : null}
-      {q.data ? (
-        <>
-          <div className="table-scroll">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>{t('audit.when')}</th>
-                  <th>{t('audit.actor')}</th>
-                  <th>{t('audit.action')}</th>
-                  <th>{t('audit.entity')}</th>
-                  <th>{t('audit.reason')}</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {q.data.data.map((r) => (
-                  <RowWithDiff
-                    key={r.id}
-                    r={r}
-                    expanded={expanded === r.id}
-                    toggle={() => setExpanded((cur) => (cur === r.id ? null : r.id))}
-                  />
-                ))}
-                {q.data.data.length === 0 ? (
-                  <tr>
-                    <td colSpan={6}>{t('audit.no_data')}</td>
-                  </tr>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-          <div className="pagination">
-            <button
-              type="button"
-              disabled={offset === 0}
-              onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-            >
-              {t('common.prev_page')}
-            </button>
-            <span>
-              {offset + 1}–{Math.min(offset + PAGE_SIZE, q.data.total)} / {q.data.total}
-            </span>
-            <button
-              type="button"
-              disabled={offset + PAGE_SIZE >= q.data.total}
-              onClick={() => setOffset(offset + PAGE_SIZE)}
-            >
-              {t('common.next_page')}
-            </button>
-          </div>
-        </>
-      ) : null}
-    </>
-  );
-}
 
-function RowWithDiff({
-  r,
-  expanded,
-  toggle,
-}: {
-  r: AuditLogRow;
-  expanded: boolean;
-  toggle: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <tr>
-        <td>{new Date(r.createdAt).toLocaleString()}</td>
-        <td>{r.actorName ?? r.actorPhone ?? '—'}</td>
-        {/* Action codes come from the API verbatim (audit.service.ts). Unknown
-            codes — a newer API against an older web build — fall back to the
-            raw code rather than rendering a translation key. */}
-        <td>{t(`audit.actions.${r.action}`, { defaultValue: r.action })}</td>
-        <td>
-          {r.entityType}
-          {r.entityId ? `#${r.entityId.slice(0, 8)}` : ''}
-        </td>
-        <td>{r.reason ?? '—'}</td>
-        <td>
-          {r.before !== null || r.after !== null ? (
-            <button type="button" className="btn btn--ghost btn--sm" onClick={toggle}>
-              {expanded ? t('audit.hide_diff') : t('audit.show_diff')}
-            </button>
-          ) : null}
-        </td>
-      </tr>
-      {expanded ? (
-        <tr>
-          <td colSpan={6}>
-            <div className="audit-diff">
-              <div>
-                <h4>{t('audit.before')}</h4>
-                <pre>{JSON.stringify(r.before ?? {}, null, 2)}</pre>
-              </div>
-              <div>
-                <h4>{t('audit.after')}</h4>
-                <pre>{JSON.stringify(r.after ?? {}, null, 2)}</pre>
-              </div>
-            </div>
-          </td>
-        </tr>
+      {q.data && visible.length === 0 ? <p className="empty-state">{t('audit.no_data')}</p> : null}
+
+      {groups.map((group) => (
+        <section key={group.label} className="history-group">
+          <h2 className="history-group__date">{group.label}</h2>
+          <ul className="card-list">
+            {group.rows.map((r) => {
+              const { icon, colorClass } = actionStyle(r.action);
+              return (
+                <li key={r.id}>
+                  <div className="history-entry">
+                    <span className={`history-entry__icon ${colorClass}`} aria-hidden="true">
+                      {icon}
+                    </span>
+                    <div className="history-entry__body">
+                      <p className="history-entry__desc">
+                        {t(`audit.actions.${r.action}`, { defaultValue: r.action })}
+                      </p>
+                      <p className="history-entry__meta">
+                        {r.actorName ?? r.actorPhone ?? t('audit.unknown_actor')}
+                        {' · '}
+                        {formatTime(r.createdAt, i18n.language)}
+                      </p>
+                      {r.reason ? (
+                        <p className="history-entry__reason">
+                          {t('audit.reason')}: {r.reason}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+
+      {q.data && q.data.total > PAGE_SIZE ? (
+        <div className="pagination">
+          <button
+            type="button"
+            disabled={offset === 0}
+            onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
+          >
+            {t('common.prev_page')}
+          </button>
+          <span>
+            {offset + 1}–{Math.min(offset + PAGE_SIZE, q.data.total)} / {q.data.total}
+          </span>
+          <button
+            type="button"
+            disabled={offset + PAGE_SIZE >= q.data.total}
+            onClick={() => setOffset(offset + PAGE_SIZE)}
+          >
+            {t('common.next_page')}
+          </button>
+        </div>
       ) : null}
     </>
   );
