@@ -1,42 +1,49 @@
-import { useTranslation } from 'react-i18next';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { ActionSheet } from './ActionSheet';
+import { BottomNav } from './BottomNav';
+import { PageTitleProvider } from './PageTitle';
+import { TitleBar } from './TitleBar';
 
-// Top nav, sized for one-handed phone use. Moved from bottom to top so
-// the nav is always visible without scrolling.
-
-interface NavItem {
-  to: string;
-  labelKey: string;
-  icon: string;
-  end?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { to: '/', labelKey: 'nav.dashboard', icon: '⌂', end: true },
-  { to: '/purchases', labelKey: 'nav.purchases', icon: '↓' },
-  { to: '/sales', labelKey: 'nav.sales', icon: '↑' },
-  { to: '/debts', labelKey: 'nav.debts', icon: '⇌' },
-  { to: '/contacts', labelKey: 'nav.contacts', icon: '☏' },
-  { to: '/settings', labelKey: 'nav.settings', icon: '⚙' },
-];
+// App chrome (design handoff, S-03): title bar, body, bottom tab bar,
+// and the `+` action sheet.
+//
+// Three rows: `auto 1fr auto`. The body is the only scroll container, so
+// both bars stay visible without either being `position: fixed` — which
+// keeps them out of the way of the on-screen keyboard on a phone.
+//
+// The screen title is owned by the page (via PageHeader) and rendered
+// here, once, in the bar. See PageTitle.tsx for why it is not a
+// route→title map.
 
 export function AppShell() {
-  const { t } = useTranslation();
+  const [title, setTitle] = useState<string | null>(null);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const location = useLocation();
+
+  const closeActions = useCallback(() => setActionsOpen(false), []);
+  const openActions = useCallback(() => setActionsOpen(true), []);
+
+  // Each screen starts at the top. Scrolling the container beats keying
+  // <main> on the pathname, which would remount the whole subtree and
+  // discard state React Router had deliberately preserved.
+  const mainRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    // `scrollTop`, not `scrollTo`: the property is universally supported
+    // and, unlike the method, exists in jsdom.
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+  }, [location.pathname]);
+
   return (
-    <div className="app-shell">
-      <nav className="top-nav" aria-label={t('nav.dashboard')}>
-        {NAV_ITEMS.map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.end} className="top-nav__item">
-            <span aria-hidden="true" className="top-nav__icon">
-              {item.icon}
-            </span>
-            <span className="top-nav__label">{t(item.labelKey)}</span>
-          </NavLink>
-        ))}
-      </nav>
-      <main className="app-shell__main">
-        <Outlet />
-      </main>
-    </div>
+    <PageTitleProvider value={setTitle}>
+      <div className="app-shell">
+        <TitleBar title={title} />
+        <main className="app-shell__main" ref={mainRef}>
+          <Outlet />
+        </main>
+        <BottomNav onOpenActions={openActions} />
+        <ActionSheet open={actionsOpen} onClose={closeActions} />
+      </div>
+    </PageTitleProvider>
   );
 }

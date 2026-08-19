@@ -7,6 +7,7 @@ import { CurrenciesListPage } from '../features/currencies/routes/CurrenciesList
 import { CurrencyFormPage } from '../features/currencies/routes/CurrencyFormPage';
 import { CurrencyHistoryPage } from '../features/currencies/routes/CurrencyHistoryPage';
 import { DashboardShell } from '../features/dashboard/routes/DashboardShell';
+import { MorePage } from '../features/more/routes/MorePage';
 import { BalancesDashboardPage } from '../features/openings/routes/BalancesDashboardPage';
 import { OpeningCurrencyFormPage } from '../features/openings/routes/OpeningCurrencyFormPage';
 import { OpeningDebtFormPage } from '../features/openings/routes/OpeningDebtFormPage';
@@ -17,6 +18,7 @@ import { SettingsExpenseCategoriesPage } from '../features/settings/routes/Setti
 import { SettingsLayout } from '../features/settings/routes/SettingsLayout';
 import { SettingsPaymentMethodsPage } from '../features/settings/routes/SettingsPaymentMethodsPage';
 import { SettingsPermissionsPage } from '../features/settings/routes/SettingsPermissionsPage';
+import { OperationsPage } from '../features/trades/routes/OperationsPage';
 import { PurchaseDetailPage } from '../features/trades/routes/PurchaseDetailPage';
 import { PurchaseFormPage } from '../features/trades/routes/PurchaseFormPage';
 import { PurchasesListPage } from '../features/trades/routes/PurchasesListPage';
@@ -62,6 +64,8 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { path: '/', element: <DashboardShell /> },
+
+          { path: '/operations', element: <OperationsPage /> },
 
           { path: '/purchases', element: <PurchasesListPage /> },
           { path: '/purchases/new', element: <PurchaseFormPage /> },
@@ -125,6 +129,8 @@ export const routes: RouteObject[] = [
               { path: 'permissions', element: <SettingsPermissionsPage /> },
             ],
           },
+
+          { path: '/more', element: <MorePage /> },
 
           { path: '*', element: <NotFoundPage /> },
         ],

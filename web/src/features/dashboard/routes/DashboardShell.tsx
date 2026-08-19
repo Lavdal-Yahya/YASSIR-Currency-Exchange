@@ -1,18 +1,15 @@
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { useBalances } from '../../openings/api/useOpenings';
 import { BalancesCard } from '../../openings/components/BalancesCard';
 import { Loading } from '../../../shared/ui/Loading';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
-import { PERMISSIONS } from '../../../shared/permissions';
-import { useSession } from '../../auth/api/useSession';
+import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useDashboardSummary } from '../../reports/api/useReports';
 
 // Home dashboard. Renders (P7-05):
 //   · today's activity summary (purchases/sales counts + totals)
 //   · open receivables/payables totals
 //   · low-balance chips
-//   · quick-nav links (balances, openings, reports, audit)
 //   · balances-card grid (unchanged from P3-11)
 
 function fmt1(s: string) {
@@ -23,12 +20,10 @@ export function DashboardShell() {
   const { t } = useTranslation();
   const balances = useBalances();
   const summary = useDashboardSummary();
-  const session = useSession();
-  const perms = new Set(session.data?.permissions ?? []);
 
   return (
     <>
-      <h1 className="page-title">{t('dashboard.title')}</h1>
+      <PageHeader title={t('dashboard.title')} />
 
       {summary.isLoading ? <Loading /> : null}
       {summary.error ? <ErrorMessage error={summary.error} /> : null}
@@ -90,39 +85,6 @@ export function DashboardShell() {
           ) : null}
         </>
       ) : null}
-
-      <div className="dashboard-actions">
-        <Link to="/balances" className="btn btn--ghost">
-          {t('balances.title')}
-        </Link>
-        <Link to="/openings" className="btn btn--ghost">
-          {t('openings.title')}
-        </Link>
-        <Link to="/reports/cash-flow" className="btn btn--ghost">
-          {t('reports.cash_flow_title')}
-        </Link>
-        <Link to="/reports/ageing" className="btn btn--ghost">
-          {t('reports.ageing_title')}
-        </Link>
-        <Link to="/rates" className="btn btn--ghost">
-          {t('rates.title')}
-        </Link>
-        {perms.has(PERMISSIONS.PROFIT_VIEW) ? (
-          <Link to="/reports/profit" className="btn btn--ghost">
-            {t('reports.profit_title')}
-          </Link>
-        ) : null}
-        {perms.has(PERMISSIONS.AUDIT_READ) ? (
-          <>
-            <Link to="/reports/user-activity" className="btn btn--ghost">
-              {t('reports.user_activity_title')}
-            </Link>
-            <Link to="/audit" className="btn btn--ghost">
-              {t('audit.page_title')}
-            </Link>
-          </>
-        ) : null}
-      </div>
 
       {balances.isLoading ? <Loading /> : null}
       {balances.error ? <ErrorMessage error={balances.error} /> : null}

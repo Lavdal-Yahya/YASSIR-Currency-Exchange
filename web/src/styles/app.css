@@ -45,19 +45,33 @@ a {
   outline-offset: 2px;
 }
 
-/* App shell layout. Top nav pinned; content scrolls below it and
-   respects the iOS safe areas on both ends. */
+/* The viewport column: offline banner (auto) above the active route
+   (the rest). Owning the 100dvh here rather than on .app-shell is what
+   keeps the bottom tab bar on screen while the banner is showing. */
+.app-root {
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+}
 
+.app-root > :not(.offline-banner) {
+  flex: 1;
+  min-block-size: 0;
+}
+
+/* App chrome — title bar, scrolling body, bottom tab bar (design
+   handoff, S-03). Three rows: the body is the only scroll container, so
+   both bars stay put without either being `position: fixed` — which
+   keeps them clear of the on-screen keyboard on a phone. */
 .app-shell {
   display: grid;
-  grid-template-rows: auto 1fr;
-  min-block-size: 100dvh;
+  grid-template-rows: auto 1fr auto;
+  min-block-size: 0;
 }
 
 .app-shell__main {
   padding-inline: var(--sp-4);
   padding-block: var(--sp-6);
-  padding-block-end: calc(var(--sp-6) + env(safe-area-inset-bottom));
   overflow-y: auto;
   /* A grid item defaults to a min-content floor, so wide content used to push
      main — and the whole shell — past the viewport. With the floor removed,
@@ -67,60 +81,339 @@ a {
   min-inline-size: 0;
 }
 
-.top-nav {
-  display: grid;
-  grid-auto-flow: column;
-  /* minmax(0, 1fr), not a bare 1fr: `1fr` means `minmax(auto, 1fr)`, and the
-     `auto` floor sizes every track to its label's min-content width. Six
-     French labels pushed the nav — and with it .app-shell and every screen —
-     to 453px on a 390px viewport, ignoring the viewport entirely. */
-  grid-auto-columns: minmax(0, 1fr);
-  align-items: stretch;
+/* --- title bar ----------------------------------------------------- */
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-block-size: 52px;
+  padding: 10px var(--sp-4);
+  padding-block-start: calc(10px + env(safe-area-inset-top));
   background: var(--ink);
   color: var(--on-ink);
   border-block-end: 1px solid var(--on-ink-hairline);
-  padding-block-start: env(safe-area-inset-top);
 }
 
-.top-nav__item {
+.title-bar__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 44×44 target; the negative inline margin keeps the glyph optically
+     aligned with the 16px page gutter despite the oversized hit area. */
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin-inline-start: calc(var(--sp-3) * -1);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--on-ink-dim);
+}
+
+.title-bar__title {
+  flex: 1;
+  min-inline-size: 0;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--on-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title-bar__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin-inline-end: calc(var(--sp-3) * -1);
+}
+
+/* The circle is the inner span so the button can carry a 44×44 hit area
+   around a 32px avatar. */
+.title-bar__avatar > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background: var(--on-ink-raised);
+  color: #e7ecf1;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Inverted fill signals the owner account at a glance. */
+.title-bar__avatar--owner > span {
+  background: var(--on-ink);
+  color: var(--ink);
+}
+
+/* --- bottom tab bar ------------------------------------------------ */
+
+/* Flex, not a fixed five-column grid: items filter on permission, so the
+   count varies between two and four plus the FAB. */
+.bottom-nav {
+  display: flex;
+  align-items: stretch;
+  background: var(--ink);
+  border-block-start: 1px solid var(--on-ink-hairline);
+  min-block-size: 64px;
+  padding-inline: var(--sp-1);
+  padding-block-end: calc(6px + env(safe-area-inset-bottom));
+}
+
+.bottom-nav__item {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-1);
+  gap: 3px;
   min-block-size: 56px;
   padding-block: var(--sp-2);
-  padding-inline: 2px;
-  /* min-inline-size: 0 so the item can actually shrink to its track —
-     a flex/grid child defaults to min-content and would re-inflate the nav. */
-  min-inline-size: 0;
+  padding-inline: var(--sp-1);
+  /* 4px each side = the 8px between targets the handoff asks for. */
+  margin-inline: var(--sp-1);
+  border-radius: var(--r-md);
   color: var(--on-ink-muted);
-  /* Uppercase + letter-spacing cost ~20% width on the French labels, which is
-     what made six of them unfittable. Fluid size keeps them legible down to
-     320px without truncating. */
-  font-size: clamp(9px, 2.7vw, 11px);
-  font-weight: 600;
+  font-size: clamp(10px, 2.6vw, 11px);
+  font-weight: 500;
   text-align: center;
-  /* 44×44 target minimum — the row min-block-size handles the vertical. */
 }
 
-.top-nav__label {
-  /* Safety net only: with the sizing above every label fits in both
-     languages, but a longer future label ellipsises instead of reflowing
-     the whole shell. */
+.bottom-nav__icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.bottom-nav__label {
+  /* Safety net: a longer future label ellipsises instead of reflowing
+     the bar and, with it, the whole shell. */
   max-inline-size: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.top-nav__item[aria-current='page'] {
+.bottom-nav__item[aria-current='page'] {
   color: var(--on-ink-bright);
+  font-weight: 600;
 }
 
-.top-nav__icon {
-  font-size: 20px;
+/* Active state is not carried by colour alone — weight changes and a rule
+   sits above the item. The app is used outdoors in bright sun, where a
+   colour-only signal is the first thing to disappear. */
+.bottom-nav__item[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 25%;
+  block-size: 2px;
+  border-radius: var(--r-pill);
+  background: var(--on-ink-bright);
+}
+
+/* 56px circle in a 76px slot, overhanging the bar's top edge. The only
+   saturated thing in the chrome, because it is the most-used control. */
+.bottom-nav__fab {
+  flex: 0 0 56px;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 56px;
+  block-size: 56px;
+  margin-block-start: -18px;
+  margin-inline: 10px;
+  border-radius: var(--r-pill);
+  background: var(--in);
+  color: #fff;
+  font-size: 26px;
   line-height: 1;
+  box-shadow: 0 3px 12px rgb(11 110 95 / 40%);
+}
+
+/* --- action sheet --------------------------------------------------- */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  background: rgb(11 18 32 / 50%);
+}
+
+.sheet {
+  inline-size: 100%;
+  background: white;
+  border-start-start-radius: var(--r-xl);
+  border-start-end-radius: var(--r-xl);
+  padding: var(--sp-2) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom));
+}
+
+.sheet__grip {
+  inline-size: 36px;
+  block-size: 4px;
+  margin: var(--sp-2) auto var(--sp-3);
+  border-radius: var(--r-pill);
+  background: var(--hairline-strong);
+}
+
+.sheet__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.sheet__item {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-block-size: 56px;
+  padding-inline: var(--sp-3);
+  border-radius: var(--r-lg);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: start;
+}
+
+.sheet__item:hover,
+.sheet__item:focus-visible {
+  background: var(--surface);
+}
+
+.sheet__icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 18px;
+}
+
+.sheet__label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.sheet__cancel {
+  inline-size: 100%;
+  min-block-size: 52px;
+  margin-block-start: var(--sp-3);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sheet__empty {
+  padding: var(--sp-4);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* --- More menu ------------------------------------------------------ */
+
+.more-group {
+  margin-block-end: var(--sp-6);
+}
+
+.more-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.more-list__item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-block-size: 56px;
+  padding-inline: var(--sp-4);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.more-list li + li .more-list__item {
+  border-block-start: 1px solid var(--hairline-soft);
+}
+
+.more-list__item:hover,
+.more-list__item:focus-visible {
+  background: var(--surface);
+}
+
+.more-list__icon {
+  flex: 0 0 auto;
+  inline-size: 20px;
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--muted);
+}
+
+.more-list__label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.more-list__chevron {
+  color: var(--muted);
+  font-size: 18px;
+}
+
+/* The chevron points at the content, so it follows reading direction. */
+[dir='rtl'] .more-list__chevron {
+  transform: scaleX(-1);
+}
+
+/* --- segmented control ---------------------------------------------- */
+
+.segmented {
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-1);
+  margin-block-end: var(--sp-4);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+}
+
+.segmented__item {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 40px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.segmented__item.is-active {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgb(11 18 32 / 10%);
 }
 
 .page-title {
@@ -197,12 +490,44 @@ a {
   color: var(--on-ink-bright);
 }
 
+/* Title-bar variant — bordered chip on the ink chrome. Shorter than the
+   44px target minimum: the handoff specifies both `6px 8px` padding for
+   this chip and a 44px floor for touch targets, and those two rules
+   cannot both hold in a 52px bar. 34px is the compromise, and the
+   full-size switcher on the profile screen stays 44px-compliant. */
+.language-switcher--compact {
+  flex: 0 0 auto;
+  padding: 2px;
+  background: transparent;
+  border-color: var(--on-ink-raised);
+}
+
+.language-switcher--compact .language-switcher__item {
+  min-block-size: 34px;
+  padding-inline: var(--sp-2);
+  padding-block: var(--sp-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--on-ink-muted);
+}
+
+.language-switcher--compact .language-switcher__item.is-active {
+  background: var(--on-ink);
+  color: var(--ink);
+}
+
+.login-page__lang {
+  display: flex;
+  justify-content: flex-end;
+  margin-block-end: var(--sp-4);
+}
+
 /* Login screen — full-height, centered card. Sits outside AppShell so
    no bottom nav appears. */
 .login-page {
   display: grid;
   place-items: center;
-  min-block-size: 100dvh;
+  overflow-y: auto;
   padding: var(--sp-6);
   padding-block: max(var(--sp-8), env(safe-area-inset-top))
     max(var(--sp-8), env(safe-area-inset-bottom));
@@ -328,17 +653,15 @@ a {
   color: var(--muted);
 }
 
-/* Page header — title + optional action button on the right */
+/* Page header — the primary action only. The screen title moved to the
+   title bar (app/PageTitle.tsx), so this row is right-aligned rather
+   than space-between. */
 .page-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: var(--sp-4);
   margin-block-end: var(--sp-4);
-}
-
-.page-header .page-title {
-  margin: 0;
 }
 
 /* Toolbar for filters / search */
