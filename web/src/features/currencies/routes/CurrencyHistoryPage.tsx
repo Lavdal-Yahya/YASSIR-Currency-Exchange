@@ -45,14 +45,16 @@ export function CurrencyHistoryPage() {
   type Group = { label: string; entries: NonNullable<typeof q.data>['rows'] };
   const groups: Group[] = [];
   if (q.data) {
-    let currentLabel = '';
+    // Hold the open group rather than re-reading `groups.at(-1)` — see the
+    // same shape in AuditLogPage; conventions §2 bans the non-null assertion.
+    let current: Group | null = null;
     for (const entry of q.data.rows) {
       const label = groupLabel(entry.transactionDate as string, i18n.language, t);
-      if (label !== currentLabel) {
-        groups.push({ label, entries: [] });
-        currentLabel = label;
+      if (!current || current.label !== label) {
+        current = { label, entries: [] };
+        groups.push(current);
       }
-      groups.at(-1)!.entries.push(entry);
+      current.entries.push(entry);
     }
   }
 

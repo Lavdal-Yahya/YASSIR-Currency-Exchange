@@ -61,14 +61,17 @@ export function AuditLogPage() {
   type Group = { label: string; rows: AuditLogRow[] };
   const groups = useMemo<Group[]>(() => {
     const result: Group[] = [];
-    let currentLabel = '';
+    // Hold the open group rather than re-reading `result.at(-1)` — the
+    // array access is never actually undefined here, but proving that to
+    // the compiler needed a non-null assertion, which conventions §2 bans.
+    let current: Group | null = null;
     for (const row of visible) {
       const label = groupLabel(row.createdAt, i18n.language, t);
-      if (label !== currentLabel) {
-        result.push({ label, rows: [] });
-        currentLabel = label;
+      if (!current || current.label !== label) {
+        current = { label, rows: [] };
+        result.push(current);
       }
-      result.at(-1)!.rows.push(row);
+      current.rows.push(row);
     }
     return result;
   }, [visible, i18n.language, t]);
