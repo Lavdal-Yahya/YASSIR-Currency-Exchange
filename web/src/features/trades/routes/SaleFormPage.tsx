@@ -13,9 +13,7 @@ import { useOnline } from '../../../shared/pwa/useOnline';
 import { suggestedRate } from '../../rates/api/suggestion';
 import { useCurrentRates } from '../../rates/api/useRates';
 import { useCreateSale, useLastTradeRate } from '../api/useTrades';
-
-const AMOUNT_RE = /^\d+(\.\d{1,4})?$/;
-const RATE_RE = /^\d+(\.\d{1,8})?$/;
+import { AMOUNT_RE, RATE_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 const schema = z.object({
   deliveredCurrencyId: z.string().uuid({ message: 'form.required' }),
@@ -106,18 +104,20 @@ export function SaleFormPage() {
     baseCode: 'MRU',
   });
 
+  const normRate = normalizeDecimal(rate);
+  const normAmount = normalizeDecimal(deliveredAmount);
   const derivedTotal =
-    rate && deliveredAmount && RATE_RE.test(rate) && AMOUNT_RE.test(deliveredAmount)
-      ? (parseFloat(rate) * parseFloat(deliveredAmount)).toFixed(2)
+    normRate && normAmount && RATE_RE.test(normRate) && AMOUNT_RE.test(normAmount)
+      ? (parseFloat(normRate) * parseFloat(normAmount)).toFixed(2)
       : null;
 
   const showRateWarning =
     !rateSanityDismissed &&
     !!lastRate &&
-    !!rate &&
-    RATE_RE.test(rate) &&
+    !!normRate &&
+    RATE_RE.test(normRate) &&
     (() => {
-      const entered = parseFloat(rate);
+      const entered = parseFloat(normRate);
       const last = parseFloat(lastRate);
       return last > 0 && (entered > last * 3 || entered < last / 3);
     })();
@@ -125,10 +125,12 @@ export function SaleFormPage() {
   async function onSubmit(values: FormValues) {
     const input = {
       deliveredCurrencyId: values.deliveredCurrencyId,
-      deliveredAmount: values.deliveredAmount,
+      deliveredAmount: normalizeDecimal(values.deliveredAmount),
       paymentCurrencyId: values.paymentCurrencyId,
-      ...(values.rate ? { rate: values.rate } : {}),
-      ...(values.immediatePayment ? { immediatePayment: values.immediatePayment } : {}),
+      ...(values.rate ? { rate: normalizeDecimal(values.rate) } : {}),
+      ...(values.immediatePayment
+        ? { immediatePayment: normalizeDecimal(values.immediatePayment) }
+        : {}),
       ...(values.paymentMethodId ? { paymentMethodId: values.paymentMethodId } : {}),
       ...(values.paymentMethodNote ? { paymentMethodNote: values.paymentMethodNote } : {}),
       ...(values.contactId ? { contactId: values.contactId } : {}),
@@ -227,9 +229,9 @@ export function SaleFormPage() {
               {t('rates.suggested_rate', { rate: suggestion.value })}
             </button>
           ) : null}
-          {rate && RATE_RE.test(rate) && deliveredCurrencyId && paymentCurrencyId ? (
+          {normRate && RATE_RE.test(normRate) && deliveredCurrencyId && paymentCurrencyId ? (
             <p className="field__hint field__hint--rate">
-              {t('sales.rate_direction', { from: fromCode, rate, to: toCode })}
+              {t('sales.rate_direction', { from: fromCode, rate: normRate, to: toCode })}
             </p>
           ) : null}
           {showRateWarning ? (

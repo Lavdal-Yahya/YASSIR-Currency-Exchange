@@ -9,8 +9,7 @@ import { usePaymentMethods } from '../../payment-methods/api/usePaymentMethods';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useCreateExpense } from '../api/useExpenses';
-
-const AMOUNT_RE = /^\d+(\.\d{1,4})?$/;
+import { AMOUNT_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 const schema = z
   .object({
@@ -57,7 +56,7 @@ export function ExpenseFormPage() {
 
   async function onSubmit(values: FormValues) {
     const parsed = schema.parse(values);
-    await create.mutateAsync(parsed);
+    await create.mutateAsync({ ...parsed, amount: normalizeDecimal(parsed.amount) });
     navigate('/expenses');
   }
 

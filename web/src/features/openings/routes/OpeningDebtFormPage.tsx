@@ -8,14 +8,12 @@ import { useCurrencies } from '../../currencies/api/useCurrencies';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useCreateOpeningDebt } from '../api/useOpenings';
+import { AMOUNT_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 const schema = z.object({
   contactId: z.string().uuid(),
   currencyId: z.string().uuid(),
-  amount: z
-    .string()
-    .trim()
-    .regex(/^\d+(\.\d{1,4})?$/, { message: 'openings.amount_invalid' }),
+  amount: z.string().trim().regex(AMOUNT_RE, { message: 'openings.amount_invalid' }),
   side: z.enum(['receivable', 'payable']),
 });
 
@@ -38,7 +36,7 @@ export function OpeningDebtFormPage() {
   });
 
   async function onSubmit(values: FormValues) {
-    await create.mutateAsync(values);
+    await create.mutateAsync({ ...values, amount: normalizeDecimal(values.amount) });
     navigate('/openings');
   }
 

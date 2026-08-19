@@ -7,6 +7,7 @@ import { useCurrencies } from '../../currencies/api/useCurrencies';
 import { ErrorMessage } from '../../../shared/ui/ErrorMessage';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useCreateOpeningBalance } from '../api/useOpenings';
+import { AMOUNT_RE, RATE_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 // Opening currency balance form. The three fields the operator supplies
 // map 1:1 to the DTO on the server. Money-shaped inputs stay STRING
@@ -19,14 +20,8 @@ import { useCreateOpeningBalance } from '../api/useOpenings';
 
 const schema = z.object({
   currencyId: z.string().uuid(),
-  quantity: z
-    .string()
-    .trim()
-    .regex(/^\d+(\.\d{1,4})?$/, { message: 'openings.quantity_invalid' }),
-  openingAvgCostMru: z
-    .string()
-    .trim()
-    .regex(/^\d+(\.\d{1,8})?$/, { message: 'openings.avg_cost_invalid' }),
+  quantity: z.string().trim().regex(AMOUNT_RE, { message: 'openings.quantity_invalid' }),
+  openingAvgCostMru: z.string().trim().regex(RATE_RE, { message: 'openings.avg_cost_invalid' }),
   effectiveDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
     message: 'openings.date_invalid',
   }),
@@ -55,7 +50,11 @@ export function OpeningCurrencyFormPage() {
   });
 
   async function onSubmit(values: FormValues) {
-    await create.mutateAsync(values);
+    await create.mutateAsync({
+      ...values,
+      quantity: normalizeDecimal(values.quantity),
+      openingAvgCostMru: normalizeDecimal(values.openingAvgCostMru),
+    });
     navigate('/openings');
   }
 

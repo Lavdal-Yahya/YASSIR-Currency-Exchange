@@ -14,6 +14,7 @@ import {
   useReactivateCurrency,
   useUpdateCurrency,
 } from '../api/useCurrencies';
+import { THRESHOLD_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 const schema = z.object({
   code: z
@@ -26,7 +27,7 @@ const schema = z.object({
   lowBalanceThreshold: z
     .string()
     .trim()
-    .regex(/^\d+(\.\d+)?$/, { message: 'currencies.threshold_invalid' })
+    .regex(THRESHOLD_RE, { message: 'currencies.threshold_invalid' })
     .optional()
     .or(z.literal('')),
 });
@@ -75,7 +76,7 @@ export function CurrencyFormPage() {
       decimalPlaces: values.decimalPlaces,
       lowBalanceThreshold:
         values.lowBalanceThreshold && values.lowBalanceThreshold.length > 0
-          ? values.lowBalanceThreshold
+          ? normalizeDecimal(values.lowBalanceThreshold)
           : null,
     };
     try {

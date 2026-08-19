@@ -12,8 +12,7 @@ import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useOnline } from '../../../shared/pwa/useOnline';
 import { useCreateCustomerPayment, useReceivable } from '../api/useDebts';
-
-const AMOUNT_RE = /^\d+(\.\d{1,4})?$/;
+import { AMOUNT_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 // Single-target in v1 per D-011: this page settles exactly one receivable.
 // The service accepts N — the UI defers multi-target until requested.
@@ -82,7 +81,7 @@ export function ReceivePaymentPage() {
     const input = {
       contactId: r.contactId,
       currencyId: r.currencyId,
-      amount: values.amount,
+      amount: normalizeDecimal(values.amount),
       paymentMethodId: values.paymentMethodId,
       ...(values.paymentMethodNote ? { paymentMethodNote: values.paymentMethodNote } : {}),
       ...(values.reference ? { reference: values.reference } : {}),

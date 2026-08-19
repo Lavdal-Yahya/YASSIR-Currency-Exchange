@@ -12,8 +12,7 @@ import { Loading } from '../../../shared/ui/Loading';
 import { PageHeader } from '../../../shared/ui/PageHeader';
 import { useOnline } from '../../../shared/pwa/useOnline';
 import { useCreateSupplierPayment, usePayable } from '../api/useDebts';
-
-const AMOUNT_RE = /^\d+(\.\d{1,4})?$/;
+import { AMOUNT_RE, normalizeDecimal } from '../../../shared/lib/numericString';
 
 // Mirror of ReceivePaymentPage for the payables side. Non-base
 // settlements trigger the FX gain/loss in SupplierPaymentService
@@ -79,7 +78,7 @@ export function PaySupplierPage() {
     const input = {
       contactId: p.contactId,
       currencyId: p.currencyId,
-      amount: values.amount,
+      amount: normalizeDecimal(values.amount),
       paymentMethodId: values.paymentMethodId,
       ...(values.paymentMethodNote ? { paymentMethodNote: values.paymentMethodNote } : {}),
       ...(values.reference ? { reference: values.reference } : {}),
