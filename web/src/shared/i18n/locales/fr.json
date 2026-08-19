@@ -237,7 +237,9 @@
       "phase5_placeholder": "Disponible à partir de la phase 5.",
       "created_at": "Créé le",
       "not_found": "Contact introuvable.",
-      "see_more": "Voir plus"
+      "see_more": "Voir plus",
+      "export_pdf": "Exporter PDF",
+      "pdf_pay_status": "Règlement"
     }
   },
   "users": {
